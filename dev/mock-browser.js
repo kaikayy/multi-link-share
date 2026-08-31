@@ -80,28 +80,55 @@
     },
     storage: {
       onChanged: { addListener() {} },
-      local: {
-        get: (key) => {
-          if (key == null) return asyncOk({ ...store });
-          if (typeof key === "string") return asyncOk({ [key]: store[key] });
-          if (Array.isArray(key)) {
-            const out = {};
-            for (const k of key) if (store[k] !== undefined) out[k] = store[k];
-            return asyncOk(out);
-          }
-          const out = {};
-          for (const k of Object.keys(key)) out[k] = store[k] ?? key[k];
-          return asyncOk(out);
-        },
-        set: (obj) => {
-          Object.assign(store, obj);
-          return asyncOk();
-        },
-        remove: (k) => {
-          delete store[k];
-          return asyncOk();
-        },
-      },
+      local: makeArea(store),
+      // Backed by real sessionStorage so drafts survive a tab reload — closer to
+      // how chrome.storage.session behaves across popup open/close.
+      session: makeArea(sessionBacked()),
     },
   };
+
+  function sessionBacked() {
+    const KEY = "__tabshare_mock_session";
+    let data = {};
+    try {
+      data = JSON.parse(sessionStorage.getItem(KEY) || "{}");
+    } catch (e) {}
+    return new Proxy(data, {
+      set(t, p, v) {
+        t[p] = v;
+        try { sessionStorage.setItem(KEY, JSON.stringify(t)); } catch (e) {}
+        return true;
+      },
+      deleteProperty(t, p) {
+        delete t[p];
+        try { sessionStorage.setItem(KEY, JSON.stringify(t)); } catch (e) {}
+        return true;
+      },
+    });
+  }
+
+  function makeArea(bag) {
+    return {
+      get: (key) => {
+        if (key == null) return asyncOk({ ...bag });
+        if (typeof key === "string") return asyncOk({ [key]: bag[key] });
+        if (Array.isArray(key)) {
+          const out = {};
+          for (const k of key) if (bag[k] !== undefined) out[k] = bag[k];
+          return asyncOk(out);
+        }
+        const out = {};
+        for (const k of Object.keys(key)) out[k] = bag[k] ?? key[k];
+        return asyncOk(out);
+      },
+      set: (obj) => {
+        for (const k of Object.keys(obj)) bag[k] = obj[k];
+        return asyncOk();
+      },
+      remove: (k) => {
+        (Array.isArray(k) ? k : [k]).forEach((one) => delete bag[one]);
+        return asyncOk();
+      },
+    };
+  }
 })();

@@ -130,7 +130,7 @@
     render();
   }
 
-  async function refreshGroupPanel() {
+  async function refreshGroupPanel(keepList) {
     const unsupported = $("#group-unsupported");
     const pickerWrap = $("#group-picker-wrap");
     unsupported.hidden = true;
@@ -139,13 +139,13 @@
     if (!hasTabGroupsApi()) {
       unsupported.hidden = false;
       unsupported.textContent =
-        "This browser doesn't have a tab-group API. Use This window or Paste links instead.";
+        "This browser doesn't have a tab-group API. Use Windows or Paste Links instead.";
       return;
     }
-    await populateGroups();
+    await populateGroups(keepList);
   }
 
-  async function populateGroups() {
+  async function populateGroups(keepList) {
     const pickerWrap = $("#group-picker-wrap");
     const picker = $("#group-picker");
     const win = await api.windows.getCurrent();
@@ -175,6 +175,10 @@
     if (active && active.groupId != null && active.groupId >= 0) {
       picker.value = String(active.groupId);
     }
+    if (keepList) {
+      render(); // a restored list wins — don't replace it with a group preview
+      return;
+    }
     state.groupPristine = true;
     await loadGroup(Number(picker.value));
   }
@@ -195,23 +199,30 @@
     }
   }
 
-  /** Preview one group — replaces the list. Only runs while the list is pristine. */
+  /** Preview one group — replaces the list. Only runs while the list is pristine.
+      Merely browsing groups never touches the name field (not even its placeholder). */
   async function loadGroup(groupId) {
     state.pages = dedupe(await groupTabs(groupId));
     state.groupPristine = true;
-    // The group title is only a *hint* for the name field, never filled in.
-    const t = await groupTitle(groupId);
-    $("#collection-name").placeholder = t || "e.g. Research on hummingbirds";
     render();
   }
 
-  /** Append the picked group's tabs — combines groups. */
+  /** Append the picked group's tabs — combines groups. The first group actively
+      added seeds the collection name (if the user hasn't typed one). */
   async function addGroup(groupId) {
     const before = state.pages.length;
     state.pages = dedupe(state.pages.concat(await groupTabs(groupId)));
     state.groupPristine = false;
     render();
     const added = state.pages.length - before;
+
+    const gt = await groupTitle(groupId);
+    const nameEl = $("#collection-name");
+    if (gt && !nameEl.value.trim()) {
+      nameEl.value = gt;
+      state.name = gt;
+      saveNameDraft();
+    }
     toast(added > 0 ? `Added ${added} tab${added === 1 ? "" : "s"}` : "That group's tabs are already in the list");
   }
 
@@ -223,13 +234,18 @@
 
   async function loadDrafts() {
     try {
-      const s = await draftStore.get(["pasteDraft", "nameDraft", "source"]);
+      const s = await draftStore.get(["pasteDraft", "nameDraft", "source", "pagesDraft"]);
       if (s.pasteDraft) $("#paste-box").value = s.pasteDraft;
       if (s.nameDraft) {
         $("#collection-name").value = s.nameDraft;
         state.name = s.nameDraft;
       }
       if (s.source) state.source = s.source;
+      if (Array.isArray(s.pagesDraft) && s.pagesDraft.length) {
+        state.pages = s.pagesDraft
+          .filter((p) => p && isWebUrl(p.url))
+          .map((p) => ({ url: p.url, title: p.title || "", checked: p.checked !== false }));
+      }
     } catch (e) {}
   }
   function savePasteDraft() {
@@ -246,6 +262,18 @@
   function saveNameDraft() {
     try {
       draftStore.set({ nameDraft: $("#collection-name").value });
+    } catch (e) {}
+  }
+  function savePagesDraft() {
+    try {
+      draftStore.set({
+        pagesDraft: state.pages.map((p) => ({ url: p.url, title: p.title || "", checked: p.checked !== false })),
+      });
+    } catch (e) {}
+  }
+  function clearDrafts() {
+    try {
+      draftStore.remove(["nameDraft", "pasteDraft", "pagesDraft"]);
     } catch (e) {}
   }
 
@@ -358,6 +386,7 @@
 
     $("#list-empty").hidden = state.pages.length > 0;
     updateCount();
+    savePagesDraft();
   }
 
   function selectedPages() {
@@ -410,9 +439,7 @@
     }
 
     await saveRecent(link, name, pages.length);
-    try {
-      draftStore.remove(["nameDraft", "pasteDraft"]);
-    } catch (e) {}
+    clearDrafts();
     showResult(link, name, pages.length, !!password);
     autoCopy(link);
   }
@@ -529,7 +556,7 @@
 
   /* ---------- source switching ---------- */
 
-  async function setSource(source) {
+  async function setSource(source, keepList) {
     state.source = source;
     try {
       draftStore.set({ source });
@@ -542,9 +569,10 @@
 
     if (source === "window") {
       await populateWindows();
-      await loadWindowSource();
+      if (keepList) render();
+      else await loadWindowSource();
     }
-    if (source === "group") await refreshGroupPanel();
+    if (source === "group") await refreshGroupPanel(keepList);
     if (source === "paste") render(); // keep whatever is already in the list
   }
 
@@ -632,7 +660,12 @@
     });
 
     Promise.all([loadDrafts(), loadSettings()])
-      .then(() => setSource(["window", "group", "paste"].includes(state.source) ? state.source : "window"))
+      .then(() => {
+        const src = ["window", "group", "paste"].includes(state.source) ? state.source : "window";
+        const keepList = state.pages.length > 0; // a restored draft list takes precedence
+        if (keepList) state.groupPristine = false;
+        return setSource(src, keepList);
+      })
       .catch((e) => showError("Could not read this window's tabs: " + e.message));
   }
 

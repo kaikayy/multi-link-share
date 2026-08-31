@@ -61,7 +61,7 @@
         <svg class="vi"><use href="#v-select" /></svg>
       </button>
       <button id="btn-openall" class="v-btn ghost" type="button">
-        <svg class="vi"><use href="#v-ext" /></svg><span>Open page</span>
+        <svg class="vi"><use href="#v-ext" /></svg><span>Open all pages</span>
       </button>
       <button id="btn-search" class="v-btn ghost icon-only" type="button" aria-label="Search" aria-pressed="false">
         <svg class="vi"><use href="#v-search" /></svg>
@@ -84,7 +84,7 @@
             <svg class="tc"><use href="#v-check"/></svg>
           </button>
           <button class="v-tile" data-mode="list" role="menuitemradio">
-            <svg class="ti"><use href="#v-m-list"/></svg><span class="tl">List<em>copyable</em></span>
+            <svg class="ti"><use href="#v-m-list"/></svg><span class="tl">List <em>copyable</em></span>
             <svg class="tc"><use href="#v-check"/></svg>
           </button>
         </div>
@@ -234,7 +234,10 @@
         <span class="g-title"></span>
         <span class="g-host"></span>
       </span>
-      <span class="g-index"></span>
+      <span class="g-corner">
+        <span class="g-index"></span>
+        <svg class="g-ext" aria-hidden="true"><use href="#v-ext"/></svg>
+      </span>
     </a>
   </template>
 
@@ -244,8 +247,14 @@
       <div class="bg-shot"></div>
       <div class="bg-head">
         <span class="bg-mono"></span>
-        <span class="bg-meta"><span class="bg-title"></span><span class="bg-host"></span></span>
-        <a class="bg-open" target="_blank" rel="noopener noreferrer" aria-label="Open"><svg class="vi"><use href="#v-ext"/></svg></a>
+        <span class="bg-meta">
+          <a class="bg-title" target="_blank" rel="noopener noreferrer"></a>
+          <span class="bg-host"></span>
+        </span>
+        <span class="bg-corner">
+          <span class="bg-index"></span>
+          <a class="bg-open" target="_blank" rel="noopener noreferrer" aria-label="Open"><svg class="vi"><use href="#v-ext"/></svg></a>
+        </span>
       </div>
       <button class="bg-view" type="button">Open in slideshow</button>
     </div>

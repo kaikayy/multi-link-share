@@ -71,7 +71,6 @@
   let collection = null;
   let index = 0;
   let mode = "slides"; // slides | grid | list | biggrid("Preview Grid")
-  let segScrollable = false;
   let query = "";
   let selectMode = false;
   const selected = new Set(); // real page indices
@@ -79,7 +78,6 @@
   let bigPage = 0;
   let slideRendered = false;
 
-  const SEG_MAX = 15;
   const GRID_PAGE = 27;
   const BIG_PAGE = 9;
   const MODES = ["slides", "biggrid", "grid", "list"];
@@ -296,7 +294,7 @@
     const klass = (window.FrameHosts && FrameHosts.classify(host)) || "unknown";
     const pos = vis.indexOf(index);
 
-    els.frameTitle.textContent = `${index + 1}. ${title}`;
+    els.frameTitle.textContent = `${String(index + 1).padStart(2, "0")}.  ${title}`;
     els.slideOpen.href = page.url;
     els.cardOpen.href = page.url;
 
@@ -309,15 +307,13 @@
 
     const badMsg = "This site (Google, X, banks, …) blocks being shown inside another page — use “Open this page”.";
     els.cardPreview.hidden = klass === "bad";
+    els.footnote.hidden = true; // the note lives on the card only, never doubled below
     if (klass === "bad") {
       els.cardNote.hidden = false;
       els.cardNote.textContent = badMsg;
-      els.footnote.hidden = false;
-      els.footnote.textContent = badMsg;
     } else {
       els.cardNote.hidden = klass !== "unknown";
       els.cardNote.textContent = "Live preview is best-effort — many sites refuse to display inside another page.";
-      els.footnote.hidden = true;
     }
     if (klass === "good" && autoPreviewOn()) livePreview();
 
@@ -358,11 +354,11 @@
   function renderSeg(vis, pos) {
     const n = vis.length;
     els.seg.innerHTML = "";
-    const scroll = segScrollable || n <= SEG_MAX;
-    els.seg.classList.toggle("scroll", scroll);
-    const shown = scroll ? n : SEG_MAX;
-
-    for (let i = 0; i < shown; i++) {
+    // All pages get a segment; they shrink to fit. Past ~40 the gap closes up
+    // so the bar stays one tidy strip rather than wrapping or scrolling.
+    els.seg.classList.toggle("dense", n > 40);
+    els.seg.classList.toggle("packed", n > 80);
+    for (let i = 0; i < n; i++) {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "seg-i" + (i === pos ? " active" : "");
@@ -370,20 +366,6 @@
       b.addEventListener("click", () => jumpPos(i));
       els.seg.appendChild(b);
     }
-    if (!scroll && n > SEG_MAX) {
-      const more = document.createElement("button");
-      more.type = "button";
-      more.className = "seg-more";
-      more.textContent = "···";
-      more.title = `Show all ${n} pages`;
-      more.addEventListener("click", () => {
-        segScrollable = true;
-        renderSlide();
-      });
-      els.seg.appendChild(more);
-    }
-    const active = els.seg.querySelector(".seg-i.active");
-    if (active && scroll) active.scrollIntoView({ block: "nearest", inline: "center" });
   }
 
   /* ---------- generic pager ([⏮ ◀ n/total ▶ ⏭]) ---------- */
@@ -438,6 +420,7 @@
       const node = tpl.content.firstElementChild.cloneNode(true);
       const host = hostOf(page.url);
       node.href = page.url;
+      node.title = page.url; // full link on hover
       paintAvatar(node.querySelector(".g-mono"), page.url);
       node.querySelector(".g-title").textContent = page.title || host || page.url;
       node.querySelector(".g-host").textContent = host;
@@ -458,17 +441,39 @@
     els.listBody.innerHTML = "";
     const vis = visible();
     els.listEmpty.hidden = vis.length > 0;
+    els.listBody.classList.toggle("selectable", selectMode);
     vis.forEach((i) => {
       const p = collection.pages[i];
       const li = document.createElement("li");
-      li.value = i + 1;
+
+      let cb = null;
+      if (selectMode) {
+        cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.className = "li-check";
+        cb.setAttribute("aria-label", "Select");
+        li.appendChild(cb);
+      }
+
+      const num = document.createElement("span");
+      num.className = "li-index";
+      num.textContent = String(i + 1).padStart(2, "0");
+
+      const meta = document.createElement("span");
+      meta.className = "li-meta";
       const t = document.createElement("span");
       t.className = "li-t";
       t.textContent = p.title || hostOf(p.url) || p.url;
-      const u = document.createElement("span");
+      const u = document.createElement("a");
       u.className = "li-u";
+      u.href = p.url;
+      u.target = "_blank";
+      u.rel = "noopener noreferrer";
       u.textContent = p.url;
-      li.append(t, u);
+      meta.append(t, u);
+
+      li.append(num, meta);
+      if (selectMode) wireCard(li, cb, i);
       els.listBody.appendChild(li);
     });
   }
@@ -542,9 +547,13 @@
       node.dataset.i = String(i);
       node.dataset.url = page.url;
       node.dataset.klass = klass;
+      node.title = page.url;
       paintAvatar(node.querySelector(".bg-mono"), page.url);
-      node.querySelector(".bg-title").textContent = page.title || host || page.url;
+      const bgTitle = node.querySelector(".bg-title");
+      bgTitle.textContent = page.title || host || page.url;
+      bgTitle.href = page.url;
       node.querySelector(".bg-host").textContent = host;
+      node.querySelector(".bg-index").textContent = String(i + 1).padStart(2, "0");
       node.querySelector(".bg-open").href = page.url;
       node.querySelector(".bg-view").addEventListener("click", () => {
         index = i;
@@ -591,7 +600,7 @@
   /* ---------- mode switching ---------- */
 
   function setMode(next) {
-    if (selectMode && (next === "list" || next === "slides")) next = "grid"; // keep checkboxes
+    if (selectMode && next === "slides") next = "grid"; // slideshow has no checkboxes
     mode = next;
     lsSet("ts:view", mode);
     closeMenus();
@@ -652,7 +661,7 @@
     selected.clear();
     els.selBtn.setAttribute("aria-pressed", "true");
     els.selBar.hidden = false;
-    if (mode === "slides" || mode === "list") setMode("grid"); // views with checkboxes
+    if (mode === "slides") setMode("grid"); // slideshow can't show checkboxes
     else rerender();
     updateSelBar();
   }
@@ -682,9 +691,11 @@
 
   /* ---------- toolbar actions ---------- */
 
-  function openPage() {
-    const p = collection.pages[index];
-    if (p) window.open(p.url, "_blank", "noopener");
+  function openAllPages() {
+    const vis = visible();
+    if (!vis.length) return;
+    toast(`Opening ${vis.length} tab${vis.length === 1 ? "" : "s"} — allow pop-ups if asked`);
+    vis.forEach((i, n) => setTimeout(() => window.open(collection.pages[i].url, "_blank", "noopener"), n * 120));
   }
 
   function applyTheme(t) {
@@ -776,7 +787,7 @@
       if (!e.target.closest(".v-menu-wrap")) closeMenus();
     });
 
-    els.openPage.addEventListener("click", openPage);
+    els.openPage.addEventListener("click", openAllPages);
     els.listCopy.addEventListener("click", () => copyText(copyAll(), "Copied"));
     els.listCopyLinks.addEventListener("click", () => copyText(copyLinksOnly(), "Links copied"));
 
