@@ -17,14 +17,26 @@
   const token = (location.hash || "").replace(/^#/, "").slice(0, 96);
   const K = { auto: "tabshare:auto:" + token };
 
-  // Let the viewer's selection "Open in a new window / tab group" reach the
-  // background (a static page can't do that itself).
-  window.__tabShare = true;
-  window.addEventListener("tabshare:open", (e) => {
-    const d = e && e.detail;
-    if (!d || !Array.isArray(d.urls)) return;
-    const pages = d.urls.filter((u) => typeof u === "string" && /^https?:\/\//i.test(u)).map((u) => ({ url: u }));
-    if (pages.length) api.runtime.sendMessage({ type: "ts-import", mode: d.mode, collection: { pages } });
+  // Tell the viewer's page script the extension is here. A content-script global
+  // (window.__tabShare) lives in an isolated world the page can't see, so use a
+  // DOM marker plus a postMessage channel — both cross the boundary reliably.
+  window.__tabShare = true; // kept for older viewers
+  document.documentElement.setAttribute("data-tabshare-ext", "1");
+
+  // Let the viewer's "Open all pages" / "Open selected in a new window / tab
+  // group" reach the background (a static page can't open tabs itself).
+  window.addEventListener("message", (e) => {
+    // same document only — the viewer's live-preview iframes are always
+    // cross-origin, so this rejects anything they could post
+    if (e.origin !== location.origin) return;
+    const d = e.data;
+    if (!d || d.__tabshare !== "open" || !Array.isArray(d.urls)) return;
+    const pages = d.urls
+      .filter((u) => typeof u === "string" && /^https?:\/\//i.test(u))
+      .slice(0, 200)
+      .map((u) => ({ url: u }));
+    const mode = ["this-window", "new-window", "tab-group"].indexOf(d.mode) === -1 ? "this-window" : d.mode;
+    if (pages.length) api.runtime.sendMessage({ type: "ts-import", mode, collection: { pages } });
   });
 
   let collection = null;

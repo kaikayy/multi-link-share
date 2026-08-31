@@ -683,10 +683,19 @@
     rerender();
   }
 
+  /** The import content script sets this attribute (a page can't see its
+      isolated-world globals). */
+  function hasExtension() {
+    return (
+      document.documentElement.hasAttribute("data-tabshare-ext") || window.__tabShare === true
+    );
+  }
+
   /**
    * Open a set of URLs.
-   *  - With the extension: hand them to the background worker (`tabshare:open`),
-   *    which opens every one cleanly via the tabs API — no pop-up blocking.
+   *  - With the extension: post them to the content script, which asks the
+   *    background worker to open every one cleanly via the tabs API — no pop-up
+   *    blocking.
    *  - Without it: open them synchronously inside the click gesture so the
    *    browser lets the first through; if it blocks the rest, tell the user how
    *    to allow them. (A setTimeout loop here gets *every* tab blocked.)
@@ -695,8 +704,8 @@
     if (!urls || !urls.length) return;
     const mode = openMode || "this-window";
 
-    if (window.__tabShare) {
-      window.dispatchEvent(new CustomEvent("tabshare:open", { detail: { mode, urls } }));
+    if (hasExtension()) {
+      window.postMessage({ __tabshare: "open", mode: mode, urls: urls }, location.origin);
       toast(
         mode === "new-window"
           ? "Opening a new window…"

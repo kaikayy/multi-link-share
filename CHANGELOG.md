@@ -3,6 +3,20 @@
 All notable changes to Tab Share. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); dates are `YYYY-MM-DD`.
 
+## [1.0.0-beta.3] — 2026-08-31
+
+### Fixed
+
+- **The viewer can now tell when the recipient has the extension.** It was
+  checking a content-script global (`window.__tabShare`) that lives in an
+  isolated world the page can't read, so it *always* thought the extension was
+  absent. As a result **"Open all pages" and "Open selected → new window / tab
+  group" never used the extension** even when it was installed — they fell back
+  to `window.open` (pop-up-blocked) and a misleading "install Tab Share" toast.
+  Now the content script sets a `data-tabshare-ext` attribute and the two sides
+  talk over `postMessage` (same-origin only), so with the extension installed
+  every tab opens cleanly through the tabs API.
+
 ## [1.0.0-beta.2] — 2026-08-31
 
 ### Fixed
