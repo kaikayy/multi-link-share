@@ -162,6 +162,28 @@
 
   /* ---------- paste source ---------- */
 
+  // Draft persistence for the paste box — survives popup close/reopen and
+  // switching between the This window / Tab group / Paste links tabs.
+  const draftStore = (api.storage && api.storage.session) || (api.storage && api.storage.local);
+
+  async function loadPasteDraft() {
+    try {
+      const s = await draftStore.get("pasteDraft");
+      if (s.pasteDraft) $("#paste-box").value = s.pasteDraft;
+    } catch (e) {}
+  }
+  function savePasteDraft() {
+    try {
+      draftStore.set({ pasteDraft: $("#paste-box").value });
+    } catch (e) {}
+  }
+  function clearPasteDraft() {
+    $("#paste-box").value = "";
+    try {
+      draftStore.remove("pasteDraft");
+    } catch (e) {}
+  }
+
   function parsePasteBox(merge) {
     const raw = $("#paste-box").value;
     const found = [];
@@ -184,7 +206,7 @@
     }
     const before = state.pages.length;
     state.pages = dedupe(merge ? state.pages.concat(found) : found);
-    $("#paste-box").value = "";
+    clearPasteDraft();
     clearError();
     render();
     const added = state.pages.length - before;
@@ -201,6 +223,7 @@
     const existing = box.value.trim();
     const urls = tabs.map((t) => t.url).join("\n");
     box.value = existing ? existing + "\n" + urls : urls;
+    savePasteDraft();
     box.focus();
     toast(`Loaded ${tabs.length} URL${tabs.length === 1 ? "" : "s"} — edit, then Add`);
   }
@@ -465,6 +488,7 @@
 
     $("#paste-parse").addEventListener("click", () => parsePasteBox(true));
     $("#paste-fill").addEventListener("click", fillPasteBox);
+    $("#paste-box").addEventListener("input", savePasteDraft);
     $("#paste-add-window").addEventListener("click", async () => {
       const before = state.pages.length;
       const win = await queryWindowTabs();
@@ -520,6 +544,7 @@
       $("#foot-build").hidden = false;
     });
 
+    loadPasteDraft();
     loadSettings()
       .then(() => setSource("window"))
       .catch((e) => showError("Could not read this window's tabs: " + e.message));

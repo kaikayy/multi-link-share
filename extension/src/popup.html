@@ -49,11 +49,18 @@
 
     <section id="panel-paste" class="panel" hidden>
       <label class="label" for="paste-box">One URL per line</label>
-      <textarea id="paste-box" rows="4" placeholder="https://example.com/page-one&#10;https://example.com/page-two"></textarea>
-      <p class="hint">Reads the box, keeps valid http(s) links, and adds them to the list below.</p>
-      <div class="row-actions">
-        <button id="paste-fill" class="btn btn-ghost btn-sm" type="button">↓ Load this window's tabs into the box</button>
-        <button id="paste-parse" class="btn btn-primary btn-sm" type="button">Add links from box ↑</button>
+      <div class="paste-editor">
+        <textarea id="paste-box" rows="4" placeholder="https://example.com/page-one&#10;https://example.com/page-two"></textarea>
+        <div class="paste-tools">
+          <button id="paste-fill" type="button">
+            <span class="p-arrow"><svg class="ic"><use href="#i-down" /></svg></span>
+            Load open tabs
+          </button>
+          <button id="paste-parse" data-role="parse" type="button">
+            <span class="p-arrow"><svg class="ic"><use href="#i-up" /></svg></span>
+            Add to list
+          </button>
+        </div>
       </div>
       <div class="row-actions">
         <button id="paste-add-window" class="btn btn-ghost btn-sm" type="button">＋ Add tabs straight to the list</button>
