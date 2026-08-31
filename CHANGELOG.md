@@ -1,0 +1,61 @@
+# Changelog
+
+All notable changes to Tab Share. Format loosely follows
+[Keep a Changelog](https://keepachangelog.com/); dates are `YYYY-MM-DD`.
+
+## [1.0.0-beta.1] — 2026-08-31
+
+First public beta. Not on any store — install via
+[`SELF-HOSTING.md`](SELF-HOSTING.md).
+
+### Extension
+
+- Three page sources: **Windows** (with a multi-window picker), **Tab Groups**
+  (pick and **＋ Add**, combine several), **Paste Links** (or pull in open tabs).
+- Reorder / trim / rename the list; select-all / none. The list, the collection
+  name, and the last-used source survive closing the popup.
+- Adding a tab group seeds the collection name from the group title.
+- **Password-protected links** — client-side WebCrypto (PBKDF2-SHA-256, 210 000
+  iterations → AES-256-GCM); the password is never stored or sent.
+- Optional **URL shortener** (is.gd / v.gd / TinyURL / custom endpoint),
+  off by default, host-permission gated.
+- Options page with first-run welcome, a per-device history of the last 50
+  links, and a **custom viewer URL** (self-hosting) with a one-time host prompt.
+- Companion **import button** on the viewer page: open a received collection
+  into this window / a new window / a tab group, or save it to history. Closed
+  shadow-DOM menu, `event.isTrusted`-guarded, sender-validated background
+  messages. Reversible-hide from the button's menu, the options page, or the
+  viewer's ⚙ menu — all in sync.
+
+### Viewer (static site)
+
+- Four views: **Slideshow**, **Preview Grid**, **Grid**, **List** — switched
+  from a **Change View** tile menu.
+- Slideshow: framed page, side + bottom arrows, first/last, keyboard nav, a
+  clickable segmented pager that scales to any page count, jump-to-page.
+- Per-view **search** (title / site / URL) and **Select** mode (checkboxes in
+  every view → open the checked pages in this window / a new window / a tab
+  group). **Open all pages** opens every filtered page.
+- **Light / dark** toggle, dark by default, applied before first paint.
+- Optional **site icons** from `icons.duckduckgo.com` — off by default; with it
+  off the viewer makes **zero** network requests.
+- `frame-hosts.js` built from a live `X-Frame-Options` / CSP probe of ~730 of
+  the most-visited / most-shared domains (`tools/frame-probe/`): framing-friendly
+  hosts auto-preview, known blockers show only "Open this page", the rest get an
+  opt-in "Try live preview" that falls back to the card (and is remembered for
+  the session) if it never loads.
+- OpenGraph unfurl tags + a generated share card for chat apps.
+- Strict CSP; password-unlock screen; graceful empty / broken-link state.
+
+### Codec
+
+- Schema **v3** `[3, name, created, pages, flags]` (`flags` bit 0 = suggest
+  icons, bit 1 = auto-preview); v1 / v2 links still decode. `+`→`_` swap so chat
+  apps can't mangle a token.
+
+### Packaging
+
+- Chrome + Firefox MV3 manifests; `web-ext lint` clean (0/0/0). Chrome shows the
+  beta tag via `version_name`; the Firefox manifest version is numeric-only as
+  MV3 now requires. `npm run build` → `dist/{chrome,firefox,viewer}` + zips.
+- Relicensed to **GNU AGPL-3.0-only**.

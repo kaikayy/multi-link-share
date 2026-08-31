@@ -3,6 +3,9 @@
 Reusable text for the Chrome Web Store and Firefox AMO dashboards, plus the
 permission justifications reviewers ask for.
 
+> The current release (`1.0.0-beta.1`) ships without a store — see
+> `SELF-HOSTING.md`. This file is kept ready for when it does.
+
 ---
 
 ## Name
@@ -18,18 +21,23 @@ link that opens as a slideshow. No account, no server.
 
 Tab Share bundles a set of pages into a single link.
 
-• Share the current window, a browser tab group, or links you paste in.
-• Reorder and trim the list before you create the link.
+• Share the current window's tabs, a browser tab group, or links you paste in.
+• Reorder, trim and rename the list before you create the link. The list and
+  name survive closing the popup.
 • The recipient just clicks the link — no extension, no sign-up. It opens as a
-  clean slideshow: framed page view, title bar, next/previous arrows, and a
-  "3 / 12" counter. There's also a grid overview and an "open all in tabs"
-  button.
-• Four ways to view a link: slideshow, grid, a copyable numbered list, and a
-  large preview grid. Sites that allow it preview live; the rest show a card.
+  clean slideshow: framed page view, title bar, next/previous arrows, a
+  clickable segmented pager and jump-to-page.
+• Four ways to view a link: slideshow, a large preview grid, a compact grid, and
+  a copyable numbered list. Sites that allow it preview live; the rest show a
+  card with "Open this page".
+• Filter any view by title, site or URL. Selection mode adds checkboxes to open
+  the pages you pick in this window, a new window, or a new tab group. Or open
+  every page at once.
+• Light and dark theme, dark by default.
 • Optional: protect a link with a password (encrypted in your browser), or run
   it through a URL shortener you choose.
-• If the recipient also has Tab Share, the viewer offers to open the whole set
-  straight into a window or tab group, or save it to their history.
+• If the recipient also has Tab Share, a button in the viewer offers to open the
+  whole set straight into a window or tab group, or save it to their history.
 
 How it works — and why it's private:
 The whole list is packed into the part of the link after "#", which browsers
@@ -48,7 +56,10 @@ Productivity
 ## Screenshots
 
 `assets/screenshot-1-popup.png` (the popup), `assets/screenshot-2-viewer.png`
-(the slideshow viewer) — real 1280×800 captures of the built extension.
+(the slideshow viewer) — 1280×800. **Recapture before any store submission**:
+these predate the 4-view / selection-mode / segmented-pager redesign. Suggested
+set: popup with a list, slideshow with the segmented pager, Preview Grid, List
+view, the ⚙ / Change View menus.
 
 ## Chrome promo tile
 
@@ -142,15 +153,19 @@ None. (Firefox manifest declares
   will ask for source. Upload `dist/tab-share-source-v<version>.zip`
   (`npm run zip:source`).
 - Reviewer notes to paste:
-  > Build: `npm install` (no dependencies) then `npm run build`; the add-on is
-  > `dist/firefox/`. `src/lib/lzstring.min.js` is lz-string 1.5.0, copied
-  > verbatim from
+  > Build: Node 20+ and the system `zip` command; no npm dependencies. Run
+  > `npm run build`; the add-on is `dist/firefox/`. `src/lib/lzstring.min.js` is
+  > lz-string 1.5.0, copied verbatim from
   > https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js
   > All other files are the original source, unminified. No remote code. The
   > only outbound request is an optional, off-by-default URL shortener the user
   > configures in options. One content script (`src/content/import-banner.js`)
   > runs only on the configured viewer page; the background worker
   > (`src/background.js`) is offline and event-driven.
+- Version: the Firefox manifest uses a plain numeric `version` (MV3 on AMO no
+  longer accepts letters, so no `b1` suffix); the beta status is conveyed by the
+  AMO channel and the release notes. `package.json` and the zip names carry the
+  full `1.0.0-beta.1`.
 
 ## Chrome Web Store submission notes
 

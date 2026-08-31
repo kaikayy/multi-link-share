@@ -1,15 +1,21 @@
 # Building & testing
 
-Requires **Node 20+** (the codec uses WebCrypto for password-protected links).
-The only system dependency for artwork is `rsvg-convert` (package `librsvg`); it
-is not needed for a normal build.
+> Just want to run your own copy? See **[`SELF-HOSTING.md`](SELF-HOSTING.md)**.
+> This file is the dev workflow.
+
+Requires **Node 20+** (`npm test` uses WebCrypto) and the system **`zip`**
+command. No npm dependencies — `web-ext` (Firefox packaging / lint) is optional
+and run via `npx`. `rsvg-convert` (package `librsvg`) is only needed for
+`npm run icons`.
 
 `npm run icons` also renders `assets/og-card.svg` → `viewer/assets/og-card.png`
 (1200×630), the image chat apps show when a viewer link is unfurled.
 
-`viewer/frame-hosts.js` is a curated, hand-maintained list of which sites are
-worth auto-previewing in an `<iframe>` — it ships with the viewer verbatim (no
-build step) and only changes which preview affordance the slideshow shows.
+`viewer/frame-hosts.js` classifies which sites are worth auto-previewing in an
+`<iframe>`. It ships with the viewer verbatim (no build step). Regenerate it
+from live response headers with `tools/frame-probe/` (see its README) — probe
+the domain list, then fold the results plus the hand-review overrides into the
+`GOOD` / `BAD` arrays.
 
 ```bash
 npm test            # round-trip tests for the URL codec
@@ -74,8 +80,25 @@ The viewer must be served over **https** for the extension to accept it.
 - **Firefox:** `about:debugging#/runtime/this-firefox` → *Load Temporary
   Add-on* → `dist/firefox/manifest.json`
 
-## Lint (optional)
+Content scripts and the background worker do **not** hot-reload — after a
+rebuild, click the reload icon in the extensions page. Every OS / browser combo,
+and the permanent-install (signing) options, are in `SELF-HOSTING.md`.
+
+## Lint (required before an AMO submission)
 
 ```bash
-npx web-ext lint --source-dir dist/firefox
+npx web-ext@8 lint --source-dir dist/firefox   # must be 0 errors / 0 warnings / 0 notices
 ```
+
+## Version
+
+`package.json` holds the full semver (`1.0.0-beta.1`) and drives the zip names.
+`extension/manifest.chrome.json` keeps a numeric `version` plus a `version_name`
+for the pre-release tag; `extension/manifest.firefox.json` is numeric-only (MV3
+on AMO rejects letters). Bump all three together.
+
+## Post-commit sync (local only)
+
+`.git/hooks/post-commit` (untracked, set up per machine) runs `npm run build`
+and rsyncs `dist/{chrome,firefox}` to `~/.local/share/tab-share-ext/` so a
+loaded unpacked extension picks up changes on the next reload.

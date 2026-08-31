@@ -18,11 +18,11 @@ account, no analytics, and no tracking.
   synced, never transmitted. Clear all or individual entries in the options
   page.
 - **The viewer page only** — one content script runs on the slideshow viewer
-  page. It reads the collection from that page's URL fragment so it can offer to
-  open the pages with the extension instead of the web view. It ships enabled
-  only for the packaged viewer address; a self-hosted viewer (or `localhost`)
-  runs it only after you approve that one host in the options page. It runs on
-  no other site.
+  page. It reads the collection from that page's URL fragment so it can add an
+  "Open with Tab Share" button that opens the pages with the extension instead
+  of the web view. It ships enabled only for the packaged viewer address; a
+  self-hosted viewer (or `localhost`) runs it only after you approve that one
+  host in the options page. It runs on no other site.
 
 ## What can make a network request — and only if you turn it on
 
@@ -57,11 +57,12 @@ need the password.
 ## The viewer page
 
 The viewer is a static file (no backend). It reads the collection from the
-fragment in the recipient's browser and renders it. "Open all" and the live
-preview simply navigate to, or embed, the pages you chose — the same as
-clicking the links yourself. If the recipient also has Tab Share, an in-page
-banner offers to open the collection into a window or tab group, or save it to
-their own on-device history — that choice never leaves their device.
+fragment in the recipient's browser and renders it. "Open all pages" and the
+live preview simply navigate to, or embed, the pages you chose — the same as
+clicking the links yourself. If the recipient also has Tab Share, an
+"Open with Tab Share" button offers to open the collection into a window or tab
+group, or save it to their own on-device history — that choice never leaves
+their device.
 
 ## Contact
 
