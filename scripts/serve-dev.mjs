@@ -31,15 +31,19 @@ const INDEX = `<!doctype html><meta charset=utf-8><title>Tab Share dev previews<
   <li><a style="color:#9a8dff" href="/viewer/">Viewer</a> — append <code>#&lt;token&gt;</code> from <code>npm test</code> output or the popup</li>
 </ul></body>`;
 
-const BANNER = `<!doctype html><meta charset=utf-8><title>Import banner preview</title>
+const BANNER = `<!doctype html><meta charset=utf-8><title>Import button preview</title>
+<link rel="stylesheet" href="/viewer/tab-share.css">
 <script src="/dev/mock-browser.js"></script>
 <script src="/shared/lzstring.min.js"></script>
 <script src="/shared/share-codec.js"></script>
-<body style="font-family:system-ui;background:#0f0f14;color:#ccc;padding:80px 24px">
-<p>This is the viewer-page import banner rendered against mocked chrome.* — actions log to the console.</p>
+<body>
+<svg width=0 height=0 style="position:absolute"><symbol id="v-ext" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol></svg>
+<header class="v-bar"><div class="v-brand"><span class="v-logo"></span><div class="v-titles"><h1>Preview</h1></div></div>
+<div class="v-tools"><button class="v-btn ghost">Open all</button><button class="v-btn">View as…</button></div></header>
+<p style="padding:24px;color:var(--text-dim)">The content script adds "Open with Tab Share" to the toolbar above; actions log to the console.</p>
 <script>
   var token = ShareCodec.encode({
-    title: "",
+    title: "Sample collection",
     pages: [
       { u: "https://en.wikipedia.org/wiki/Aurora", t: "Aurora" },
       { u: "https://unsplash.com/s/photos/mountains", t: "Mountains" },

@@ -68,13 +68,21 @@
       <label class="setting">
         <input id="pref-banner" type="checkbox" />
         <span class="s-body">
-          <span class="s-title">Show the "Open with Tab Share" prompt</span>
-          <span class="s-desc">When you open a Tab Share link and have the extension, offer to open the whole set into a window or tab group.</span>
+          <span class="s-title">Show the "Open with Tab Share" button</span>
+          <span class="s-desc">Adds a button to the viewer toolbar when you open a Tab Share link, to send the whole set into a window or tab group.</span>
+        </span>
+      </label>
+
+      <label class="setting">
+        <input id="pref-autoopen" type="checkbox" />
+        <span class="s-body">
+          <span class="s-title">Open its menu automatically</span>
+          <span class="s-desc">Pop the menu open the first time you view each link. Off = the button just sits in the toolbar until you click it.</span>
         </span>
       </label>
 
       <label class="field">
-        <span class="label">Default action for that prompt</span>
+        <span class="label">Default action</span>
         <select id="pref-default">
           <option value="">Ask each time</option>
           <option value="this-window">Open in this window</option>

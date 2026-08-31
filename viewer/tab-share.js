@@ -425,7 +425,6 @@
   function setMode(next) {
     mode = next;
     lsSet("ts:view", mode);
-    els.viewLabel.textContent = { slides: "Slideshow", grid: "Grid", list: "List", biggrid: "Large grid" }[mode];
     closeMenus();
 
     show({ slides: els.slides, grid: els.grid, list: els.list, biggrid: els.biggrid }[mode]);

@@ -40,13 +40,14 @@
 
   /* ---------------- preferences ---------------- */
 
-  const PREF_KEYS = ["showIcons", "autoPreview", "import.disabled", "import.default"];
+  const PREF_KEYS = ["showIcons", "autoPreview", "import.disabled", "import.noauto", "import.default"];
 
   async function loadPrefs() {
     const s = await api.storage.local.get(PREF_KEYS);
     $("#pref-icons").checked = s.showIcons !== false; // default on
     $("#pref-autopreview").checked = s.autoPreview !== false; // default on
     $("#pref-banner").checked = !s["import.disabled"]; // default on
+    $("#pref-autoopen").checked = !s["import.noauto"]; // default on
     $("#pref-default").value = s["import.default"] || "";
   }
 
@@ -55,6 +56,7 @@
       showIcons: $("#pref-icons").checked,
       autoPreview: $("#pref-autopreview").checked,
       "import.disabled": !$("#pref-banner").checked,
+      "import.noauto": !$("#pref-autoopen").checked,
       "import.default": $("#pref-default").value || "",
     });
     flash("#pref-msg");
@@ -233,7 +235,7 @@
     loadViewer();
     renderHistory();
 
-    ["#pref-icons", "#pref-autopreview", "#pref-banner", "#pref-default"].forEach((sel) =>
+    ["#pref-icons", "#pref-autopreview", "#pref-banner", "#pref-autoopen", "#pref-default"].forEach((sel) =>
       $(sel).addEventListener("change", savePrefs)
     );
 
