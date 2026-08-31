@@ -34,7 +34,7 @@ extension makes zero network requests. It reads your tabs only when you press
 the button, and asks for the bare minimum permissions.
 
 You host the tiny viewer page yourself (GitHub Pages, Netlify, …) or use the
-one configured by whoever packaged the extension. Open source (MIT).
+one configured by whoever packaged the extension. Open source (GNU AGPL-3.0).
 
 ## Category
 

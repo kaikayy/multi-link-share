@@ -101,4 +101,7 @@ decode, slideshow/grid/live-preview). `viewer/` deploys to GitHub Pages via
 of the companion-import + tab-group paths (so far verified only in the mocked
 dev harness).
 
-MIT licensed. Bundles lz-string (MIT) — see `THIRD-PARTY.md`.
+Licensed under the **GNU AGPL-3.0** — free to use, study, share, and modify, but
+any modified version you distribute or run as a network service must be offered
+under the same license with source available. Bundles lz-string (MIT) — see
+`THIRD-PARTY.md`.

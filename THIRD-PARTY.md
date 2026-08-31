@@ -16,4 +16,6 @@ CDN at runtime) so the extension ships no remote code.
 The unminified source is available at the URL above; for AMO review, the
 minified file is byte-identical to cdnjs's published 1.5.0 build.
 
-Everything else in this repository is original and MIT-licensed (see `LICENSE`).
+Everything else in this repository is original and licensed under the GNU
+AGPL-3.0 (see `LICENSE`). Bundling the MIT-licensed lz-string inside an
+AGPL-licensed work is permitted; lz-string keeps its own license and attribution.
