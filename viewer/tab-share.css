@@ -94,6 +94,28 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
   font-size: 12.5px; color: var(--text-dim); cursor: pointer;
 }
 .v-menu-check input { margin-top: 2px; accent-color: var(--brand); }
+.v-menu-item {
+  width: 100%; text-align: left; background: transparent; border: 0; color: var(--text);
+  font: inherit; font-size: 13px; padding: 8px 10px; border-radius: 8px; cursor: pointer;
+}
+.v-menu-item:hover { background: var(--surface-2); }
+
+/* selection bar */
+.v-selbar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 20px; border-bottom: 1px solid var(--border);
+  background: var(--brand-soft, color-mix(in srgb, var(--brand) 14%, var(--surface)));
+  position: sticky; top: 61px; z-index: 26;
+}
+.v-sel-count { font-weight: 700; font-size: 13px; margin-right: auto; }
+.v-selbar .v-btn { font-size: 12.5px; padding: 7px 11px; }
+
+/* card checkboxes in select mode */
+.g-check, .bg-check {
+  width: 18px; height: 18px; accent-color: var(--brand); flex: none; cursor: pointer;
+}
+.bg-check { position: absolute; top: 10px; left: 10px; z-index: 2; }
+.bg-card { position: relative; }
 
 /* view-mode tile menu */
 .v-viewmenu {
@@ -265,6 +287,7 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
   border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
   text-decoration: none; color: var(--text);
 }
+.g-card:has(.g-check:not([hidden])) { grid-template-columns: auto auto 1fr auto; }
 .g-card:hover { background: var(--surface-2); border-color: var(--brand); }
 .g-mono {
   width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center;

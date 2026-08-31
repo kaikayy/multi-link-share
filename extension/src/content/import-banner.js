@@ -17,6 +17,16 @@
   const token = (location.hash || "").replace(/^#/, "").slice(0, 96);
   const K = { auto: "tabshare:auto:" + token };
 
+  // Let the viewer's selection "Open in a new window / tab group" reach the
+  // background (a static page can't do that itself).
+  window.__tabShare = true;
+  window.addEventListener("tabshare:open", (e) => {
+    const d = e && e.detail;
+    if (!d || !Array.isArray(d.urls)) return;
+    const pages = d.urls.filter((u) => typeof u === "string" && /^https?:\/\//i.test(u)).map((u) => ({ url: u }));
+    if (pages.length) api.runtime.sendMessage({ type: "ts-import", mode: d.mode, collection: { pages } });
+  });
+
   let collection = null;
   try {
     collection = ShareCodec.decode(location.hash);
@@ -214,7 +224,8 @@
   $("#ts-hide").addEventListener("click", (e) => {
     if (!e.isTrusted) return;
     setConfig({ "import.disabled": true });
-    teardown();
+    unmountButton();
+    if (settingsCb) settingsCb.checked = false;
   });
   document.addEventListener("click", (e) => {
     if (!menuOpen) return;
@@ -225,31 +236,88 @@
     if (menuOpen) positionMenu();
   });
 
-  /* ---------- boot ---------- */
+  /* ---------- mount / unmount the toolbar button ---------- */
 
-  (async function boot() {
-    const cfg = await getConfig();
-    if (cfg.disabled) return; // user hid the button
-
+  let mounted = false;
+  function mountButton(withAuto) {
+    if (mounted) return;
     const tools = document.querySelector(".v-tools");
     if (!tools) return;
     tools.insertBefore(btn, tools.firstChild);
     document.documentElement.appendChild(host);
-    $("#ts-cb-auto").checked = !cfg.noauto;
+    mounted = true;
+    if (withAuto) autoOpen();
+  }
+  function unmountButton() {
+    closeMenu();
+    btn.remove();
+    host.remove();
+    mounted = false;
+  }
+  function teardown() {
+    unmountButton();
+  }
 
-    let autoDone = false;
-    try {
-      autoDone = !!sessionStorage.getItem(K.auto);
-    } catch (e) {}
-    if (autoDone) return;
-    try {
-      sessionStorage.setItem(K.auto, "1");
-    } catch (e) {}
+  function autoOpen() {
+    getConfig().then((cfg) => {
+      $("#ts-cb-auto").checked = !cfg.noauto;
+      let autoDone = false;
+      try {
+        autoDone = !!sessionStorage.getItem(K.auto);
+      } catch (e) {}
+      if (autoDone) return;
+      try {
+        sessionStorage.setItem(K.auto, "1");
+      } catch (e) {}
+      if (cfg.deflt && cfg.deflt !== "save") return send(cfg.deflt);
+      if (!cfg.noauto) setTimeout(openMenu, 400);
+    });
+  }
 
-    if (cfg.deflt && cfg.deflt !== "save") {
-      send(cfg.deflt);
-      return;
-    }
-    if (!cfg.noauto) setTimeout(openMenu, 400);
+  /* ---------- reversible "Show the button" checkbox in the viewer ⚙ menu ---------- */
+
+  let settingsCb = null;
+  function addSettingsToggle(disabled) {
+    const menu = document.getElementById("settings-menu");
+    if (!menu || menu.querySelector("#ts-show-btn")) return;
+    const lbl = document.createElement("label");
+    lbl.className = "v-menu-check";
+    settingsCb = document.createElement("input");
+    settingsCb.type = "checkbox";
+    settingsCb.id = "ts-show-btn";
+    settingsCb.checked = !disabled;
+    const span = document.createElement("span");
+    span.textContent = "Show the “Open with Tab Share” button";
+    lbl.append(settingsCb, span);
+    menu.appendChild(lbl);
+    settingsCb.addEventListener("change", (e) => {
+      if (!e.isTrusted) return;
+      if (settingsCb.checked) {
+        setConfig({ "import.disabled": false });
+        mountButton(false);
+      } else {
+        setConfig({ "import.disabled": true });
+        unmountButton();
+      }
+    });
+  }
+
+  /* ---------- boot ---------- */
+
+  (async function boot() {
+    const cfg = await getConfig();
+    addSettingsToggle(cfg.disabled);
+    if (!cfg.disabled) mountButton(true);
   })();
+
+  // Keep in sync if the options page toggles it.
+  if (api.storage && api.storage.onChanged) {
+    api.storage.onChanged.addListener((changes, area) => {
+      if (area !== "local" || !changes["import.disabled"]) return;
+      const disabled = !!changes["import.disabled"].newValue;
+      if (settingsCb) settingsCb.checked = !disabled;
+      if (disabled) unmountButton();
+      else mountButton(false);
+    });
+  }
 })();

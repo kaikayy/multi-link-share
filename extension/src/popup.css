@@ -179,7 +179,6 @@ input[type="text"]:focus, textarea:focus, select:focus {
 }
 .paste-tools button:hover { background: var(--brand-soft); }
 .paste-tools button + button { border-left: 1px solid var(--border); }
-.paste-tools button[data-role="parse"] { color: var(--brand); }
 .p-arrow {
   width: 20px;
   height: 20px;

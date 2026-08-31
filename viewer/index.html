@@ -43,6 +43,8 @@
       <symbol id="v-m-preview" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="3" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="13" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
       <symbol id="v-m-grid" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h8v6H3zM13 4h8v6h-8zM3 14h8v6H3zM13 14h8v6h-8z"/></symbol>
       <symbol id="v-m-list" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h2v2H4zM9 5h11v2H9zM4 11h2v2H4zM9 11h11v2H9zM4 17h2v2H4zM9 17h11v2H9z"/></symbol>
+      <symbol id="v-select" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M8 12.5l3 3 6-6"/></symbol>
+      <symbol id="v-caret" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></symbol>
     </defs>
   </svg>
 
@@ -55,8 +57,11 @@
       </div>
     </div>
     <div class="v-tools">
+      <button id="btn-select" class="v-btn ghost icon-only" type="button" aria-label="Select pages" aria-pressed="false">
+        <svg class="vi"><use href="#v-select" /></svg>
+      </button>
       <button id="btn-openall" class="v-btn ghost" type="button">
-        <svg class="vi"><use href="#v-ext" /></svg><span>Open all</span>
+        <svg class="vi"><use href="#v-ext" /></svg><span>Open page</span>
       </button>
       <button id="btn-search" class="v-btn ghost icon-only" type="button" aria-label="Search" aria-pressed="false">
         <svg class="vi"><use href="#v-search" /></svg>
@@ -102,7 +107,23 @@
   <div id="search-bar" class="v-searchbar" hidden>
     <svg class="vi"><use href="#v-search" /></svg>
     <input id="search-input" type="text" placeholder="Filter by title, site or URL…" autocomplete="off" />
-    <button id="search-clear" type="button" aria-label="Clear">✕</button>
+    <button id="search-clear" type="button" aria-label="Close search">✕</button>
+  </div>
+
+  <div id="sel-bar" class="v-selbar" hidden>
+    <span id="sel-count" class="v-sel-count">0 / 0 selected</span>
+    <button id="sel-all" class="v-btn ghost" type="button">Select all</button>
+    <div class="v-menu-wrap">
+      <button id="sel-open" class="v-btn" type="button" aria-haspopup="true" aria-expanded="false" disabled>
+        Open selected <svg class="vi"><use href="#v-caret" /></svg>
+      </button>
+      <div id="sel-menu" class="v-menu" hidden role="menu">
+        <button class="v-menu-item" data-open="this-window" role="menuitem">In this window</button>
+        <button class="v-menu-item" data-open="new-window" role="menuitem">In a new window</button>
+        <button class="v-menu-item" data-open="tab-group" role="menuitem">As a new tab group</button>
+      </div>
+    </div>
+    <button id="sel-done" class="v-btn ghost" type="button">Done</button>
   </div>
 
   <!-- ERROR STATE -->
@@ -207,6 +228,7 @@
 
   <template id="tpl-grid-card">
     <a class="g-card" target="_blank" rel="noopener noreferrer">
+      <input class="g-check" type="checkbox" aria-label="Select" hidden />
       <span class="g-mono"></span>
       <span class="g-meta">
         <span class="g-title"></span>
@@ -218,6 +240,7 @@
 
   <template id="tpl-big-card">
     <div class="bg-card">
+      <input class="bg-check" type="checkbox" aria-label="Select" hidden />
       <div class="bg-shot"></div>
       <div class="bg-head">
         <span class="bg-mono"></span>

@@ -235,6 +235,18 @@
     loadViewer();
     renderHistory();
 
+    // Keep the page in sync when settings change elsewhere (e.g. the viewer's
+    // "hide the button" toggle writes import.disabled).
+    if (api.storage && api.storage.onChanged) {
+      api.storage.onChanged.addListener((changes, area) => {
+        if (area !== "local") return;
+        const k = Object.keys(changes);
+        if (k.some((x) => x.startsWith("import.") || x === "showIcons" || x === "autoPreview")) loadPrefs();
+        if (k.some((x) => x.startsWith("short"))) loadShortener();
+        if (k.includes("recents")) renderHistory();
+      });
+    }
+
     ["#pref-icons", "#pref-autopreview", "#pref-banner", "#pref-autoopen", "#pref-default"].forEach((sel) =>
       $(sel).addEventListener("change", savePrefs)
     );

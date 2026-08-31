@@ -33,12 +33,18 @@
   <!-- ============ BUILD VIEW ============ -->
   <main id="view-build" class="view">
     <div class="segmented" role="tablist" aria-label="Where to take links from">
-      <button class="seg" data-source="window" role="tab" aria-selected="true">This window</button>
-      <button class="seg" data-source="group" role="tab" aria-selected="false">Tab group</button>
-      <button class="seg" data-source="paste" role="tab" aria-selected="false">Paste links</button>
+      <button class="seg" data-source="window" role="tab" aria-selected="true">Windows</button>
+      <button class="seg" data-source="group" role="tab" aria-selected="false">Tab Groups</button>
+      <button class="seg" data-source="paste" role="tab" aria-selected="false">Paste Links</button>
     </div>
 
-    <!-- group-permission / paste panels -->
+    <section id="panel-window" class="panel" hidden>
+      <label class="field" id="window-picker-wrap" hidden>
+        <span class="label">Which window</span>
+        <select id="window-picker"></select>
+      </label>
+    </section>
+
     <section id="panel-group" class="panel" hidden>
       <p id="group-unsupported" class="hint" hidden></p>
       <div id="group-picker-wrap" hidden>
@@ -66,9 +72,6 @@
           </button>
         </div>
       </div>
-      <div class="row-actions">
-        <button id="paste-add-window" class="btn btn-ghost btn-sm" type="button">Add tabs to current list</button>
-      </div>
     </section>
 
     <label class="field">
@@ -84,6 +87,10 @@
       <span class="label">Password <span class="opt">(the recipient needs it; it's never stored)</span></span>
       <input id="link-pass" type="password" autocomplete="new-password" placeholder="a phrase you'll share separately" />
     </label>
+
+    <div class="row-actions">
+      <button id="paste-add-window" class="btn btn-ghost btn-sm" type="button">Add current tabs to list</button>
+    </div>
 
     <div class="list-head">
       <span id="count-label">0 pages</span>

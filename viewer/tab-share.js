@@ -55,7 +55,14 @@
     searchBar: byId("search-bar"),
     searchInput: byId("search-input"),
     searchClear: byId("search-clear"),
-    openAll: byId("btn-openall"),
+    openPage: byId("btn-openall"),
+    selBtn: byId("btn-select"),
+    selBar: byId("sel-bar"),
+    selCount: byId("sel-count"),
+    selAll: byId("sel-all"),
+    selOpen: byId("sel-open"),
+    selMenu: byId("sel-menu"),
+    selDone: byId("sel-done"),
     listCopy: byId("list-copy"),
     listCopyLinks: byId("list-copy-links"),
     toast: byId("v-toast"),
@@ -66,6 +73,8 @@
   let mode = "slides"; // slides | grid | list | biggrid("Preview Grid")
   let segScrollable = false;
   let query = "";
+  let selectMode = false;
+  const selected = new Set(); // real page indices
   let gridPage = 0;
   let bigPage = 0;
   let slideRendered = false;
@@ -235,8 +244,7 @@
 
     wireChrome();
     wireSlides();
-    const savedView = lsGet("ts:view");
-    setMode(MODES.indexOf(savedView) >= 0 ? savedView : "slides");
+    setMode("slides"); // always open in the slideshow
   }
 
   /* ---------- slideshow ---------- */
@@ -299,13 +307,16 @@
 
     clearEmbed();
 
+    const badMsg = "This site (Google, X, banks, …) blocks being shown inside another page — use “Open this page”.";
     els.cardPreview.hidden = klass === "bad";
-    els.cardNote.hidden = klass !== "unknown";
     if (klass === "bad") {
+      els.cardNote.hidden = false;
+      els.cardNote.textContent = badMsg;
       els.footnote.hidden = false;
-      els.footnote.textContent =
-        "Some sites (Google, X, banks, …) can't be shown inside another page — use “Open this page”.";
+      els.footnote.textContent = badMsg;
     } else {
+      els.cardNote.hidden = klass !== "unknown";
+      els.cardNote.textContent = "Live preview is best-effort — many sites refuse to display inside another page.";
       els.footnote.hidden = true;
     }
     if (klass === "good" && autoPreviewOn()) livePreview();
@@ -377,27 +388,37 @@
 
   /* ---------- generic pager ([⏮ ◀ n/total ▶ ⏭]) ---------- */
 
+  function iconBtn(symbol, cls, onClick, dis) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = cls;
+    b.disabled = !!dis;
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "vi");
+    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    use.setAttribute("href", "#" + symbol);
+    svg.appendChild(use);
+    b.appendChild(svg);
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
   function renderPager(el, page, pageCount, onGo) {
     el.hidden = pageCount <= 1;
     if (pageCount <= 1) return;
     el.innerHTML = "";
-    const btn = (label, to, dis) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "v-mini";
-      b.textContent = label;
-      b.disabled = dis;
-      b.addEventListener("click", () => onGo(to));
-      return b;
-    };
     el.append(
-      btn("⏮", 0, page === 0),
-      btn("◀", page - 1, page === 0)
+      iconBtn("v-first", "v-mini", () => onGo(0), page === 0),
+      iconBtn("v-prev", "v-mini", () => onGo(page - 1), page === 0)
     );
     const c = document.createElement("span");
     c.className = "v-count";
     c.textContent = `${page + 1} / ${pageCount}`;
-    el.append(c, btn("▶", page + 1, page === pageCount - 1), btn("⏭", pageCount - 1, page === pageCount - 1));
+    el.append(
+      c,
+      iconBtn("v-next", "v-mini", () => onGo(page + 1), page === pageCount - 1),
+      iconBtn("v-last", "v-mini", () => onGo(pageCount - 1), page === pageCount - 1)
+    );
   }
 
   /* ---------- grid ---------- */
@@ -421,7 +442,7 @@
       node.querySelector(".g-title").textContent = page.title || host || page.url;
       node.querySelector(".g-host").textContent = host;
       node.querySelector(".g-index").textContent = String(i + 1).padStart(2, "0");
-      node.addEventListener("click", () => (index = i));
+      wireCard(node, node.querySelector(".g-check"), i);
       frag.appendChild(node);
     });
     els.gridBody.appendChild(frag);
@@ -529,6 +550,7 @@
         index = i;
         setMode("slides");
       });
+      wireCard(node, node.querySelector(".bg-check"), i);
 
       const shot = node.querySelector(".bg-shot");
       if (klass === "good") {
@@ -569,6 +591,7 @@
   /* ---------- mode switching ---------- */
 
   function setMode(next) {
+    if (selectMode && (next === "list" || next === "slides")) next = "grid"; // keep checkboxes
     mode = next;
     lsSet("ts:view", mode);
     closeMenus();
@@ -589,12 +612,79 @@
     if (mode === "biggrid") buildBigGrid();
   }
 
+  /* ---------- selection mode ---------- */
+
+  /** Wire a grid/preview card: navigate normally, or toggle its checkbox in select mode. */
+  function wireCard(node, checkbox, i) {
+    if (checkbox) {
+      checkbox.hidden = !selectMode;
+      checkbox.checked = selected.has(i);
+      checkbox.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (checkbox.checked) selected.add(i);
+        else selected.delete(i);
+        updateSelBar();
+      });
+    }
+    node.addEventListener("click", (e) => {
+      if (selectMode) {
+        e.preventDefault();
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          checkbox.checked ? selected.add(i) : selected.delete(i);
+          updateSelBar();
+        }
+        return;
+      }
+      index = i;
+    });
+  }
+
+  function updateSelBar() {
+    const total = visible().length;
+    els.selCount.textContent = `${selected.size} / ${total} selected`;
+    els.selOpen.disabled = selected.size === 0;
+    els.selAll.textContent = selected.size >= total && total > 0 ? "Select none" : "Select all";
+  }
+
+  function enterSelect() {
+    selectMode = true;
+    selected.clear();
+    els.selBtn.setAttribute("aria-pressed", "true");
+    els.selBar.hidden = false;
+    if (mode === "slides" || mode === "list") setMode("grid"); // views with checkboxes
+    else rerender();
+    updateSelBar();
+  }
+  function exitSelect() {
+    selectMode = false;
+    selected.clear();
+    els.selBtn.setAttribute("aria-pressed", "false");
+    els.selBar.hidden = true;
+    els.selMenu.hidden = true;
+    rerender();
+  }
+
+  function openSelected(openMode) {
+    els.selMenu.hidden = true;
+    const urls = [...selected].sort((a, b) => a - b).map((i) => collection.pages[i].url);
+    if (!urls.length) return;
+    if (openMode === "this-window" || !window.__tabShare) {
+      if (openMode !== "this-window") toast("Install Tab Share to open these as a group");
+      toast(`Opening ${urls.length} tab${urls.length === 1 ? "" : "s"} — allow pop-ups if asked`);
+      urls.forEach((u, n) => setTimeout(() => window.open(u, "_blank", "noopener"), n * 120));
+    } else {
+      window.dispatchEvent(new CustomEvent("tabshare:open", { detail: { mode: openMode, urls } }));
+      toast(openMode === "new-window" ? "Opening a new window…" : "Opening a tab group…");
+    }
+    exitSelect();
+  }
+
   /* ---------- toolbar actions ---------- */
 
-  function openAll() {
-    const vis = visible();
-    toast(`Opening ${vis.length} tab${vis.length === 1 ? "" : "s"} — allow pop-ups if asked`);
-    vis.forEach((i, n) => setTimeout(() => window.open(collection.pages[i].url, "_blank", "noopener"), n * 120));
+  function openPage() {
+    const p = collection.pages[index];
+    if (p) window.open(p.url, "_blank", "noopener");
   }
 
   function applyTheme(t) {
@@ -610,8 +700,10 @@
   function closeMenus() {
     els.viewMenu.hidden = true;
     els.setMenu.hidden = true;
+    els.selMenu.hidden = true;
     els.viewBtn.setAttribute("aria-expanded", "false");
     els.setBtn.setAttribute("aria-expanded", "false");
+    els.selOpen.setAttribute("aria-expanded", "false");
   }
   function toggleMenu(menu, btn) {
     const open = menu.hidden;
@@ -630,21 +722,35 @@
     });
 
     // search
-    els.searchBtn.addEventListener("click", () => {
-      const open = els.searchBar.hidden;
-      els.searchBar.hidden = !open;
-      els.searchBtn.setAttribute("aria-pressed", String(open));
-      if (open) els.searchInput.focus();
-      else {
-        els.searchInput.value = "";
-        setQuery("");
-      }
-    });
-    els.searchInput.addEventListener("input", () => setQuery(els.searchInput.value));
-    els.searchClear.addEventListener("click", () => {
+    const openSearch = () => {
+      els.searchBar.hidden = false;
+      els.searchBtn.setAttribute("aria-pressed", "true");
+      els.searchInput.focus();
+    };
+    const closeSearch = () => {
+      els.searchBar.hidden = true;
+      els.searchBtn.setAttribute("aria-pressed", "false");
       els.searchInput.value = "";
       setQuery("");
-      els.searchInput.focus();
+    };
+    els.searchBtn.addEventListener("click", () => (els.searchBar.hidden ? openSearch() : closeSearch()));
+    els.searchInput.addEventListener("input", () => setQuery(els.searchInput.value));
+    els.searchClear.addEventListener("click", closeSearch);
+
+    // selection mode
+    els.selBtn.addEventListener("click", () => (selectMode ? exitSelect() : enterSelect()));
+    els.selDone.addEventListener("click", exitSelect);
+    els.selAll.addEventListener("click", () => {
+      const vis = visible();
+      if (selected.size >= vis.length) selected.clear();
+      else vis.forEach((i) => selected.add(i));
+      rerender();
+      updateSelBar();
+    });
+    els.selOpen.addEventListener("click", () => toggleMenu(els.selMenu, els.selOpen));
+    els.selMenu.addEventListener("click", (e) => {
+      const it = e.target.closest("[data-open]");
+      if (it) openSelected(it.dataset.open);
     });
 
     // menus
@@ -670,7 +776,7 @@
       if (!e.target.closest(".v-menu-wrap")) closeMenus();
     });
 
-    els.openAll.addEventListener("click", openAll);
+    els.openPage.addEventListener("click", openPage);
     els.listCopy.addEventListener("click", () => copyText(copyAll(), "Copied"));
     els.listCopyLinks.addEventListener("click", () => copyText(copyLinksOnly(), "Links copied"));
 

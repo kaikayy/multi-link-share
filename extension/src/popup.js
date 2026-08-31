@@ -73,24 +73,60 @@
 
   /* ---------- data sources ---------- */
 
-  async function queryWindowTabs() {
-    const tabs = await api.tabs.query({ currentWindow: true });
-    return tabs
-      .filter((t) => isWebUrl(t.url))
-      .map((t) => ({ url: t.url, title: t.title || "", checked: true, groupId: t.groupId, favIconUrl: t.favIconUrl }));
+  function tabToPage(t) {
+    return { url: t.url, title: t.title || "", checked: true, groupId: t.groupId, favIconUrl: t.favIconUrl };
+  }
+
+  async function queryWindowTabs(q) {
+    const tabs = await api.tabs.query(q || { currentWindow: true });
+    return tabs.filter((t) => isWebUrl(t.url)).map(tabToPage);
   }
 
   function hasTabGroupsApi() {
     return !!(api.tabGroups && typeof api.tabGroups.query === "function");
   }
 
-  async function loadWindowSource() {
-    state.pages = dedupe(await queryWindowTabs());
-    if (!state.name) {
-      const win = await api.windows.getCurrent();
-      state.name = "";
-      void win;
+  /** Populate the window picker; show it only when >1 normal window is open. */
+  async function populateWindows() {
+    const picker = $("#window-picker");
+    const wrap = $("#window-picker-wrap");
+    let wins = [];
+    try {
+      wins = (await api.windows.getAll({ populate: true, windowTypes: ["normal"] })) || [];
+    } catch (e) {
+      wins = [];
     }
+    if (wins.length <= 1) {
+      wrap.hidden = true;
+      return;
+    }
+    const cur = await api.windows.getCurrent();
+    picker.innerHTML = "";
+    const opt = (v, label) => {
+      const o = document.createElement("option");
+      o.value = v;
+      o.textContent = label;
+      picker.appendChild(o);
+    };
+    opt("current", "This window");
+    opt("all", `All windows (${wins.length})`);
+    let n = 0;
+    wins.forEach((w) => {
+      n += 1;
+      if (w.id === cur.id) return;
+      const webCount = (w.tabs || []).filter((t) => isWebUrl(t.url)).length;
+      opt(String(w.id), `Window ${n} · ${webCount} tab${webCount === 1 ? "" : "s"}`);
+    });
+    wrap.hidden = false;
+  }
+
+  async function loadWindowSource() {
+    const sel = ($("#window-picker") && $("#window-picker").value) || "current";
+    let q = { currentWindow: true };
+    if (sel === "all") q = { windowType: "normal" };
+    else if (/^\d+$/.test(sel)) q = { windowId: Number(sel) };
+    state.pages = dedupe(await queryWindowTabs(q));
+    state.groupPristine = false;
     render();
   }
 
@@ -163,11 +199,9 @@
   async function loadGroup(groupId) {
     state.pages = dedupe(await groupTabs(groupId));
     state.groupPristine = true;
+    // The group title is only a *hint* for the name field, never filled in.
     const t = await groupTitle(groupId);
-    if (t && !state.name) {
-      state.name = t;
-      $("#collection-name").value = t;
-    }
+    $("#collection-name").placeholder = t || "e.g. Research on hummingbirds";
     render();
   }
 
@@ -183,14 +217,19 @@
 
   /* ---------- paste source ---------- */
 
-  // Draft persistence for the paste box — survives popup close/reopen and
-  // switching between the This window / Tab group / Paste links tabs.
+  // Draft persistence — the paste box, the collection name and the active source
+  // tab all survive a popup close/reopen or a tab switch.
   const draftStore = (api.storage && api.storage.session) || (api.storage && api.storage.local);
 
-  async function loadPasteDraft() {
+  async function loadDrafts() {
     try {
-      const s = await draftStore.get("pasteDraft");
+      const s = await draftStore.get(["pasteDraft", "nameDraft", "source"]);
       if (s.pasteDraft) $("#paste-box").value = s.pasteDraft;
+      if (s.nameDraft) {
+        $("#collection-name").value = s.nameDraft;
+        state.name = s.nameDraft;
+      }
+      if (s.source) state.source = s.source;
     } catch (e) {}
   }
   function savePasteDraft() {
@@ -202,6 +241,11 @@
     $("#paste-box").value = "";
     try {
       draftStore.remove("pasteDraft");
+    } catch (e) {}
+  }
+  function saveNameDraft() {
+    try {
+      draftStore.set({ nameDraft: $("#collection-name").value });
     } catch (e) {}
   }
 
@@ -221,18 +265,15 @@
         if (clean) found.push({ url: clean, title: "", checked: true });
       });
 
-    if (!found.length) {
-      showError("No valid http(s) links found in the box.");
-      return;
-    }
     const before = state.pages.length;
-    state.pages = dedupe(merge ? state.pages.concat(found) : found);
+    if (found.length) state.pages = dedupe(merge ? state.pages.concat(found) : found);
     state.groupPristine = false;
-    clearPasteDraft();
+    clearPasteDraft(); // always empty the box — anything left couldn't be added
     clearError();
     render();
     const added = state.pages.length - before;
-    toast(added > 0 ? `Added ${added} link${added === 1 ? "" : "s"}` : "Those links are already in the list");
+    if (!found.length) toast("No valid links — cleared the box");
+    else toast(added > 0 ? `Added ${added} link${added === 1 ? "" : "s"}` : "Those links are already in the list");
   }
 
   async function fillPasteBox() {
@@ -369,6 +410,9 @@
     }
 
     await saveRecent(link, name, pages.length);
+    try {
+      draftStore.remove(["nameDraft", "pasteDraft"]);
+    } catch (e) {}
     showResult(link, name, pages.length, !!password);
     autoCopy(link);
   }
@@ -487,17 +531,21 @@
 
   async function setSource(source) {
     state.source = source;
+    try {
+      draftStore.set({ source });
+    } catch (e) {}
     $$(".seg").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.source === source)));
+    $("#panel-window").hidden = source !== "window";
     $("#panel-group").hidden = source !== "group";
     $("#panel-paste").hidden = source !== "paste";
     clearError();
 
-    if (source === "window") await loadWindowSource();
-    if (source === "group") await refreshGroupPanel();
-    if (source === "paste") {
-      // keep whatever is already in the list
-      render();
+    if (source === "window") {
+      await populateWindows();
+      await loadWindowSource();
     }
+    if (source === "group") await refreshGroupPanel();
+    if (source === "paste") render(); // keep whatever is already in the list
   }
 
   /* ---------- wire up ---------- */
@@ -523,6 +571,7 @@
     $("#paste-parse").addEventListener("click", () => parsePasteBox(true));
     $("#paste-fill").addEventListener("click", fillPasteBox);
     $("#paste-box").addEventListener("input", savePasteDraft);
+    $("#window-picker").addEventListener("change", loadWindowSource);
     $("#paste-add-window").addEventListener("click", async () => {
       const before = state.pages.length;
       const win = await queryWindowTabs();
@@ -542,7 +591,10 @@
       render();
     });
 
-    $("#collection-name").addEventListener("input", (e) => (state.name = e.target.value));
+    $("#collection-name").addEventListener("input", (e) => {
+      state.name = e.target.value;
+      saveNameDraft();
+    });
 
     $("#protect").addEventListener("change", (e) => {
       $("#pw-field").hidden = !e.target.checked;
@@ -579,9 +631,8 @@
       $("#foot-build").hidden = false;
     });
 
-    loadPasteDraft();
-    loadSettings()
-      .then(() => setSource("window"))
+    Promise.all([loadDrafts(), loadSettings()])
+      .then(() => setSource(["window", "group", "paste"].includes(state.source) ? state.source : "window"))
       .catch((e) => showError("Could not read this window's tabs: " + e.message));
   }
 
