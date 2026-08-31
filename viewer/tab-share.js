@@ -683,28 +683,54 @@
     rerender();
   }
 
+  /**
+   * Open a set of URLs.
+   *  - With the extension: hand them to the background worker (`tabshare:open`),
+   *    which opens every one cleanly via the tabs API — no pop-up blocking.
+   *  - Without it: open them synchronously inside the click gesture so the
+   *    browser lets the first through; if it blocks the rest, tell the user how
+   *    to allow them. (A setTimeout loop here gets *every* tab blocked.)
+   */
+  function openUrls(urls, openMode) {
+    if (!urls || !urls.length) return;
+    const mode = openMode || "this-window";
+
+    if (window.__tabShare) {
+      window.dispatchEvent(new CustomEvent("tabshare:open", { detail: { mode, urls } }));
+      toast(
+        mode === "new-window"
+          ? "Opening a new window…"
+          : mode === "tab-group"
+          ? "Opening a tab group…"
+          : `Opening ${urls.length} tab${urls.length === 1 ? "" : "s"}…`
+      );
+      return;
+    }
+
+    // Synchronous, inside the click gesture. `noopener` makes window.open return
+    // null even on success, so we can't count — just be honest about pop-ups.
+    urls.forEach((u) => window.open(u, "_blank", "noopener"));
+    if (mode !== "this-window") {
+      toast(`Opening ${urls.length} tabs — install Tab Share to open them as a ${mode === "new-window" ? "window" : "group"}`);
+    } else {
+      toast(
+        urls.length === 1
+          ? "Opening the page…"
+          : `Opening ${urls.length} tabs — allow pop-ups for this page if some are blocked`
+      );
+    }
+  }
+
   function openSelected(openMode) {
     els.selMenu.hidden = true;
-    const urls = [...selected].sort((a, b) => a - b).map((i) => collection.pages[i].url);
-    if (!urls.length) return;
-    if (openMode === "this-window" || !window.__tabShare) {
-      if (openMode !== "this-window") toast("Install Tab Share to open these as a group");
-      toast(`Opening ${urls.length} tab${urls.length === 1 ? "" : "s"} — allow pop-ups if asked`);
-      urls.forEach((u, n) => setTimeout(() => window.open(u, "_blank", "noopener"), n * 120));
-    } else {
-      window.dispatchEvent(new CustomEvent("tabshare:open", { detail: { mode: openMode, urls } }));
-      toast(openMode === "new-window" ? "Opening a new window…" : "Opening a tab group…");
-    }
+    openUrls([...selected].sort((a, b) => a - b).map((i) => collection.pages[i].url), openMode);
     exitSelect();
   }
 
   /* ---------- toolbar actions ---------- */
 
   function openAllPages() {
-    const vis = visible();
-    if (!vis.length) return;
-    toast(`Opening ${vis.length} tab${vis.length === 1 ? "" : "s"} — allow pop-ups if asked`);
-    vis.forEach((i, n) => setTimeout(() => window.open(collection.pages[i].url, "_blank", "noopener"), n * 120));
+    openUrls(visible().map((i) => collection.pages[i].url), "this-window");
   }
 
   function applyTheme(t) {

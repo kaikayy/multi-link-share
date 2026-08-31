@@ -3,6 +3,22 @@
 All notable changes to Tab Share. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); dates are `YYYY-MM-DD`.
 
+## [1.0.0-beta.2] — 2026-08-31
+
+### Fixed
+
+- **"Open all pages" now actually opens them.** It was firing `window.open` from
+  a `setTimeout` loop, so the browser blocked every tab. It now hands the list
+  to the extension when one is present (opens every tab cleanly), and otherwise
+  opens synchronously inside the click and tells you if pop-ups were blocked.
+  Same fix for **Select → Open selected → In this window**.
+
+### Docs
+
+- `ROADMAP.md` added — the planned **safer-links filter** (offline warnings for
+  malware / phishing / adult / gambling hosts from public blocklists) and link
+  expiry.
+
 ## [1.0.0-beta.1] — 2026-08-31
 
 First public beta. Not on any store — install via

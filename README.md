@@ -137,7 +137,8 @@ selection mode, theme toggle, password unlock, the empty-link state, and the
 companion import button / reversible-hide flow (in the mocked dev harness — do a
 real reloaded-extension pass before you publish). `viewer/` deploys to GitHub
 Pages via `.github/workflows/deploy-viewer.yml`; the privacy policy is published
-at `/privacy.html` alongside it. See `CHANGELOG.md`.
+at `/privacy.html` alongside it. See `CHANGELOG.md` for what's changed and
+`ROADMAP.md` for what's planned (notably an offline safer-links filter).
 
 Licensed under the **GNU AGPL-3.0** — free to use, study, share, and modify, but
 any modified version you distribute or run as a network service must be offered
