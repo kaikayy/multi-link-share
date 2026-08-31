@@ -56,10 +56,16 @@ Productivity
 ## Screenshots
 
 `assets/screenshot-1-popup.png` (the popup), `assets/screenshot-2-viewer.png`
-(the slideshow viewer) — 1280×800. **Recapture before any store submission**:
-these predate the 4-view / selection-mode / segmented-pager redesign. Suggested
-set: popup with a list, slideshow with the segmented pager, Preview Grid, List
-view, the ⚙ / Change View menus.
+(the slideshow viewer) — 1280×800, captured from the current UI. They're a touch
+soft (automated capture); a manual retake at full resolution would be sharper,
+and it's worth adding a few more: Preview Grid, List view, and the Change-View /
+⚙ menus. Recipe:
+
+```bash
+npm run serve:viewer                 # then open  localhost:8777/#<token>
+npm run dev                          # popup at  localhost:8778/dev/popup-inner.html
+# resize the window to ~1280×800, screenshot each view, crop to 1280×800
+```
 
 ## Chrome promo tile
 
