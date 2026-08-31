@@ -255,6 +255,8 @@
 
   function livePreview() {
     const page = collection.pages[index];
+    const host = hostOf(page.url);
+    const startedAt = index;
     const frame = document.createElement("iframe");
     frame.src = page.url;
     frame.referrerPolicy = "no-referrer";
@@ -267,9 +269,16 @@
 
     let settled = false;
     frame.addEventListener("load", () => (settled = true));
+    // If nothing loads in time the site is almost certainly blocking the frame
+    // (some blockers never fire `load`). Drop the preview, fall back to the card,
+    // and stop auto-previewing this host for the rest of the session.
     setTimeout(() => {
-      if (!settled && !els.embed.hidden) toast("This site is slow or blocking the preview — use “Open”.");
-    }, 4000);
+      if (settled || els.embed.hidden || index !== startedAt) return;
+      if (window.FrameHosts && FrameHosts.remember) FrameHosts.remember(host, "bad");
+      clearEmbed();
+      if (mode === "slides") renderSlide();
+      toast("That site won’t display here — use “Open this page”.");
+    }, 4500);
   }
 
   function renderSlide() {
