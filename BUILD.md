@@ -26,6 +26,25 @@ VIEWER_BASE=https://example.com/viewer/ npm run build
 This overrides the baked-in default for that build only. Users can also change
 it in the extension's options page.
 
+## Test the custom viewer URL locally
+
+```bash
+npm run serve:local        # builds against http://localhost:8777/ and serves dist/viewer
+```
+
+Then:
+
+1. Load `dist/chrome/` (or `dist/firefox/manifest.json`) unpacked.
+2. Options page → **Viewer base URL** → `http://localhost:8777/` → **Save**, and
+   grant the one-time host-access prompt.
+3. Create a share link — it now points at `localhost:8777`.
+4. Open the link. Because the extension is installed, the **import banner** shows:
+   open the collection into this window / a new window / a tab group, or save it
+   to history.
+
+A plain `npm run build` (and the post-commit hook) resets the baked default, so
+re-run `serve:local` whenever you want the localhost build back.
+
 ## Deploying the viewer
 
 `viewer/` (or `dist/viewer/`) is a plain static site — no build step, no server

@@ -25,7 +25,7 @@ The collection (page URLs + titles) is compressed with
 
 - no backend, no database, no accounts;
 - the extension makes **zero network requests**;
-- the link is self-contained (≈500 chars for 5 pages, ≈1.6 KB for 30).
+- the link is self-contained (≈500 chars for 5 pages, ≈1.5 KB for 30).
 
 A ~6 KB static page (`viewer/`) decodes the fragment in the recipient's browser
 and renders the slideshow. You host it anywhere (see `BUILD.md`).
@@ -39,16 +39,28 @@ card** (title, domain, URL, "Open this page") by default, with an optional
 (many docs, blogs, Wikipedia) preview inline; the rest open in a real tab. The
 grid view and "open all" sidestep the issue entirely.
 
+### If the recipient also has the extension
+
+When a Tab Share link is opened in a browser that has the extension, a small
+banner offers to **open the collection natively** instead of using the web view:
+into the current window, a new window, or a tab group — or to **save it to
+history** with a title. Everyone else just gets the slideshow. This is a content
+script that runs **only on the viewer page** (the default host + `localhost`;
+a custom viewer URL asks for that host once in the options page).
+
 ## Permissions (deliberately tiny)
 
 | Permission | Required? | Why |
 |---|---|---|
 | `tabs` | yes | Read URL + title of the current window's tabs, only on button click. |
-| `storage` | yes | Remember your viewer URL + last 8 links, on-device (`storage.local`). |
-| `tabGroups` | **optional**, asked at runtime | Read tab-group names for the "Tab group" source. |
+| `storage` | yes | Remember your viewer URL + last 50 links, on-device (`storage.local`). |
+| `scripting` | yes | Register the import banner for a **custom** viewer URL you set. |
+| `tabGroups` | **optional**, asked at runtime | Tab-group names for the "Tab group" source; titling a group on import. |
+| host access to a custom viewer URL | **optional**, asked when you save one | Show the import banner on your own viewer host. |
 
-No `host_permissions`. No content scripts. No background/service worker. No
-remote code. No data collection. Full rationale in `STORE-LISTING.md`;
+No static `host_permissions`. One content script, scoped to the viewer page
+only. A minimal background worker (import actions + content-script registration).
+No remote code. No data collection. Full rationale in `STORE-LISTING.md`;
 user-facing statement in `PRIVACY.md`.
 
 ## Repo layout
@@ -57,7 +69,8 @@ user-facing statement in `PRIVACY.md`.
 shared/            canonical codec + helpers (lz-string, share-codec, monogram)
 extension/
   manifest.chrome.json / manifest.firefox.json
-  src/             popup + options (plain HTML/CSS/JS, no framework)
+  src/             popup + options + background worker (plain HTML/CSS/JS)
+  src/content/     import-banner.js — viewer-page "open with the extension" banner
   icons/           icon.svg + generated PNGs
 viewer/            self-contained static slideshow site
 assets/            store artwork (promo tile, screenshots)
@@ -69,8 +82,9 @@ scripts/           build / sync / icons / selftest / dev-server
 
 ```bash
 npm test                 # codec round-trip tests
-npm run dev              # preview popup + viewer at localhost:8778
-VIEWER_BASE=https://kaikayy.github.io/multi-link-share/ npm run build
+npm run dev              # preview popup + options + import banner at localhost:8778
+npm run build            # dist/chrome + dist/firefox + dist/viewer
+npm run serve:local      # build against http://localhost:8777/ and serve the viewer
 ```
 
 Load `dist/chrome/` (Chrome) or `dist/firefox/manifest.json` (Firefox) unpacked.

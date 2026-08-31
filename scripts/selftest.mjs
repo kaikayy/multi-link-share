@@ -9,6 +9,18 @@ const require = createRequire(import.meta.url);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ShareCodec = require(path.join(root, "shared", "share-codec.js"));
 const Monogram = require(path.join(root, "shared", "monogram.js"));
+const LZString = require(path.join(root, "shared", "lzstring.min.js"));
+
+/** Recreate a legacy v1 token so we can prove old links still decode. */
+function encodeV1(collection) {
+  const payload = {
+    v: 1,
+    n: collection.title || "",
+    c: collection.created || Date.now(),
+    p: collection.pages.map((p) => [p.u || p.url, p.t || p.title || ""]),
+  };
+  return LZString.compressToEncodedURIComponent(JSON.stringify(payload));
+}
 
 let pass = 0;
 const ok = (name, fn) => {
@@ -68,9 +80,41 @@ ok("large collection stays a sane URL length", () => {
     t: `Page number ${i} — a representative title of middling length`,
   }));
   const token = ShareCodec.encode({ title: "Big set", pages });
-  console.log(`      (30 pages -> ${token.length} chars in the fragment)`);
+  const v1len = encodeV1({ title: "Big set", pages }).length;
+  console.log(`      (30 pages -> ${token.length} chars, was ${v1len} under v1)`);
   assert.ok(token.length < 4000, `token too long: ${token.length}`);
+  assert.ok(token.length < v1len, `v2 (${token.length}) should be shorter than v1 (${v1len})`);
   assert.equal(ShareCodec.decode(token).pages.length, 30);
+});
+
+ok("still decodes legacy v1 links", () => {
+  const token = encodeV1({
+    title: "Old link",
+    created: 1700000000000,
+    pages: [
+      { u: "https://en.wikipedia.org/wiki/Aurora", t: "Aurora" },
+      { u: "http://example.org/plain", t: "" },
+    ],
+  });
+  const out = ShareCodec.decode(token);
+  assert.equal(out.title, "Old link");
+  assert.equal(out.created, 1700000000000);
+  assert.deepEqual(out.pages.map((p) => p.url), [
+    "https://en.wikipedia.org/wiki/Aurora",
+    "http://example.org/plain",
+  ]);
+  assert.equal(out.pages[0].title, "Aurora");
+});
+
+ok("v2 keeps http:// but drops https:// prefix internally", () => {
+  const token = ShareCodec.encode({
+    pages: [{ u: "https://a.example/x", t: "A" }, { u: "http://b.example/y", t: "B" }],
+  });
+  const raw = LZString.decompressFromEncodedURIComponent(token);
+  assert.ok(raw.includes('"a.example/x"'), "https:// should be stripped in the payload");
+  assert.ok(raw.includes('"http://b.example/y"'), "http:// should be kept verbatim");
+  const out = ShareCodec.decode(token);
+  assert.deepEqual(out.pages.map((p) => p.url), ["https://a.example/x", "http://b.example/y"]);
 });
 
 ok("monogram is deterministic and offline", () => {

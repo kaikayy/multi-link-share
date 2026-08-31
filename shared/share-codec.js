@@ -15,7 +15,9 @@
 })(typeof self !== "undefined" ? self : this, function (LZString) {
   "use strict";
 
-  var SCHEMA_VERSION = 1;
+  // v2 is the compact array form `[2, name, created, [[url, title], ...]]`.
+  // v1 (the object `{v:1,n,c,p}`) is still decoded so old links keep working.
+  var SCHEMA_VERSION = 2;
   var MAX_PAGES = 100;
   var MAX_URL = 4000;
   var MAX_TITLE = 300;
@@ -42,6 +44,26 @@
       .slice(0, max);
   }
 
+  function hostOf(url) {
+    try {
+      return new URL(url).hostname;
+    } catch (e) {
+      return "";
+    }
+  }
+
+  // Drop the "https://" prefix (the common case) to shave bytes; "http://" and
+  // anything else is kept verbatim so decode can tell them apart.
+  function packUrl(url) {
+    return url.indexOf("https://") === 0 ? url.slice(8) : url;
+  }
+
+  function unpackUrl(value) {
+    if (typeof value !== "string") return null;
+    var full = /^[a-z][a-z0-9+.-]*:\/\//i.test(value) ? value : "https://" + value;
+    return sanitizeUrl(full);
+  }
+
   /**
    * @param {{title?:string, pages:Array<{url?:string,u?:string,title?:string,t?:string}>}} collection
    * @returns {string} URL-safe fragment payload (no leading '#')
@@ -57,18 +79,16 @@
       var url = sanitizeUrl(p.url != null ? p.url : p.u);
       if (!url || seen[url]) continue;
       seen[url] = true;
-      pages.push([url, clean(p.title != null ? p.title : p.t, MAX_TITLE)]);
+      var title = clean(p.title != null ? p.title : p.t, MAX_TITLE);
+      // A title that just echoes the hostname carries no information — drop it.
+      if (title && title === hostOf(url)) title = "";
+      pages.push([packUrl(url), title]);
       if (pages.length >= MAX_PAGES) break;
     }
     if (!pages.length) {
       throw new Error("encode: no valid http(s) links to share");
     }
-    var payload = {
-      v: SCHEMA_VERSION,
-      n: clean(collection.title, MAX_NAME),
-      c: Date.now(),
-      p: pages,
-    };
+    var payload = [SCHEMA_VERSION, clean(collection.title, MAX_NAME), Date.now(), pages];
     return LZString.compressToEncodedURIComponent(JSON.stringify(payload));
   }
 
@@ -95,21 +115,37 @@
     } catch (e) {
       return null;
     }
-    if (!obj || obj.v !== SCHEMA_VERSION || !Array.isArray(obj.p)) return null;
+
+    var name, created, rawRows, compact;
+    if (Array.isArray(obj) && obj[0] === 2 && Array.isArray(obj[3])) {
+      // v2: [2, name, created, [[url, title], ...]]
+      name = obj[1];
+      created = obj[2];
+      rawRows = obj[3];
+      compact = true;
+    } else if (obj && obj.v === 1 && Array.isArray(obj.p)) {
+      // v1: { v:1, n, c, p:[[url, title], ...] }
+      name = obj.n;
+      created = obj.c;
+      rawRows = obj.p;
+      compact = false;
+    } else {
+      return null;
+    }
 
     var pages = [];
-    for (var i = 0; i < obj.p.length && pages.length < MAX_PAGES; i++) {
-      var row = obj.p[i];
+    for (var i = 0; i < rawRows.length && pages.length < MAX_PAGES; i++) {
+      var row = rawRows[i];
       if (!Array.isArray(row)) continue;
-      var url = sanitizeUrl(row[0]);
+      var url = compact ? unpackUrl(row[0]) : sanitizeUrl(row[0]);
       if (!url) continue;
       pages.push({ url: url, title: clean(row[1], MAX_TITLE) });
     }
     if (!pages.length) return null;
 
     return {
-      title: clean(obj.n, MAX_NAME),
-      created: typeof obj.c === "number" && isFinite(obj.c) ? obj.c : null,
+      title: clean(name, MAX_NAME),
+      created: typeof created === "number" && isFinite(created) ? created : null,
       pages: pages,
     };
   }

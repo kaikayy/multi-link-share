@@ -22,9 +22,28 @@
   },
   "options_ui": {
     "page": "src/options.html",
-    "open_in_tab": false
+    "open_in_tab": true
   },
-  "permissions": ["tabs", "storage"],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://kaikayy.github.io/multi-link-share/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "src/lib/lzstring.min.js",
+        "src/lib/share-codec.js",
+        "src/content/import-banner.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["tabs", "storage", "scripting"],
   "optional_permissions": ["tabGroups"],
+  "optional_host_permissions": ["*://*/*"],
   "minimum_chrome_version": "116"
 }

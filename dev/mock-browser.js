@@ -16,6 +16,13 @@
   window.chrome = {
     runtime: {
       openOptionsPage: () => console.log("(mock) would open the options page"),
+      sendMessage: (msg) => {
+        console.log("(mock) runtime.sendMessage", msg);
+        return asyncOk({ ok: true });
+      },
+      onMessage: { addListener() {}, removeListener() {} },
+      onInstalled: { addListener() {} },
+      onStartup: { addListener() {} },
       lastError: null,
     },
     tabs: {
@@ -31,21 +38,48 @@
         console.log("(mock) tabs.create", url);
         return asyncOk({ id: 99, url });
       },
+      group: ({ tabIds }) => {
+        console.log("(mock) tabs.group", tabIds);
+        return asyncOk(42);
+      },
     },
-    windows: { getCurrent: () => asyncOk({ id: 1 }) },
+    windows: {
+      getCurrent: () => asyncOk({ id: 1 }),
+      create: ({ url }) => {
+        console.log("(mock) windows.create", url);
+        return asyncOk({ id: 2 });
+      },
+    },
     tabGroups: {
       query: () => asyncOk([{ id: 7, title: "Hummingbirds", color: "pink", windowId: 1 }]),
       get: (id) => asyncOk({ id, title: "Hummingbirds", color: "pink" }),
+      update: (id, props) => {
+        console.log("(mock) tabGroups.update", id, props);
+        return asyncOk({ id, ...props });
+      },
     },
     permissions: {
       _granted: new Set(),
-      contains: ({ permissions }) => asyncOk(permissions.every((p) => window.chrome.permissions._granted.has(p))),
-      request: ({ permissions }) => {
-        permissions.forEach((p) => window.chrome.permissions._granted.add(p));
+      contains: ({ permissions = [], origins = [] }) =>
+        asyncOk(
+          permissions.every((p) => window.chrome.permissions._granted.has(p)) &&
+            origins.every((o) => window.chrome.permissions._granted.has(o))
+        ),
+      request: ({ permissions = [], origins = [] }) => {
+        [...permissions, ...origins].forEach((p) => window.chrome.permissions._granted.add(p));
         return asyncOk(true);
       },
+      onAdded: { addListener() {} },
+      onRemoved: { addListener() {} },
+    },
+    scripting: {
+      getRegisteredContentScripts: () => asyncOk([]),
+      registerContentScripts: () => asyncOk(),
+      updateContentScripts: () => asyncOk(),
+      unregisterContentScripts: () => asyncOk(),
     },
     storage: {
+      onChanged: { addListener() {} },
       local: {
         get: (key) => {
           if (key == null) return asyncOk({ ...store });

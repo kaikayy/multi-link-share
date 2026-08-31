@@ -9,7 +9,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "tab-share@multi-link-share",
-      "strict_min_version": "128.0",
+      "strict_min_version": "139.0",
       "data_collection_permissions": {
         "required": ["none"]
       }
@@ -31,8 +31,27 @@
   },
   "options_ui": {
     "page": "src/options.html",
-    "open_in_tab": false
+    "open_in_tab": true
   },
-  "permissions": ["tabs", "storage"],
-  "optional_permissions": ["tabGroups"]
+  "background": {
+    "scripts": ["src/background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://kaikayy.github.io/multi-link-share/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": [
+        "src/lib/lzstring.min.js",
+        "src/lib/share-codec.js",
+        "src/content/import-banner.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["tabs", "storage", "scripting"],
+  "optional_permissions": ["tabGroups"],
+  "optional_host_permissions": ["*://*/*"]
 }

@@ -27,8 +27,29 @@ const INDEX = `<!doctype html><meta charset=utf-8><title>Tab Share dev previews<
 <ul>
   <li><a style="color:#9a8dff" href="/dev/popup-inner.html">Popup</a> (mocked chrome.*)</li>
   <li><a style="color:#9a8dff" href="/dev/options-inner.html">Options page</a> (mocked chrome.*)</li>
+  <li><a style="color:#9a8dff" href="/dev/import-banner.html">Import banner</a> (mocked chrome.*)</li>
   <li><a style="color:#9a8dff" href="/viewer/">Viewer</a> — append <code>#&lt;token&gt;</code> from <code>npm test</code> output or the popup</li>
 </ul></body>`;
+
+const BANNER = `<!doctype html><meta charset=utf-8><title>Import banner preview</title>
+<script src="/dev/mock-browser.js"></script>
+<script src="/shared/lzstring.min.js"></script>
+<script src="/shared/share-codec.js"></script>
+<body style="font-family:system-ui;background:#0f0f14;color:#ccc;padding:80px 24px">
+<p>This is the viewer-page import banner rendered against mocked chrome.* — actions log to the console.</p>
+<script>
+  var token = ShareCodec.encode({
+    title: "",
+    pages: [
+      { u: "https://en.wikipedia.org/wiki/Aurora", t: "Aurora" },
+      { u: "https://unsplash.com/s/photos/mountains", t: "Mountains" },
+      { u: "https://commons.wikimedia.org/wiki/Main_Page", t: "" },
+    ],
+  });
+  location.hash = token;
+<\/script>
+<script src="/extension/src/content/import-banner.js"></script>
+</body>`;
 
 function injectedPage(htmlPath) {
   let html = fs.readFileSync(path.join(root, htmlPath), "utf8");
@@ -51,6 +72,7 @@ http
     if (url === "/" || url === "/dev" || url === "/dev/") return send(200, MIME[".html"], INDEX);
     if (url === "/dev/popup-inner.html") return send(200, MIME[".html"], injectedPage("extension/src/popup.html"));
     if (url === "/dev/options-inner.html") return send(200, MIME[".html"], injectedPage("extension/src/options.html"));
+    if (url === "/dev/import-banner.html") return send(200, MIME[".html"], BANNER);
     if (url === "/viewer" || url === "/viewer/") url = "/viewer/index.html";
 
     const file = path.join(root, url);

@@ -15,6 +15,15 @@
 
   const isWebUrl = (u) => typeof u === "string" && /^https?:\/\//i.test(u);
 
+  /** Local-time "YYYY-MM-DD-HH:MM", the fallback name for an untitled collection. */
+  function defaultTitle(d = new Date()) {
+    const p = (n) => String(n).padStart(2, "0");
+    return (
+      `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}` +
+      `-${p(d.getHours())}:${p(d.getMinutes())}`
+    );
+  }
+
   function toast(msg) {
     const el = $("#toast");
     el.textContent = msg;
@@ -80,16 +89,29 @@
     needsPerm.hidden = true;
     unsupported.hidden = true;
     pickerWrap.hidden = true;
+    unsupported.textContent =
+      "This browser doesn't expose the tab-group API to extensions yet. " +
+      "Use This window or Paste links instead.";
 
-    if (!hasTabGroupsApi()) {
+    const granted = await hasTabGroupsPermission();
+
+    if (granted && hasTabGroupsApi()) {
+      await populateGroups();
+      return;
+    }
+    if (granted && !hasTabGroupsApi()) {
+      // Permission is on but the namespace still isn't here → genuinely unsupported.
       unsupported.hidden = false;
       return;
     }
-    if (!(await hasTabGroupsPermission())) {
+    // Not granted yet. Offer the button even though chrome.tabGroups isn't visible —
+    // Chrome and Firefox both hide that namespace until the permission is granted,
+    // so an API check here would wrongly report "unsupported" forever.
+    if (api.permissions && typeof api.permissions.request === "function") {
       needsPerm.hidden = false;
-      return;
+    } else {
+      unsupported.hidden = false;
     }
-    await populateGroups();
   }
 
   async function populateGroups() {
@@ -164,10 +186,27 @@
       showError("No valid http(s) links found in the box.");
       return;
     }
+    const before = state.pages.length;
     state.pages = dedupe(merge ? state.pages.concat(found) : found);
     $("#paste-box").value = "";
     clearError();
     render();
+    const added = state.pages.length - before;
+    toast(added > 0 ? `Added ${added} link${added === 1 ? "" : "s"}` : "Those links are already in the list");
+  }
+
+  async function fillPasteBox() {
+    const tabs = await queryWindowTabs();
+    if (!tabs.length) {
+      toast("No web pages open in this window");
+      return;
+    }
+    const box = $("#paste-box");
+    const existing = box.value.trim();
+    const urls = tabs.map((t) => t.url).join("\n");
+    box.value = existing ? existing + "\n" + urls : urls;
+    box.focus();
+    toast(`Loaded ${tabs.length} URL${tabs.length === 1 ? "" : "s"} — edit, then Add`);
   }
 
   /* ---------- rendering ---------- */
@@ -246,9 +285,11 @@
     const pages = selectedPages().map((p) => ({ u: p.url, t: p.title }));
     if (!pages.length) return;
 
+    const name = ($("#collection-name").value || "").trim() || defaultTitle();
+
     let token;
     try {
-      token = ShareCodec.encode({ title: $("#collection-name").value, pages });
+      token = ShareCodec.encode({ title: name, pages });
     } catch (e) {
       showError(e.message || "Could not build the link.");
       return;
@@ -257,8 +298,18 @@
     const base = await getViewerBase();
     const link = base + "#" + token;
 
-    await saveRecent(link, $("#collection-name").value, pages.length);
-    showResult(link, $("#collection-name").value, pages.length);
+    await saveRecent(link, name, pages.length);
+    showResult(link, name, pages.length);
+    autoCopy(link);
+  }
+
+  async function autoCopy(link) {
+    try {
+      await navigator.clipboard.writeText(link);
+      toast("Link created — copied to clipboard");
+    } catch (e) {
+      toast("Link created — press Copy to put it on the clipboard");
+    }
   }
 
   function showResult(link, name, count) {
@@ -303,11 +354,14 @@
 
   /* ---------- recents ---------- */
 
+  const HISTORY_CAP = 50;
+
   async function saveRecent(link, name, count) {
     try {
       const { recents = [] } = await api.storage.local.get("recents");
-      recents.unshift({ link, name: name || "Untitled", count, at: Date.now() });
-      await api.storage.local.set({ recents: recents.slice(0, 8) });
+      const at = Date.now();
+      recents.unshift({ id: String(at), link, name: name || "Untitled", count, at });
+      await api.storage.local.set({ recents: recents.slice(0, HISTORY_CAP) });
     } catch (e) {}
   }
 
@@ -362,8 +416,20 @@
     $("#grant-groups").addEventListener("click", async () => {
       try {
         const granted = await api.permissions.request({ permissions: ["tabGroups"] });
-        if (granted) await refreshGroupPanel();
-        else toast("Permission not granted");
+        if (!granted) {
+          toast("Permission not granted");
+          return;
+        }
+        // The chrome.tabGroups namespace usually only appears in a fresh popup
+        // context, so reload and land back on the Tab group tab.
+        try {
+          sessionStorage.setItem("ts:src", "group");
+        } catch (e) {}
+        if (hasTabGroupsApi()) {
+          await refreshGroupPanel();
+        } else {
+          location.reload();
+        }
       } catch (e) {
         toast("This browser can't grant that permission");
       }
@@ -372,11 +438,14 @@
     $("#group-picker").addEventListener("change", (e) => loadGroup(Number(e.target.value)));
 
     $("#paste-parse").addEventListener("click", () => parsePasteBox(true));
+    $("#paste-fill").addEventListener("click", fillPasteBox);
     $("#paste-add-window").addEventListener("click", async () => {
+      const before = state.pages.length;
       const win = await queryWindowTabs();
       state.pages = dedupe(state.pages.concat(win));
       render();
-      toast(`Added ${win.length} tab${win.length === 1 ? "" : "s"}`);
+      const added = state.pages.length - before;
+      toast(`Added ${added} tab${added === 1 ? "" : "s"} straight to the list`);
     });
 
     $("#select-all").addEventListener("click", () => {
@@ -401,7 +470,15 @@
       $("#foot-build").hidden = false;
     });
 
-    setSource("window").catch((e) => showError("Could not read this window's tabs: " + e.message));
+    let startSource = "window";
+    try {
+      const wanted = sessionStorage.getItem("ts:src");
+      if (wanted) {
+        startSource = wanted;
+        sessionStorage.removeItem("ts:src");
+      }
+    } catch (e) {}
+    setSource(startSource).catch((e) => showError("Could not read this window's tabs: " + e.message));
   }
 
   document.addEventListener("DOMContentLoaded", init);

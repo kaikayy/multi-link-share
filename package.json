@@ -9,8 +9,10 @@
     "sync": "node scripts/sync-shared.mjs",
     "icons": "node scripts/make-icons.mjs",
     "build": "node scripts/build.mjs",
+    "build:local": "VIEWER_BASE=http://localhost:8777/ node scripts/build.mjs",
     "zip:source": "node scripts/zip-source.mjs",
     "serve:viewer": "node scripts/serve-viewer.mjs",
+    "serve:local": "node scripts/serve-local.mjs",
     "dev": "node scripts/serve-dev.mjs",
     "lint:ext": "web-ext lint --source-dir dist/firefox"
   },
