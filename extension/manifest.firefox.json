@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Tab Share — one link for a group of tabs",
   "short_name": "Tab Share",
-  "version": "1.0.0.3",
+  "version": "1.0.0.4",
   "description": "Bundle the current window, a tab group, or pasted links into a single link that opens as a slideshow. No account, no server.",
   "author": "Tab Share contributors",
   "homepage_url": "https://github.com/kaikayy/multi-link-share",
@@ -48,5 +48,5 @@
     }
   ],
   "permissions": ["tabs", "storage", "scripting", "tabGroups"],
-  "optional_host_permissions": ["*://*/*"]
+  "optional_host_permissions": ["https://*/*", "http://localhost/*", "http://127.0.0.1/*"]
 }

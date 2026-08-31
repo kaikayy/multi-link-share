@@ -113,12 +113,22 @@ the user's on-device history. The banner UI lives in a closed shadow root and
 acts only on genuine user clicks. It is not registered for, and does not run on,
 any other site. No remote code, no network requests.
 
-### `optional_host_permissions` (`*://*/*`, opt-in)
+### `optional_host_permissions` (`https://*/*` + `http://localhost/*` + `http://127.0.0.1/*`, opt-in)
 
-Never requested at install, and the wildcard is never requested. When the user
-saves a viewer address other than the packaged default, the options page
-requests host access to **that one origin** so the content script above can be
-registered there; nothing else uses it.
+Never requested at install, and the broad patterns are never requested. They are
+only the *set the user is allowed to grant from*. The extension calls
+`permissions.request({ origins: ["<one specific origin>/*"] })` in exactly two
+places, both in the options page:
+
+- when the user saves a **self-hosted viewer URL** (so the import content script
+  can be registered on that host), and
+- when the user picks a **custom URL-shortener endpoint** (so the popup can
+  `fetch` it).
+
+Self-hosted viewers and shortener endpoints must be `https://` (localhost is
+allowed for testing), which is why the declared set is `https` + the two
+localhost hosts rather than `*://*/*`. Nothing is granted or used until the user
+enters an address and approves that origin.
 
 ### Background service worker
 

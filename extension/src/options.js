@@ -100,13 +100,21 @@
 
     let pattern = PROVIDER_ORIGIN[provider] || null;
     if (provider === "custom") {
+      let parsed;
       try {
-        pattern = new URL(endpoint).origin + "/*";
+        parsed = new URL(endpoint);
       } catch (e) {
         $("#short-err").textContent = "Enter a valid https:// endpoint.";
         $("#short-err").hidden = false;
         return;
       }
+      const localhost = parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
+      if (parsed.protocol !== "https:" && !localhost) {
+        $("#short-err").textContent = "The endpoint must be https:// (localhost is allowed for testing).";
+        $("#short-err").hidden = false;
+        return;
+      }
+      pattern = parsed.origin + "/*";
     }
 
     if (pattern) {

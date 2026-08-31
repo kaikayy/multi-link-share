@@ -3,6 +3,17 @@
 All notable changes to Tab Share. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); dates are `YYYY-MM-DD`.
 
+## [1.0.0-beta.5] — 2026-08-31
+
+### Changed
+
+- **Narrowed `optional_host_permissions`** from `*://*/*` to
+  `https://*/*` + `http://localhost/*` + `http://127.0.0.1/*`. The extension only
+  ever requests one specific `https` (or localhost) origin at a time — for a
+  self-hosted viewer URL or a custom shortener endpoint — so the plain-`http`
+  wildcard was never used. Custom shortener endpoints must now be `https://`
+  (localhost excepted), matching the viewer-URL rule.
+
 ## [1.0.0-beta.4] — 2026-08-31
 
 _(beta.3 was tagged but not released — its fix is folded in here.)_
