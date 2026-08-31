@@ -13,6 +13,7 @@
     source: "window",
     pages: [],
     name: "",
+    groupPristine: true, // true = a picker change may replace the list wholesale
     settings: { showIcons: true, autoPreview: true, shortProvider: "", shortEndpoint: "", shortAuto: false },
   };
 
@@ -20,7 +21,7 @@
     try {
       const s = await api.storage.local.get(["showIcons", "autoPreview", "shortProvider", "shortEndpoint", "shortAuto"]);
       state.settings = {
-        showIcons: s.showIcons !== false,
+        showIcons: s.showIcons === true, // default OFF
         autoPreview: s.autoPreview !== false,
         shortProvider: s.shortProvider || "",
         shortEndpoint: s.shortEndpoint || "",
@@ -138,26 +139,46 @@
     if (active && active.groupId != null && active.groupId >= 0) {
       picker.value = String(active.groupId);
     }
+    state.groupPristine = true;
     await loadGroup(Number(picker.value));
   }
 
-  async function loadGroup(groupId) {
+  async function groupTabs(groupId) {
     const tabs = await api.tabs.query({ groupId });
-    state.pages = dedupe(
-      tabs
-        .filter((t) => isWebUrl(t.url))
-        .map((t) => ({ url: t.url, title: t.title || "", checked: true, favIconUrl: t.favIconUrl }))
-    );
+    return tabs
+      .filter((t) => isWebUrl(t.url))
+      .map((t) => ({ url: t.url, title: t.title || "", checked: true, favIconUrl: t.favIconUrl }));
+  }
+
+  async function groupTitle(groupId) {
     try {
       const g = await api.tabGroups.get(groupId);
-      if (g && g.title && !state.name) {
-        state.name = g.title;
-        $("#collection-name").value = g.title;
-      }
+      return (g && g.title && g.title.trim()) || "";
     } catch (e) {
-      /* ignore */
+      return "";
+    }
+  }
+
+  /** Preview one group — replaces the list. Only runs while the list is pristine. */
+  async function loadGroup(groupId) {
+    state.pages = dedupe(await groupTabs(groupId));
+    state.groupPristine = true;
+    const t = await groupTitle(groupId);
+    if (t && !state.name) {
+      state.name = t;
+      $("#collection-name").value = t;
     }
     render();
+  }
+
+  /** Append the picked group's tabs — combines groups. */
+  async function addGroup(groupId) {
+    const before = state.pages.length;
+    state.pages = dedupe(state.pages.concat(await groupTabs(groupId)));
+    state.groupPristine = false;
+    render();
+    const added = state.pages.length - before;
+    toast(added > 0 ? `Added ${added} tab${added === 1 ? "" : "s"}` : "That group's tabs are already in the list");
   }
 
   /* ---------- paste source ---------- */
@@ -206,6 +227,7 @@
     }
     const before = state.pages.length;
     state.pages = dedupe(merge ? state.pages.concat(found) : found);
+    state.groupPristine = false;
     clearPasteDraft();
     clearError();
     render();
@@ -286,6 +308,7 @@
         if (act === "up" && idx > 0) [state.pages[idx - 1], state.pages[idx]] = [state.pages[idx], state.pages[idx - 1]];
         if (act === "down" && idx < state.pages.length - 1)
           [state.pages[idx + 1], state.pages[idx]] = [state.pages[idx], state.pages[idx + 1]];
+        state.groupPristine = false; // curated — don't let a picker change wipe it
         render();
       });
 
@@ -484,7 +507,18 @@
 
     $$(".seg").forEach((btn) => btn.addEventListener("click", () => setSource(btn.dataset.source)));
 
-    $("#group-picker").addEventListener("change", (e) => loadGroup(Number(e.target.value)));
+    $("#group-picker").addEventListener("change", (e) => {
+      const id = Number(e.target.value);
+      if (state.groupPristine) {
+        loadGroup(id);
+      } else {
+        $("#group-hint").hidden = false; // list is curated — pick + ＋ Add to combine
+      }
+    });
+    $("#group-add").addEventListener("click", () => {
+      const id = Number($("#group-picker").value);
+      if (Number.isFinite(id)) addGroup(id);
+    });
 
     $("#paste-parse").addEventListener("click", () => parsePasteBox(true));
     $("#paste-fill").addEventListener("click", fillPasteBox);
@@ -493,9 +527,10 @@
       const before = state.pages.length;
       const win = await queryWindowTabs();
       state.pages = dedupe(state.pages.concat(win));
+      state.groupPristine = false;
       render();
       const added = state.pages.length - before;
-      toast(`Added ${added} tab${added === 1 ? "" : "s"} straight to the list`);
+      toast(`Added ${added} tab${added === 1 ? "" : "s"} to the list`);
     });
 
     $("#select-all").addEventListener("click", () => {

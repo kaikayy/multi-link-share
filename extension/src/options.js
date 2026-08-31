@@ -44,7 +44,7 @@
 
   async function loadPrefs() {
     const s = await api.storage.local.get(PREF_KEYS);
-    $("#pref-icons").checked = s.showIcons !== false; // default on
+    $("#pref-icons").checked = s.showIcons === true; // default OFF (privacy)
     $("#pref-autopreview").checked = s.autoPreview !== false; // default on
     $("#pref-banner").checked = !s["import.disabled"]; // default on
     $("#pref-autoopen").checked = !s["import.noauto"]; // default on

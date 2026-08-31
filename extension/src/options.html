@@ -24,6 +24,7 @@
     .setting .s-title { font-weight: 600; font-size: 12.5px; color: var(--text); }
     .setting .s-desc { color: var(--text-dim); font-size: 11.5px; }
     .setting select { margin-top: 4px; }
+    .setting.lead { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 4px; }
 
     .hist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 340px; overflow-y: auto; }
     .hist li {
@@ -44,18 +45,17 @@
     <section class="card welcome">
       <h2>Welcome</h2>
       <p>A couple of choices before you start. Everything here is stored on this device only and can be changed any time.</p>
+      <label class="setting lead">
+        <input id="pref-icons" type="checkbox" />
+        <span class="s-body">
+          <span class="s-title">Show real site icons</span>
+          <span class="s-desc">Off by default. Turn this on and the slideshow viewer fetches a favicon per domain from <code>icons.duckduckgo.com</code> when someone opens a link. Left off, the viewer makes <strong>no network requests at all</strong> and shows coloured initials instead.</span>
+        </span>
+      </label>
     </section>
 
     <section class="card">
       <h2>Preferences</h2>
-
-      <label class="setting">
-        <input id="pref-icons" type="checkbox" />
-        <span class="s-body">
-          <span class="s-title">Show site icons in shared links</span>
-          <span class="s-desc">When a page can't be previewed, the viewer shows the site's real icon. This makes one request per domain to <code>icons.duckduckgo.com</code> when a link is opened. Off = coloured initials, and the viewer makes no requests at all.</span>
-        </span>
-      </label>
 
       <label class="setting">
         <input id="pref-autopreview" type="checkbox" />

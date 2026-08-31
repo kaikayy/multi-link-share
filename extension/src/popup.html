@@ -41,10 +41,14 @@
     <!-- group-permission / paste panels -->
     <section id="panel-group" class="panel" hidden>
       <p id="group-unsupported" class="hint" hidden></p>
-      <label id="group-picker-wrap" hidden>
-        <span class="label">Group</span>
-        <select id="group-picker"></select>
-      </label>
+      <div id="group-picker-wrap" hidden>
+        <label class="field">
+          <span class="label">Group</span>
+          <select id="group-picker"></select>
+        </label>
+        <button id="group-add" class="btn btn-ghost btn-sm" type="button">＋ Add this group to the list</button>
+        <p id="group-hint" class="hint" hidden>Pick a group above, then ＋ Add it. Do it again to combine groups.</p>
+      </div>
     </section>
 
     <section id="panel-paste" class="panel" hidden>
@@ -53,17 +57,17 @@
         <textarea id="paste-box" rows="4" placeholder="https://example.com/page-one&#10;https://example.com/page-two"></textarea>
         <div class="paste-tools">
           <button id="paste-fill" type="button">
-            <span class="p-arrow"><svg class="ic"><use href="#i-down" /></svg></span>
+            <span class="p-arrow"><svg class="ic"><use href="#i-up" /></svg></span>
             Load open tabs
           </button>
           <button id="paste-parse" data-role="parse" type="button">
-            <span class="p-arrow"><svg class="ic"><use href="#i-up" /></svg></span>
+            <span class="p-arrow"><svg class="ic"><use href="#i-down" /></svg></span>
             Add to list
           </button>
         </div>
       </div>
       <div class="row-actions">
-        <button id="paste-add-window" class="btn btn-ghost btn-sm" type="button">＋ Add tabs straight to the list</button>
+        <button id="paste-add-window" class="btn btn-ghost btn-sm" type="button">Add tabs to current list</button>
       </div>
     </section>
 

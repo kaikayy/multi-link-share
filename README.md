@@ -13,11 +13,13 @@ person you send it to needs no extension, no account, and hits no server.
    - **Paste links** — one URL per line, or pull in the current window.
 2. Reorder / trim / name the collection. Optionally set a password.
 3. **Create share link** → it's copied automatically.
-4. The recipient opens it in any browser. Four views: **slideshow** (framed page,
-   ◀ ▶, keyboard nav, a clickable segmented `5 / 14` pager, jump-to-page),
-   **grid**, a copyable **numbered list**, and a **large preview grid**.
-   Framing-friendly sites preview live; the rest show a card. "Open all" opens
-   every page in tabs.
+4. The recipient opens it in any browser. Four views: **slideshow** (side + bottom
+   arrows, first/last, keyboard nav, a segmented `5 / 14` pager, jump-to-page),
+   **Preview Grid** (large live tiles), **Grid**, and a copyable **numbered list**
+   (copy all, or links only). Framing-friendly sites preview live; the rest show a
+   card. Per-view **search** filters by title/site/URL. A **light/dark toggle**
+   (dark by default). Grids centre their last row and paginate past 27 / 9 items.
+   "Open all" opens every page in tabs.
 
 ## How one link can carry everything
 
