@@ -67,8 +67,15 @@ Planned work, roughly ordered. Nothing here is committed to a release yet.
 
 ## Platform
 
-- **Firefox for Android** once an AMO listing exists (custom add-on
-  collection).
+- The **viewer already works on mobile** (responsive, swipe nav, no extension
+  needed) — that's the recipient side and it's done.
+- **The extension on Firefox for Android.** Blocked by `tabGroups` being a
+  *required* permission (Android Firefox has no tab-groups API) and
+  `strict_min_version: 139`. The popup already degrades gracefully when the API
+  is missing (`hasTabGroupsApi()`), so the fix is: make `tabGroups` optional
+  (request it from the popup/options instead of relying on it at content-script
+  time), test the popup at ~360 px, and flag Android compatibility on AMO. Low
+  priority — link *creation* is a desktop task.
 - Investigate Safari packaging beyond the manual `safari-web-extension-converter`
   step.
 
