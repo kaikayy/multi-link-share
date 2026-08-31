@@ -45,6 +45,11 @@
     },
     windows: {
       getCurrent: () => asyncOk({ id: 1 }),
+      getAll: () =>
+        asyncOk([
+          { id: 1, type: "normal", tabs: FAKE_TABS },
+          { id: 2, type: "normal", tabs: FAKE_TABS.slice(0, 3) },
+        ]),
       create: ({ url }) => {
         console.log("(mock) windows.create", url);
         return asyncOk({ id: 2 });

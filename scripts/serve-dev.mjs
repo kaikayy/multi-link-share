@@ -39,8 +39,20 @@ const BANNER = `<!doctype html><meta charset=utf-8><title>Import button preview<
 <body>
 <svg width=0 height=0 style="position:absolute"><symbol id="v-ext" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol></svg>
 <header class="v-bar"><div class="v-brand"><span class="v-logo"></span><div class="v-titles"><h1>Preview</h1></div></div>
-<div class="v-tools"><button class="v-btn ghost">Open all</button><button class="v-btn">View as…</button></div></header>
-<p style="padding:24px;color:var(--text-dim)">The content script adds "Open with Tab Share" to the toolbar above; actions log to the console.</p>
+<div class="v-tools">
+  <button class="v-btn ghost">Open all pages</button>
+  <button class="v-btn">Change View</button>
+  <div class="v-menu-wrap">
+    <button id="btn-settings" class="v-btn ghost icon-only" type="button">⚙</button>
+    <div id="settings-menu" class="v-menu" hidden role="menu">
+      <label class="v-menu-check"><input type="checkbox" id="set-autopreview"><span>Auto-load live previews</span></label>
+      <label class="v-menu-check"><input type="checkbox" id="set-icons"><span>Show site icons</span></label>
+    </div>
+  </div>
+</div></header>
+<p style="padding:24px;color:var(--text-dim)">The content script adds "Open with Tab Share" to the toolbar, and a
+"Show the button" checkbox into the ⚙ menu (click ⚙). Actions log to the console.</p>
+<script>document.getElementById('btn-settings').addEventListener('click',()=>{const m=document.getElementById('settings-menu');m.hidden=!m.hidden;});<\/script>
 <script>
   var token = ShareCodec.encode({
     title: "Sample collection",

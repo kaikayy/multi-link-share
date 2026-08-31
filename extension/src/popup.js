@@ -98,6 +98,7 @@
     }
     if (wins.length <= 1) {
       wrap.hidden = true;
+      $("#panel-window").hidden = true; // nothing to choose — don't show an empty panel
       return;
     }
     const cur = await api.windows.getCurrent();
@@ -118,6 +119,7 @@
       opt(String(w.id), `Window ${n} · ${webCount} tab${webCount === 1 ? "" : "s"}`);
     });
     wrap.hidden = false;
+    $("#panel-window").hidden = false;
   }
 
   async function loadWindowSource() {
@@ -440,6 +442,13 @@
 
     await saveRecent(link, name, pages.length);
     clearDrafts();
+    // the link is done — "Build another" starts from a clean name (pages are kept
+    // so a quick variant is easy), and a fresh popup open won't resurrect this one
+    $("#collection-name").value = "";
+    state.name = "";
+    $("#protect").checked = false;
+    $("#pw-field").hidden = true;
+    $("#link-pass").value = "";
     showResult(link, name, pages.length, !!password);
     autoCopy(link);
   }
