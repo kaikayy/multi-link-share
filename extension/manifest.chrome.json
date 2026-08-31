@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Share — one link for a group of tabs",
+  "short_name": "Tab Share",
+  "version": "1.0.0",
+  "description": "Bundle the current window, a tab group, or pasted links into a single link that opens as a slideshow. No account, no server.",
+  "author": "Tab Share contributors",
+  "homepage_url": "https://github.com/kaikayy/multi-link-share",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "Tab Share",
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "options_ui": {
+    "page": "src/options.html",
+    "open_in_tab": false
+  },
+  "permissions": ["tabs", "storage"],
+  "optional_permissions": ["tabGroups"],
+  "minimum_chrome_version": "116"
+}

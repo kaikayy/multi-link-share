@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="robots" content="noindex" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-src https: http:; base-uri 'none'; form-action 'none'" />
+  <title>Shared tabs</title>
+  <link rel="stylesheet" href="tab-share.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <svg width="0" height="0" class="sprite" aria-hidden="true">
+    <defs>
+      <symbol id="v-prev" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
+      <symbol id="v-next" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
+      <symbol id="v-ext" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
+      <symbol id="v-grid" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></symbol>
+      <symbol id="v-slides" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 5h16v11H4z"/><path fill="currentColor" d="M8 19h8v2H8z"/></symbol>
+      <symbol id="v-copy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M9 9V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4M5 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="v-bar">
+    <div class="v-brand">
+      <span class="v-logo" aria-hidden="true"></span>
+      <div class="v-titles">
+        <h1 id="coll-name">Shared tabs</h1>
+        <p id="coll-sub"></p>
+      </div>
+    </div>
+    <div class="v-tools">
+      <button id="btn-openall" class="v-btn ghost" type="button">
+        <svg class="vi"><use href="#v-ext" /></svg><span>Open all</span>
+      </button>
+      <button id="btn-copy" class="v-btn ghost" type="button">
+        <svg class="vi"><use href="#v-copy" /></svg><span>Copy list</span>
+      </button>
+      <button id="btn-view" class="v-btn" type="button" aria-pressed="false">
+        <svg class="vi"><use href="#v-grid" /></svg><span id="view-label">Grid</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ERROR STATE -->
+  <main id="state-error" class="v-error" hidden>
+    <div class="v-logo big" aria-hidden="true"></div>
+    <h2>This link has no pages in it</h2>
+    <p>The link may be incomplete — long links sometimes get cut off when pasted into chat apps.
+       Ask the sender to copy the whole thing again.</p>
+  </main>
+
+  <!-- SLIDESHOW -->
+  <main id="state-slides" class="v-stage" hidden>
+    <button id="nav-prev" class="v-nav prev" type="button" aria-label="Previous page">
+      <svg class="vi lg"><use href="#v-prev" /></svg>
+    </button>
+
+    <figure class="v-frame">
+      <div class="v-frame-bar">
+        <span class="v-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="v-frame-title" id="slide-title">—</span>
+        <a class="v-open" id="slide-open" target="_blank" rel="noopener noreferrer">
+          <svg class="vi"><use href="#v-ext" /></svg><span>Open</span>
+        </a>
+      </div>
+
+      <div class="v-viewport" id="viewport">
+        <!-- rich card (default) -->
+        <div class="v-card" id="slide-card">
+          <span class="v-card-mono" id="slide-mono"></span>
+          <p class="v-card-title" id="card-title"></p>
+          <p class="v-card-host" id="card-host"></p>
+          <p class="v-card-url" id="card-url"></p>
+          <div class="v-card-actions">
+            <a class="v-btn primary" id="card-open" target="_blank" rel="noopener noreferrer">
+              <svg class="vi"><use href="#v-ext" /></svg><span>Open this page</span>
+            </a>
+            <button class="v-btn ghost" id="card-preview" type="button">Try live preview</button>
+          </div>
+          <p class="v-card-note">Live preview is best-effort — many sites (banks, Google, X…) refuse to
+            display inside another page. Use “Open this page” if the preview stays blank.</p>
+        </div>
+        <!-- iframe host (on demand) -->
+        <div class="v-embed" id="slide-embed" hidden></div>
+      </div>
+    </figure>
+
+    <button id="nav-next" class="v-nav next" type="button" aria-label="Next page">
+      <svg class="vi lg"><use href="#v-next" /></svg>
+    </button>
+
+    <nav class="v-counter" aria-label="Page navigation">
+      <button id="mini-prev" class="v-mini" type="button" aria-label="Previous">
+        <svg class="vi"><use href="#v-prev" /></svg>
+      </button>
+      <span id="counter" class="v-count">1 / 1</span>
+      <button id="mini-next" class="v-mini" type="button" aria-label="Next">
+        <svg class="vi"><use href="#v-next" /></svg>
+      </button>
+      <span class="v-progress"><span id="progress-fill"></span></span>
+    </nav>
+  </main>
+
+  <!-- GRID -->
+  <main id="state-grid" class="v-grid" hidden></main>
+
+  <div id="v-toast" class="v-toast" hidden></div>
+
+  <template id="tpl-grid-card">
+    <a class="g-card" target="_blank" rel="noopener noreferrer">
+      <span class="g-mono"></span>
+      <span class="g-meta">
+        <span class="g-title"></span>
+        <span class="g-host"></span>
+      </span>
+      <span class="g-index"></span>
+    </a>
+  </template>
+
+  <script src="lib/lzstring.min.js"></script>
+  <script src="lib/share-codec.js"></script>
+  <script src="lib/monogram.js"></script>
+  <script src="tab-share.js"></script>
+</body>
+</html>

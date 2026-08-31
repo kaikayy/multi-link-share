@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7dff"/>
+      <stop offset="0.55" stop-color="#d76ad4"/>
+      <stop offset="1" stop-color="#ff9d6c"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#1a1030" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="128" height="128" rx="30" fill="url(#bg)"/>
+  <rect x="0" y="0" width="128" height="128" rx="30" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
+
+  <!-- back card -->
+  <rect x="26" y="40" width="52" height="60" rx="10" fill="#ffffff" fill-opacity="0.45"/>
+  <!-- front card -->
+  <g filter="url(#soft)">
+    <rect x="34" y="32" width="52" height="60" rx="10" fill="#ffffff"/>
+    <rect x="34" y="32" width="52" height="16" rx="10" fill="#ffffff"/>
+    <rect x="42" y="40" width="14" height="4" rx="2" fill="#d76ad4"/>
+    <rect x="42" y="54" width="36" height="4" rx="2" fill="#c9c7e6"/>
+    <rect x="42" y="64" width="36" height="4" rx="2" fill="#c9c7e6"/>
+    <rect x="42" y="74" width="24" height="4" rx="2" fill="#c9c7e6"/>
+  </g>
+
+  <!-- share arrow -->
+  <g filter="url(#soft)">
+    <circle cx="92" cy="86" r="17" fill="#14101f"/>
+    <path d="M92 78 v16 M92 78 l-6 6 M92 78 l6 6" fill="none" stroke="#ffffff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

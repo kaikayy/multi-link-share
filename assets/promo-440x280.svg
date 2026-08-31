@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="280" viewBox="0 0 440 280">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#171622"/>
+      <stop offset="1" stop-color="#241a33"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7dff"/>
+      <stop offset="0.55" stop-color="#d76ad4"/>
+      <stop offset="1" stop-color="#ff9d6c"/>
+    </linearGradient>
+  </defs>
+  <rect width="440" height="280" fill="url(#bg)"/>
+  <g transform="translate(28,28)">
+    <rect width="52" height="52" rx="14" fill="url(#mark)"/>
+    <rect x="10" y="16" width="22" height="26" rx="4" fill="#ffffff" fill-opacity="0.55"/>
+    <rect x="17" y="10" width="22" height="26" rx="4" fill="#ffffff"/>
+    <circle cx="40" cy="40" r="11" fill="#14101f"/>
+    <path d="M40 34 v12 M40 34 l-4 4 M40 34 l4 4" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="96" y="52" fill="#f0f0f5" font-family="system-ui, sans-serif" font-size="26" font-weight="700">Tab Share</text>
+  <text x="96" y="76" fill="#9c9cad" font-family="system-ui, sans-serif" font-size="14">one link for a whole group of tabs</text>
+
+  <!-- mini slideshow mock -->
+  <g transform="translate(28,110)">
+    <rect width="384" height="142" rx="14" fill="#1e1e29" stroke="#34343f"/>
+    <rect width="384" height="30" rx="14" fill="#262633"/>
+    <rect y="16" width="384" height="14" fill="#262633"/>
+    <circle cx="18" cy="15" r="4" fill="#3a3a47"/><circle cx="32" cy="15" r="4" fill="#3a3a47"/><circle cx="46" cy="15" r="4" fill="#3a3a47"/>
+    <text x="192" y="20" text-anchor="middle" fill="#9c9cad" font-family="system-ui, sans-serif" font-size="11" font-weight="600">3. Design references</text>
+
+    <g transform="translate(150,52)">
+      <rect width="84" height="84" rx="18" fill="#d76ad4"/>
+      <text x="42" y="52" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="26" font-weight="800">DR</text>
+    </g>
+    <path d="M22 84 l-10 10 10 10" fill="none" stroke="#f0f0f5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M362 84 l10 10 -10 10" fill="none" stroke="#f0f0f5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="220" y="272" text-anchor="middle" fill="#6b6b78" font-family="system-ui, sans-serif" font-size="11">No account · no server · opens without an extension</text>
+</svg>

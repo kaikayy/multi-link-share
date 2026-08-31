@@ -1,0 +1,21 @@
+{
+  "name": "tab-share-ext",
+  "version": "1.0.0",
+  "description": "Bundle a group of tabs (current window, a tab group, or pasted links) into one link that opens as a slideshow — no account, no server, and the recipient needs no extension.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "node scripts/selftest.mjs",
+    "sync": "node scripts/sync-shared.mjs",
+    "icons": "node scripts/make-icons.mjs",
+    "build": "node scripts/build.mjs",
+    "zip:source": "node scripts/zip-source.mjs",
+    "serve:viewer": "node scripts/serve-viewer.mjs",
+    "dev": "node scripts/serve-dev.mjs",
+    "lint:ext": "web-ext lint --source-dir dist/firefox"
+  },
+  "devDependencies": {},
+  "optionalDevDependencies": {
+    "web-ext": "^8.0.0"
+  }
+}

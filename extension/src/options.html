@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tab Share — Settings</title>
+  <link rel="stylesheet" href="popup.css" />
+  <style>
+    html, body { width: auto; }
+    .wrap { max-width: 520px; margin: 0 auto; padding: 20px 18px 32px; display: flex; flex-direction: column; gap: 18px; }
+    h1 { font-size: 17px; margin: 0; }
+    .card { background: var(--bg-sunken); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .card h2 { font-size: 13px; margin: 0; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+    p { margin: 0; color: var(--text-dim); font-size: 12.5px; }
+    .ok-note { color: var(--ok); font-size: 12.5px; }
+    code { background: var(--surface); padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Tab Share settings</h1>
+
+    <section class="card">
+      <h2>Viewer address</h2>
+      <p>
+        Every share link points at a small static page that renders the slideshow.
+        Host <code>viewer/index.html</code> anywhere (GitHub Pages, Netlify, Cloudflare Pages)
+        and paste the address here. It must be an <code>https://</code> URL ending in <code>/</code>.
+      </p>
+      <label class="field">
+        <span class="label">Viewer base URL</span>
+        <input id="viewer-base" type="text" placeholder="https://kaikayy.github.io/multi-link-share/" />
+      </label>
+      <div class="row-actions">
+        <button id="save" class="btn btn-primary btn-sm" type="button">Save</button>
+        <button id="reset" class="btn btn-ghost btn-sm" type="button">Use built-in default</button>
+      </div>
+      <p id="save-msg" class="ok-note" hidden>Saved.</p>
+      <p id="save-err" class="error" hidden></p>
+    </section>
+
+    <section class="card">
+      <h2>Recent links</h2>
+      <p id="recent-count">No links created yet.</p>
+      <div class="row-actions">
+        <button id="clear-recents" class="btn btn-ghost btn-sm" type="button">Clear recent links</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Privacy</h2>
+      <p>
+        Tab Share never sends your tabs or links anywhere. The whole collection is packed
+        into the part of the URL after <code>#</code>, which browsers do not transmit to servers.
+        The <code>tabs</code> permission is used only to read the current window's URLs and titles
+        when you press the button. The optional <code>tabGroups</code> permission, if you enable it,
+        is used only to read tab-group names.
+      </p>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="lib/config.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

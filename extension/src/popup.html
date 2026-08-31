@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tab Share</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-gear" viewBox="0 0 24 24"><path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Zm7.4-2.1 1.8-1-1.7-3-2 .5a6 6 0 0 0-1.7-1l-.3-2h-3.4l-.3 2a6 6 0 0 0-1.7 1l-2-.5-1.7 3 1.8 1a6 6 0 0 0 0 2l-1.8 1 1.7 3 2-.5a6 6 0 0 0 1.7 1l.3 2h3.4l.3-2a6 6 0 0 0 1.7-1l2 .5 1.7-3-1.8-1a6 6 0 0 0 0-2Z"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><path fill="currentColor" d="M9 9V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4M5 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/></symbol>
+      <symbol id="i-external" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-up" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M6 15l6-6 6 6"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="app-bar">
+    <span class="brand">
+      <img src="../icons/icon-32.png" width="20" height="20" alt="" />
+      Tab&nbsp;Share
+    </span>
+    <button id="open-options" class="icon-btn" type="button" title="Settings" aria-label="Settings">
+      <svg class="ic"><use href="#i-gear" /></svg>
+    </button>
+  </header>
+
+  <!-- ============ BUILD VIEW ============ -->
+  <main id="view-build" class="view">
+    <div class="segmented" role="tablist" aria-label="Where to take links from">
+      <button class="seg" data-source="window" role="tab" aria-selected="true">This window</button>
+      <button class="seg" data-source="group" role="tab" aria-selected="false">Tab group</button>
+      <button class="seg" data-source="paste" role="tab" aria-selected="false">Paste links</button>
+    </div>
+
+    <!-- group-permission / paste panels -->
+    <section id="panel-group" class="panel" hidden>
+      <div id="group-needs-perm" hidden>
+        <p class="hint">To read tab-group names and colours, Tab Share needs the optional
+          <code>tabGroups</code> permission. Nothing else changes.</p>
+        <button id="grant-groups" class="btn btn-ghost" type="button">Enable tab-group detection</button>
+      </div>
+      <div id="group-unsupported" hidden>
+        <p class="hint">This browser doesn't expose the tab-group API to extensions yet.
+          Use <strong>This window</strong> or <strong>Paste links</strong> instead.</p>
+      </div>
+      <label id="group-picker-wrap" hidden>
+        <span class="label">Group</span>
+        <select id="group-picker"></select>
+      </label>
+    </section>
+
+    <section id="panel-paste" class="panel" hidden>
+      <label class="label" for="paste-box">One URL per line</label>
+      <textarea id="paste-box" rows="4" placeholder="https://example.com/page-one&#10;https://example.com/page-two"></textarea>
+      <div class="row-actions">
+        <button id="paste-add-window" class="btn btn-ghost btn-sm" type="button">+ Add this window's tabs</button>
+        <button id="paste-parse" class="btn btn-ghost btn-sm" type="button">Add to list</button>
+      </div>
+    </section>
+
+    <label class="field">
+      <span class="label">Collection name <span class="opt">(optional)</span></span>
+      <input id="collection-name" type="text" maxlength="200" placeholder="e.g. Research on hummingbirds" />
+    </label>
+
+    <div class="list-head">
+      <span id="count-label">0 pages</span>
+      <button id="select-all" class="linklike" type="button">select all</button>
+      <button id="select-none" class="linklike" type="button">none</button>
+    </div>
+
+    <ul id="page-list" class="page-list" aria-label="Pages to share"></ul>
+    <p id="list-empty" class="empty" hidden>No web pages here. Open a few tabs, or paste links.</p>
+
+    <p id="build-error" class="error" role="alert" hidden></p>
+  </main>
+
+  <footer id="foot-build" class="foot">
+    <button id="create-link" class="btn btn-primary" type="button" disabled>Create share link</button>
+  </footer>
+
+  <!-- ============ RESULT VIEW ============ -->
+  <main id="view-result" class="view" hidden>
+    <button id="result-back" class="linklike back" type="button">
+      <svg class="ic"><use href="#i-back" /></svg> Build another
+    </button>
+
+    <p class="result-title" id="result-name"></p>
+    <p class="result-sub" id="result-sub"></p>
+
+    <label class="label" for="result-link">Share link</label>
+    <div class="link-row">
+      <input id="result-link" type="text" readonly />
+      <button id="copy-link" class="btn btn-primary btn-sm" type="button">
+        <svg class="ic"><use href="#i-copy" /></svg> Copy
+      </button>
+    </div>
+    <p id="len-warn" class="warn" hidden></p>
+
+    <div class="result-actions">
+      <button id="open-preview" class="btn btn-ghost" type="button">
+        <svg class="ic"><use href="#i-external" /></svg> Open slideshow preview
+      </button>
+    </div>
+
+    <details class="recents" id="recents" hidden>
+      <summary>Recent links</summary>
+      <ul id="recents-list"></ul>
+    </details>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <template id="tpl-page-row">
+    <li class="page-row">
+      <label class="chk">
+        <input type="checkbox" checked />
+        <span class="mono" aria-hidden="true"></span>
+      </label>
+      <span class="meta">
+        <span class="p-title"></span>
+        <span class="p-host"></span>
+      </span>
+      <span class="reorder">
+        <button class="icon-btn xs" data-act="up" type="button" title="Move up" aria-label="Move up"><svg class="ic"><use href="#i-up"/></svg></button>
+        <button class="icon-btn xs" data-act="down" type="button" title="Move down" aria-label="Move down"><svg class="ic"><use href="#i-down"/></svg></button>
+        <button class="icon-btn xs" data-act="remove" type="button" title="Remove" aria-label="Remove"><svg class="ic"><use href="#i-x"/></svg></button>
+      </span>
+    </li>
+  </template>
+
+  <script src="lib/lzstring.min.js"></script>
+  <script src="lib/config.js"></script>
+  <script src="lib/share-codec.js"></script>
+  <script src="lib/monogram.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
