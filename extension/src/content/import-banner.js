@@ -61,7 +61,10 @@
   host.id = "tab-share-import-host";
   host.style.cssText =
     "all:initial;position:fixed;top:12px;left:0;right:0;z-index:2147483647;display:flex;justify-content:center;pointer-events:none";
-  const root = host.attachShadow({ mode: "open" });
+  // Closed so the host page cannot reach in and synthesise clicks on the
+  // action buttons (which would let it open tabs via the background worker
+  // without the user actually clicking).
+  const root = host.attachShadow({ mode: "closed" });
 
   root.appendChild(el("style", null, CSS));
 
@@ -126,6 +129,7 @@
   }
 
   $("#ts-actions").addEventListener("click", async (e) => {
+    if (!e.isTrusted) return; // ignore programmatic clicks from the host page
     const btn = e.target.closest("button[data-mode]");
     if (!btn) return;
     const mode = btn.dataset.mode;
@@ -152,17 +156,20 @@
     send(mode);
   });
 
-  $("#ts-save-go").addEventListener("click", () => {
+  $("#ts-save-go").addEventListener("click", (e) => {
+    if (!e.isTrusted) return;
     send("history", ($("#ts-save-title").value || "").trim());
   });
-  $("#ts-save-cancel").addEventListener("click", () => {
+  $("#ts-save-cancel").addEventListener("click", (e) => {
+    if (!e.isTrusted) return;
     $("#ts-save-row").hidden = true;
     say("");
   });
-  $("#ts-dismiss").addEventListener("click", () => {
+  $("#ts-dismiss").addEventListener("click", (e) => {
+    if (!e.isTrusted) return;
     try {
       sessionStorage.setItem(dismissKey, "1");
-    } catch (e) {}
+    } catch (e2) {}
     remove();
   });
 })();

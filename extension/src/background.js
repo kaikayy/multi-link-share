@@ -93,6 +93,8 @@ async function handleImport(msg, sender) {
 
 api.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (!msg || msg.type !== "ts-import") return;
+  // Only our own content script may drive imports, and only from a real tab.
+  if (!sender || sender.id !== api.runtime.id || !sender.tab) return;
   handleImport(msg, sender).then(
     (r) => sendResponse(r),
     (e) => sendResponse({ ok: false, error: e && e.message ? e.message : String(e) })

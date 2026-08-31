@@ -94,10 +94,10 @@ Full instructions, deployment, and store submission: **`BUILD.md`**,
 ## Status
 
 Works end-to-end (verified: window + tab-group capture, link creation, viewer
-decode, slideshow/grid/live-preview). Before publishing you must:
-
-1. deploy `viewer/` (GitHub Pages) — `config.js` already points at it;
-2. swap the mockup screenshots in `assets/` for real captures;
-3. host `PRIVACY.md` and link it in every store listing.
+decode, slideshow/grid/live-preview). `viewer/` deploys to GitHub Pages via
+`.github/workflows/deploy-viewer.yml`; the privacy policy is published at
+`/privacy.html` alongside it. Before publishing, do a real-browser reload test
+of the companion-import + tab-group paths (so far verified only in the mocked
+dev harness).
 
 MIT licensed. Bundles lz-string (MIT) — see `THIRD-PARTY.md`.

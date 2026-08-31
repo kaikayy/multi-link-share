@@ -24,6 +24,8 @@ Tab Share bundles a set of pages into a single link.
   clean slideshow: framed page view, title bar, next/previous arrows, and a
   "3 / 12" counter. There's also a grid overview and an "open all in tabs"
   button.
+• If the recipient also has Tab Share, the viewer offers to open the whole set
+  straight into a window or tab group, or save it to their history.
 
 How it works — and why it's private:
 The whole list is packed into the part of the link after "#", which browsers
@@ -40,9 +42,8 @@ Productivity
 
 ## Screenshots
 
-`assets/screenshot-1-popup.png`, `assets/screenshot-2-viewer.png`
-(1280×800). Replace with real captures from your build before publishing —
-the checked-in files are representative mockups.
+`assets/screenshot-1-popup.png` (the popup), `assets/screenshot-2-viewer.png`
+(the slideshow viewer) — real 1280×800 captures of the built extension.
 
 ## Chrome promo tile
 
@@ -55,27 +56,53 @@ the checked-in files are representative mockups.
 ### `tabs` (required)
 
 Reads the URL and title of tabs **in the current window**, and only when the
-user clicks "Create share link" or "Add this window's tabs". Used to populate
-the list of pages the user chooses from. The data never leaves the device
-except inside the share link the user explicitly creates. No content scripts,
-no host permissions, no background page.
+user clicks "Create share link" or one of the "add this window's tabs" buttons.
+Used to populate the list of pages the user chooses from. On import (see the
+content script below) it also opens the shared pages into tabs/windows the user
+asked for. The data never leaves the device except inside the share link the
+user explicitly creates.
 
 ### `tabGroups` (optional)
 
-Requested at runtime, only if the user opens the "Tab group" tab. Reads tab
-group titles so the collection can be named after the group and the group
-picker can be shown. Declined by default; the rest of the extension works
-without it.
+Requested at runtime, only if the user opens the "Tab group" tab or picks
+"Tab group" on the import banner. Reads tab group titles for the picker and to
+name the collection; sets the title of a group it creates when importing.
+Declined by default; the rest of the extension works without it.
 
 ### `storage` (required)
 
-`storage.local` only. Stores the user's chosen viewer URL and up to 8 recently
+`storage.local` only. Stores the user's chosen viewer URL and up to 50 recently
 created links, on the device. Not synced, not transmitted.
 
-### No host permissions
+### `scripting` (required)
 
-The extension declares no `host_permissions` and injects no scripts into web
-pages.
+Used only to register the single content script (below) for a **custom** viewer
+address the user sets in the options page. The default viewer host and
+`localhost` are covered by the static `content_scripts` entry; `scripting` lets
+a user who self-hosts the viewer get the same import banner on their own host,
+after granting access to that one host.
+
+### `content_scripts` — viewer page only
+
+One content script, matching the packaged viewer host and `localhost` (plus a
+custom viewer host the user opts into via an `optional_host_permissions`
+prompt). It reads the current page's URL fragment; if it decodes to a Tab Share
+collection it shows an in-page banner offering to open the pages into a window
+or tab group, or save the collection to the user's on-device history. It is not
+registered for, and does not run on, any other site. No remote code, no network
+requests.
+
+### `optional_host_permissions` (`*://*/*`, opt-in)
+
+Never requested at install. Requested only when the user saves a custom viewer
+address, and only for that address's origin, so the content script above can be
+registered there.
+
+### Background service worker
+
+Event-driven, no persistent state of its own. Handles the import-banner actions
+(open pages / save to history) and keeps the custom-host content script
+registration in sync with the saved viewer address. No network access.
 
 ### Remote code
 
@@ -92,21 +119,25 @@ None. (Firefox manifest declares
 ## AMO (Firefox) submission notes
 
 - Upload `dist/tab-share-firefox-v<version>.zip`.
-- This add-on **vendors a minified library** (`lib/lzstring.min.js`), so AMO
+- This add-on **vendors a minified library** (`src/lib/lzstring.min.js`), so AMO
   will ask for source. Upload `dist/tab-share-source-v<version>.zip`
   (`npm run zip:source`).
 - Reviewer notes to paste:
   > Build: `npm install` (no dependencies) then `npm run build`; the add-on is
-  > `dist/firefox/`. `lib/lzstring.min.js` is lz-string 1.5.0, copied verbatim
-  > from https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js
-  > All other files are the original source, unminified. No network requests,
-  > no remote code, no content scripts.
+  > `dist/firefox/`. `src/lib/lzstring.min.js` is lz-string 1.5.0, copied
+  > verbatim from
+  > https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js
+  > All other files are the original source, unminified. No network requests
+  > and no remote code. One content script (`src/content/import-banner.js`)
+  > runs only on the configured viewer page; the background worker
+  > (`src/background.js`) is offline and event-driven.
 
 ## Chrome Web Store submission notes
 
 - Upload `dist/tab-share-chrome-v<version>.zip`.
 - Single purpose: "Create one shareable link from a group of tabs and view
   shared links as a slideshow."
-- Data usage: check **none**; the privacy policy URL is your hosted copy of
-  `PRIVACY.md`.
+- Data usage: check **none**; the privacy policy URL is
+  `https://kaikayy.github.io/multi-link-share/privacy.html` (deployed from
+  `viewer/privacy.html`, mirrors `PRIVACY.md`).
 - Fill the permission justifications from the section above.
