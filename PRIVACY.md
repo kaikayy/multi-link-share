@@ -1,6 +1,6 @@
 # Privacy Policy — Tab Share
 
-_Last updated: 2026-08-31_
+_Last updated: 2026-08-31 (1.0.0-beta.4)_
 
 Tab Share is built so that there is nothing to collect. It has no server, no
 account, no analytics, and no tracking.
@@ -31,9 +31,9 @@ account, no analytics, and no tracking.
   `icons.duckduckgo.com`. Those domain names go to DuckDuckGo's icon service and
   nowhere else. Turn it off at first run or in options, and the viewer makes
   **zero** network requests.
-- **A URL shortener**. Off by default. If you pick one (is.gd / v.gd / TinyURL /
-  your own endpoint), creating a link sends that one generated URL to the
-  service you chose.
+- **A URL shortener**. Off by default. If you pick one (TinyURL, or your own
+  endpoint), creating a link sends that one generated URL to the service you
+  chose — and nothing else.
 
 Everything else — the extension itself, the viewer with icons off — makes no
 network requests at all.
