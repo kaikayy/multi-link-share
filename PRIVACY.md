@@ -18,11 +18,11 @@ Tab Share is built so that there is nothing to collect.
   `storage.local`. Never synced, never transmitted. Clear all or individual
   entries any time from the options page.
 - **The viewer page only** — one content script runs on the slideshow viewer
-  page (the viewer address configured in the extension, plus `localhost` for
-  local testing). It reads the collection from that page's URL fragment so it
-  can offer to open the pages with the extension instead of the web view. It
-  runs on no other site, and a custom viewer address prompts you for access to
-  that one host before the script is registered.
+  page. It reads the collection from that page's URL fragment so it can offer to
+  open the pages with the extension instead of the web view. It ships enabled
+  only for the packaged viewer address; if you point the extension at your own
+  viewer (including `localhost` for testing), the options page asks you to
+  approve that one host before the script runs there. It runs on no other site.
 
 ## What is sent over the network
 

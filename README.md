@@ -45,8 +45,9 @@ When a Tab Share link is opened in a browser that has the extension, a small
 banner offers to **open the collection natively** instead of using the web view:
 into the current window, a new window, or a tab group — or to **save it to
 history** with a title. Everyone else just gets the slideshow. This is a content
-script that runs **only on the viewer page** (the default host + `localhost`;
-a custom viewer URL asks for that host once in the options page).
+script that runs **only on the viewer page** — statically just the packaged
+viewer host; point the extension at your own viewer (or `localhost`) and the
+options page asks you to approve that one host before the banner appears there.
 
 ## Permissions (deliberately tiny)
 

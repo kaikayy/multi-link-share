@@ -57,11 +57,12 @@
         browser's <code>storage.local</code>. Never synced, never transmitted. Clear
         all or individual entries any time from the options page.</li>
       <li><strong>The viewer page only</strong> — one content script runs on the
-        slideshow viewer page (the viewer address configured in the extension, plus
-        <code>localhost</code> for local testing). It reads the collection from that
-        page's URL fragment so it can offer to open the pages with the extension
-        instead of the web view. It runs on no other site, and a custom viewer address
-        prompts you for access to that one host before the script is registered.</li>
+        slideshow viewer page. It reads the collection from that page's URL fragment
+        so it can offer to open the pages with the extension instead of the web view.
+        It ships enabled only for the packaged viewer address; if you point the
+        extension at your own viewer (including <code>localhost</code> for testing),
+        the options page asks you to approve that one host before the script runs
+        there. It runs on no other site.</li>
     </ul>
 
     <h2>What is sent over the network</h2>

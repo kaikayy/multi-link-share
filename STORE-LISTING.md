@@ -76,27 +76,27 @@ created links, on the device. Not synced, not transmitted.
 
 ### `scripting` (required)
 
-Used only to register the single content script (below) for a **custom** viewer
-address the user sets in the options page. The default viewer host and
-`localhost` are covered by the static `content_scripts` entry; `scripting` lets
-a user who self-hosts the viewer get the same import banner on their own host,
-after granting access to that one host.
+Used only to register the single content script (below) for a viewer address
+the user sets in the options page that isn't the packaged default — a
+self-hosted viewer, or `localhost` for testing. The script is registered only
+after the user approves that one host, and unregistered if the address changes.
 
 ### `content_scripts` — viewer page only
 
-One content script, matching the packaged viewer host and `localhost` (plus a
-custom viewer host the user opts into via an `optional_host_permissions`
-prompt). It reads the current page's URL fragment; if it decodes to a Tab Share
-collection it shows an in-page banner offering to open the pages into a window
-or tab group, or save the collection to the user's on-device history. It is not
-registered for, and does not run on, any other site. No remote code, no network
-requests.
+The static entry matches **only the packaged viewer host**
+(`https://kaikayy.github.io/multi-link-share/*`). It reads the current page's
+URL fragment; if it decodes to a Tab Share collection it shows an in-page banner
+offering to open the pages into a window or tab group, or save the collection to
+the user's on-device history. The banner UI lives in a closed shadow root and
+acts only on genuine user clicks. It is not registered for, and does not run on,
+any other site. No remote code, no network requests.
 
 ### `optional_host_permissions` (`*://*/*`, opt-in)
 
-Never requested at install. Requested only when the user saves a custom viewer
-address, and only for that address's origin, so the content script above can be
-registered there.
+Never requested at install, and the wildcard is never requested. When the user
+saves a viewer address other than the packaged default, the options page
+requests host access to **that one origin** so the content script above can be
+registered there; nothing else uses it.
 
 ### Background service worker
 

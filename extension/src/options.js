@@ -29,11 +29,10 @@
     toast._t = setTimeout(() => (el.hidden = true), 1800);
   }
 
-  /** Is this viewer origin already covered by a static content_scripts match? */
+  /** The one host the manifest's static content_scripts entry already covers. */
   function isBuiltInOrigin(base) {
     try {
-      const h = new URL(base).hostname;
-      return h === "kaikayy.github.io" || h === "localhost" || h === "127.0.0.1";
+      return new URL(base).hostname === "kaikayy.github.io";
     } catch (e) {
       return true;
     }
@@ -59,8 +58,8 @@
       return;
     }
 
-    // A custom viewer host needs a one-time host permission so the import banner
-    // can appear there. Built-in hosts (default + localhost) are already covered.
+    // Any viewer host other than the packaged default (localhost included) needs
+    // a one-time host permission so the import banner can appear there.
     if (value && !isBuiltInOrigin(value)) {
       try {
         const pattern = new URL(value).origin + "/*";

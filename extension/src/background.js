@@ -4,18 +4,16 @@
  *   1. Handle "import" requests from the viewer-page banner (content script):
  *      open a shared collection into this window / a new window / a tab group,
  *      or save it to history.
- *   2. Register the banner content script for a custom viewer URL set in options
- *      (the manifest only covers the default host + localhost).
+ *   2. Register the banner content script for the viewer URL set in options —
+ *      any host other than the packaged default (localhost included) after the
+ *      user grants that one host in the options page.
  */
 "use strict";
 
 const api = globalThis.browser && globalThis.browser.runtime ? globalThis.browser : globalThis.chrome;
 
-const STATIC_MATCHES = [
-  "https://kaikayy.github.io/multi-link-share/*",
-  "http://localhost/*",
-  "http://127.0.0.1/*",
-];
+// The only host the manifest's static content_scripts entry covers.
+const BUILTIN_VIEWER_HOST = "kaikayy.github.io";
 const CUSTOM_SCRIPT_ID = "ts-viewer-custom";
 const HISTORY_CAP = 50;
 
@@ -120,14 +118,12 @@ async function syncCustomContentScript() {
     if (viewerBase) pattern = originPattern(viewerBase);
   } catch (e) {}
 
-  // The static content_scripts already cover the default host and any localhost
-  // port (a bare-host match pattern ignores the port).
+  // The manifest's static content_scripts entry already covers the packaged
+  // default host; every other host (localhost included) goes through the
+  // permission-gated dynamic registration below.
   let covered = false;
   try {
-    if (pattern) {
-      const h = new URL(pattern.replace(/\*$/, "")).hostname;
-      covered = h === "kaikayy.github.io" || h === "localhost" || h === "127.0.0.1";
-    }
+    if (pattern) covered = new URL(pattern.replace(/\*$/, "")).hostname === BUILTIN_VIEWER_HOST;
   } catch (e) {}
 
   let existing = [];

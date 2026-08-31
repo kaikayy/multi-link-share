@@ -29,11 +29,7 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://kaikayy.github.io/multi-link-share/*",
-        "http://localhost/*",
-        "http://127.0.0.1/*"
-      ],
+      "matches": ["https://kaikayy.github.io/multi-link-share/*"],
       "js": [
         "src/lib/lzstring.min.js",
         "src/lib/share-codec.js",
