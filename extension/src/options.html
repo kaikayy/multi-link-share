@@ -120,23 +120,24 @@
         <span class="label">Shortener</span>
         <select id="short-provider">
           <option value="">Off</option>
-          <option value="isgd">is.gd</option>
-          <option value="vgd">v.gd</option>
           <option value="tinyurl">TinyURL</option>
           <option value="custom">Custom endpoint</option>
         </select>
       </label>
       <label class="field" id="short-endpoint-wrap" hidden>
         <span class="label">Custom endpoint (the encoded long URL is appended)</span>
-        <input id="short-endpoint" type="text" placeholder="https://example.com/api?url=" />
+        <input id="short-endpoint" type="text" placeholder="https://your-shortener.example/api/new?url=" />
+        <span class="s-desc">Must accept a GET, return the short URL as plain text or JSON, and preserve the <code>#…</code> fragment. See
+          <a href="https://github.com/kaikayy/multi-link-share/blob/main/docs/CUSTOM-SHORTENER.md" target="_blank" rel="noopener">docs/CUSTOM-SHORTENER.md</a>.</span>
       </label>
       <label class="setting">
         <input id="short-auto" type="checkbox" />
         <span class="s-body">
           <span class="s-title">Shorten automatically</span>
-          <span class="s-desc">Otherwise the popup shows a "Shorten" button on the result.</span>
+          <span class="s-desc">Otherwise the popup shows a "Shorten" button on the result. If shortening fails, the popup shows why and keeps the full link.</span>
         </span>
       </label>
+      <p class="s-desc">is.gd and v.gd were removed — they reject URLs with a <code>#</code> fragment, which every share link has.</p>
       <p id="short-msg" class="ok-note" hidden>Saved.</p>
       <p id="short-err" class="error" hidden></p>
     </section>

@@ -17,18 +17,21 @@ Planned work, roughly ordered. Nothing here is committed to a release yet.
   back to host/URL); optionally truncate long titles.
 - Revisit `MAX_PAGES` / `SOFT_URL_LIMIT` once v4 lands.
 
-## Optional short-link backend
+## First-party link shortener
 
-- An **optional, self-hostable** service that stores a collection under a short
-  code, so the shared link can be a few characters instead of a fragment.
-- **Free for everyone, no account.** Strictly opt-in per link — the default
-  stays the fully self-contained fragment link with no server involved.
-- Minimal data model (collection blob + code + optional expiry). Document
-  exactly what it stores; self-hosters run their own instance and point the
-  extension at it (same mechanism as the custom viewer URL).
-- Ships alongside the existing external-shortener option, not replacing it.
-  (External shorteners shorten the long fragment link via a third party; this
-  stores the collection itself.)
+- **Build a dedicated Tab Share shortener** and make it the built-in default
+  (replacing TinyURL as the recommended option). A small, self-hostable service
+  that either stores the whole collection under a short code, or just shortens
+  the long fragment link — TBD which.
+- **Free for everyone, no account.** Still opt-in per link; the default without
+  it stays the fully self-contained fragment link with no server involved.
+- Reference deployment (Cloudflare Worker / Deno Deploy) plus a one-file source
+  drop so anyone can run their own and point the extension at it — same
+  mechanism as the custom viewer URL and today's custom endpoint
+  ([docs/CUSTOM-SHORTENER.md](docs/CUSTOM-SHORTENER.md)).
+- Minimal data model (collection blob or long URL + code + optional expiry);
+  document exactly what it stores. Must preserve the `#…` fragment on redirect.
+- Ships alongside the custom-endpoint option, not replacing it.
 
 ## Safer-links filter
 

@@ -72,14 +72,21 @@
   /* ---------------- shortener ---------------- */
 
   const PROVIDER_ORIGIN = {
-    isgd: "https://is.gd/*",
-    vgd: "https://v.gd/*",
     tinyurl: "https://tinyurl.com/*",
   };
 
   async function loadShortener() {
     const s = await api.storage.local.get(["shortProvider", "shortEndpoint", "shortAuto"]);
-    $("#short-provider").value = s.shortProvider || "";
+    // is.gd / v.gd never worked for share links (they reject '#'-fragment URLs) —
+    // drop a stored value silently.
+    let prov = s.shortProvider || "";
+    if (prov === "isgd" || prov === "vgd") {
+      prov = "";
+      try {
+        await api.storage.local.set({ shortProvider: "", shortAuto: false });
+      } catch (e) {}
+    }
+    $("#short-provider").value = prov;
     $("#short-endpoint").value = s.shortEndpoint || "";
     $("#short-auto").checked = !!s.shortAuto;
     $("#short-endpoint-wrap").hidden = $("#short-provider").value !== "custom";

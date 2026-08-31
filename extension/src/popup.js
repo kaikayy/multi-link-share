@@ -20,10 +20,13 @@
   async function loadSettings() {
     try {
       const s = await api.storage.local.get(["showIcons", "autoPreview", "shortProvider", "shortEndpoint", "shortAuto"]);
+      // is.gd / v.gd reject '#'-fragment and github.io URLs, so they never worked
+      // for share links — retired in favour of TinyURL / a custom endpoint.
+      const provider = s.shortProvider === "isgd" || s.shortProvider === "vgd" ? "" : s.shortProvider || "";
       state.settings = {
         showIcons: s.showIcons === true, // default OFF
         autoPreview: s.autoPreview !== false,
-        shortProvider: s.shortProvider || "",
+        shortProvider: provider,
         shortEndpoint: s.shortEndpoint || "",
         shortAuto: !!s.shortAuto,
       };
@@ -431,11 +434,12 @@
     let link = base + "#" + token;
     lastLongLink = link;
 
+    let shortenNote = "";
     if (state.settings.shortProvider && state.settings.shortAuto) {
       try {
         link = await shorten(lastLongLink);
       } catch (e) {
-        toast("Shortener failed — using the full link");
+        shortenNote = "Couldn't shorten this link — " + (e.message || "the shortener failed") + ". The full link is below.";
         link = lastLongLink;
       }
     }
@@ -449,25 +453,41 @@
     $("#protect").checked = false;
     $("#pw-field").hidden = true;
     $("#link-pass").value = "";
-    showResult(link, name, pages.length, !!password);
+    showResult(link, name, pages.length, !!password, shortenNote);
     autoCopy(link);
+  }
+
+  /** Extract a short URL from a text or JSON shortener response. */
+  function pickShortUrl(body) {
+    body = String(body || "").trim();
+    if (/^https?:\/\/\S+$/i.test(body)) return body;
+    try {
+      const j = JSON.parse(body);
+      const cand = j.shorturl || j.short_url || j.shortUrl || j.short || j.url || j.link || (j.result && j.result.full_short_link);
+      if (typeof cand === "string" && /^https?:\/\//i.test(cand)) return cand.trim();
+    } catch (e) {}
+    return "";
   }
 
   async function shorten(longUrl) {
     const p = state.settings.shortProvider;
     const enc = encodeURIComponent(longUrl);
     let url;
-    let asJson = false;
-    if (p === "isgd") { url = `https://is.gd/create.php?format=json&url=${enc}`; asJson = true; }
-    else if (p === "vgd") { url = `https://v.gd/create.php?format=json&url=${enc}`; asJson = true; }
-    else if (p === "tinyurl") { url = `https://tinyurl.com/api-create.php?url=${enc}`; }
-    else if (p === "custom" && state.settings.shortEndpoint) { url = state.settings.shortEndpoint + enc; }
-    else throw new Error("no shortener configured");
+    if (p === "tinyurl") url = `https://tinyurl.com/api-create.php?url=${enc}`;
+    else if (p === "custom" && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
+    else throw new Error("no shortener is set up — see the options page");
 
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const short = asJson ? (await res.json()).shorturl : (await res.text()).trim();
-    if (!short || !/^https?:\/\//i.test(short)) throw new Error("bad response");
+    let res;
+    try {
+      res = await fetch(url, { headers: { Accept: "text/plain, application/json" } });
+    } catch (e) {
+      throw new Error("the shortener couldn’t be reached (offline, or the options page never got host access)");
+    }
+    if (!res.ok) throw new Error("the shortener returned HTTP " + res.status);
+
+    const short = pickShortUrl(await res.text());
+    if (!short) throw new Error("the shortener returned no link (it may reject long or '#'-fragment URLs)");
+    if (short.length >= longUrl.length) throw new Error("the shortened link came back no shorter than the original");
     return short;
   }
 
@@ -480,7 +500,7 @@
     }
   }
 
-  function showResult(link, name, count, encrypted) {
+  function showResult(link, name, count, encrypted, shortenNote) {
     $("#view-build").hidden = true;
     $("#foot-build").hidden = true;
     $("#view-result").hidden = false;
@@ -490,13 +510,19 @@
     $("#result-link").value = link;
     $("#pw-note").hidden = !encrypted;
 
-    const shortManual = state.settings.shortProvider && !state.settings.shortAuto && link === lastLongLink;
-    $("#shorten-row").hidden = !shortManual;
+    // A shortener is configured and we're still on the long link — offer the
+    // button (whether auto-shorten is off, or it's on but just failed).
+    const showShorten = !!state.settings.shortProvider && link === lastLongLink;
+    $("#shorten-row").hidden = !showShorten;
     $("#shorten-link").hidden = false;
+    $("#shorten-link").textContent = shortenNote ? "Try shortening again" : "Shorten link";
     $("#show-original").hidden = true;
 
     const warn = $("#len-warn");
-    if (link.length > (CFG.SOFT_URL_LIMIT || 12000)) {
+    if (shortenNote) {
+      warn.hidden = false;
+      warn.textContent = shortenNote;
+    } else if (link.length > (CFG.SOFT_URL_LIMIT || 12000)) {
       warn.hidden = false;
       warn.textContent = `Heads up: this link is ${link.length.toLocaleString()} characters. It works in browsers, but some chat apps may shorten or break very long links. Consider sharing fewer pages.`;
     } else {
@@ -647,9 +673,13 @@
         $("#result-link").value = short;
         $("#shorten-link").hidden = true;
         $("#show-original").hidden = false;
+        $("#len-warn").hidden = true;
         await copyLink();
       } catch (e) {
-        toast("Shortener failed");
+        const warn = $("#len-warn");
+        warn.textContent = "Couldn't shorten this link — " + (e.message || "the shortener failed") + ". The full link is still below.";
+        warn.hidden = false;
+        $("#shorten-link").textContent = "Try shortening again";
       } finally {
         $("#shorten-link").disabled = false;
       }
@@ -658,6 +688,8 @@
       $("#result-link").value = lastLongLink;
       $("#show-original").hidden = true;
       $("#shorten-link").hidden = false;
+      $("#shorten-link").textContent = "Shorten link";
+      $("#len-warn").hidden = true;
     });
     $("#open-preview").addEventListener("click", () => {
       api.tabs.create({ url: $("#result-link").value });

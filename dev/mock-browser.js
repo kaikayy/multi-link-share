@@ -10,6 +10,14 @@
     { id: 6, url: "https://www.nature.org/en-us/about-us/where-we-work/", title: "Where We Work | The Nature Conservancy", groupId: -1, favIconUrl: "" },
   ];
   const store = { viewerBase: "", recents: [] };
+  // dev: seed settings from the URL, e.g. ?short=tinyurl&auto=1&icons=1
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.has("short")) store.shortProvider = q.get("short");
+    if (q.has("endpoint")) store.shortEndpoint = q.get("endpoint");
+    if (q.get("auto") === "1") store.shortAuto = true;
+    if (q.get("icons") === "1") store.showIcons = true;
+  } catch (e) {}
 
   const asyncOk = (v) => Promise.resolve(v);
 

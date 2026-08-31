@@ -3,10 +3,24 @@
 All notable changes to Tab Share. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); dates are `YYYY-MM-DD`.
 
-## [1.0.0-beta.3] — 2026-08-31
+## [1.0.0-beta.4] — 2026-08-31
+
+_(beta.3 was tagged but not released — its fix is folded in here.)_
 
 ### Fixed
 
+- **URL shorteners actually work now, and tell you when they don't.**
+  - **is.gd and v.gd removed** — they reject any URL with a `#` fragment (every
+    share link has one) and block `github.io`, so they always failed.
+  - **TinyURL kept** — it preserves the fragment and handles multi-KB links.
+  - `shorten()` reports the real reason (unreachable / HTTP error / rejected
+    long-or-fragment URL / result not actually shorter) instead of a silent
+    fail.
+  - **Auto-shorten failures are now visible.** The failure message was a toast
+    that the "link copied" toast instantly overwrote; it's now a persistent note
+    on the result screen with a **Try shortening again** button, and the full
+    link is kept.
+  - A stored `is.gd` / `v.gd` choice is migrated to "off" on upgrade.
 - **The viewer can now tell when the recipient has the extension.** It was
   checking a content-script global (`window.__tabShare`) that lives in an
   isolated world the page can't read, so it *always* thought the extension was
@@ -16,6 +30,12 @@ All notable changes to Tab Share. Format loosely follows
   Now the content script sets a `data-tabshare-ext` attribute and the two sides
   talk over `postMessage` (same-origin only), so with the extension installed
   every tab opens cleanly through the tabs API.
+
+### Added
+
+- **`docs/CUSTOM-SHORTENER.md`** — how to run your own shortener endpoint
+  (Cloudflare Worker / Deno / YOURLS samples) and connect it. `ROADMAP.md` now
+  lists a first-party Tab Share shortener as the intended default.
 
 ## [1.0.0-beta.2] — 2026-08-31
 
