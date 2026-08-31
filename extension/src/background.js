@@ -37,9 +37,11 @@ async function openNewWindow(urls) {
 }
 
 async function openInGroup(urls, windowId, title) {
+  // tabGroups is a required permission now, but very old builds may still lack
+  // the tabs.group() API — fall back to a new window there.
   if (typeof api.tabs.group !== "function" || !(api.tabGroups && api.tabGroups.update)) {
     await openNewWindow(urls);
-    return { note: "This browser can't make tab groups from an extension — opened a new window instead." };
+    return { note: "This browser can't make tab groups — opened a new window instead." };
   }
   const ids = [];
   for (const url of urls) {
@@ -176,6 +178,16 @@ if (api.permissions && api.permissions.onAdded) {
 if (api.permissions && api.permissions.onRemoved) {
   api.permissions.onRemoved.addListener(syncCustomContentScript);
 }
-if (api.runtime.onInstalled) api.runtime.onInstalled.addListener(syncCustomContentScript);
+if (api.runtime.onInstalled) {
+  api.runtime.onInstalled.addListener((details) => {
+    syncCustomContentScript();
+    // First install → open the options page so the user can make the setup choices.
+    if (details && details.reason === "install") {
+      try {
+        api.runtime.openOptionsPage();
+      } catch (e) {}
+    }
+  });
+}
 if (api.runtime.onStartup) api.runtime.onStartup.addListener(syncCustomContentScript);
 syncCustomContentScript();

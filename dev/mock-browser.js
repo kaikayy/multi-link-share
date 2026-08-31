@@ -2,12 +2,12 @@
    in a normal tab for visual work. NOT shipped (scripts/build.mjs excludes dev/). */
 (function () {
   const FAKE_TABS = [
-    { id: 1, url: "https://en.wikipedia.org/wiki/Anna's_hummingbird", title: "Anna's hummingbird — Wikipedia", groupId: 7, active: true },
-    { id: 2, url: "https://www.allaboutbirds.org/guide/Annas_Hummingbird", title: "Anna's Hummingbird Identification", groupId: 7 },
-    { id: 3, url: "https://www.youtube.com/watch?v=abc123", title: "Hummingbird in slow motion (4K)", groupId: 7 },
-    { id: 4, url: "https://scholar.google.com/scholar?q=hummingbird+flight", title: "hummingbird flight - Google Scholar", groupId: -1 },
+    { id: 1, url: "https://en.wikipedia.org/wiki/Anna's_hummingbird", title: "Anna's hummingbird — Wikipedia", groupId: 7, active: true, favIconUrl: "https://en.wikipedia.org/static/favicon/wikipedia.ico" },
+    { id: 2, url: "https://www.allaboutbirds.org/guide/Annas_Hummingbird", title: "Anna's Hummingbird Identification", groupId: 7, favIconUrl: "" },
+    { id: 3, url: "https://www.youtube.com/watch?v=abc123", title: "Hummingbird in slow motion (4K)", groupId: 7, favIconUrl: "https://www.youtube.com/s/desktop/favicon.ico" },
+    { id: 4, url: "https://scholar.google.com/scholar?q=hummingbird+flight", title: "hummingbird flight - Google Scholar", groupId: -1, favIconUrl: "" },
     { id: 5, url: "chrome://newtab/", title: "New Tab", groupId: -1 },
-    { id: 6, url: "https://www.nature.org/en-us/about-us/where-we-work/", title: "Where We Work | The Nature Conservancy", groupId: -1 },
+    { id: 6, url: "https://www.nature.org/en-us/about-us/where-we-work/", title: "Where We Work | The Nature Conservancy", groupId: -1, favIconUrl: "" },
   ];
   const store = { viewerBase: "", recents: [] };
 
@@ -84,6 +84,11 @@
         get: (key) => {
           if (key == null) return asyncOk({ ...store });
           if (typeof key === "string") return asyncOk({ [key]: store[key] });
+          if (Array.isArray(key)) {
+            const out = {};
+            for (const k of key) if (store[k] !== undefined) out[k] = store[k];
+            return asyncOk(out);
+          }
           const out = {};
           for (const k of Object.keys(key)) out[k] = store[k] ?? key[k];
           return asyncOk(out);

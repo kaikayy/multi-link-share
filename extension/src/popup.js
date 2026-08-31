@@ -1,4 +1,5 @@
-/* Tab Share — popup logic. No network, no content scripts. */
+/* Tab Share — popup logic. The only network call is the optional URL shortener
+   (off by default; see options). */
 (function () {
   "use strict";
 
@@ -8,12 +9,30 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  /** @type {{source:string, pages:Array<{url:string,title:string,checked:boolean}>, name:string}} */
-  const state = { source: "window", pages: [], name: "" };
+  const state = {
+    source: "window",
+    pages: [],
+    name: "",
+    settings: { showIcons: true, autoPreview: true, shortProvider: "", shortEndpoint: "", shortAuto: false },
+  };
+
+  async function loadSettings() {
+    try {
+      const s = await api.storage.local.get(["showIcons", "autoPreview", "shortProvider", "shortEndpoint", "shortAuto"]);
+      state.settings = {
+        showIcons: s.showIcons !== false,
+        autoPreview: s.autoPreview !== false,
+        shortProvider: s.shortProvider || "",
+        shortEndpoint: s.shortEndpoint || "",
+        shortAuto: !!s.shortAuto,
+      };
+    } catch (e) {}
+  }
 
   /* ---------- helpers ---------- */
 
   const isWebUrl = (u) => typeof u === "string" && /^https?:\/\//i.test(u);
+  const safeIcon = (u) => typeof u === "string" && /^(https?:|data:)/i.test(u);
 
   /** Local-time "YYYY-MM-DD-HH:MM", the fallback name for an untitled collection. */
   function defaultTitle(d = new Date()) {
@@ -57,19 +76,11 @@
     const tabs = await api.tabs.query({ currentWindow: true });
     return tabs
       .filter((t) => isWebUrl(t.url))
-      .map((t) => ({ url: t.url, title: t.title || "", checked: true, groupId: t.groupId }));
+      .map((t) => ({ url: t.url, title: t.title || "", checked: true, groupId: t.groupId, favIconUrl: t.favIconUrl }));
   }
 
   function hasTabGroupsApi() {
     return !!(api.tabGroups && typeof api.tabGroups.query === "function");
-  }
-
-  async function hasTabGroupsPermission() {
-    try {
-      return await api.permissions.contains({ permissions: ["tabGroups"] });
-    } catch (e) {
-      return false;
-    }
   }
 
   async function loadWindowSource() {
@@ -83,35 +94,18 @@
   }
 
   async function refreshGroupPanel() {
-    const needsPerm = $("#group-needs-perm");
     const unsupported = $("#group-unsupported");
     const pickerWrap = $("#group-picker-wrap");
-    needsPerm.hidden = true;
     unsupported.hidden = true;
     pickerWrap.hidden = true;
-    unsupported.textContent =
-      "This browser doesn't expose the tab-group API to extensions yet. " +
-      "Use This window or Paste links instead.";
 
-    const granted = await hasTabGroupsPermission();
-
-    if (granted && hasTabGroupsApi()) {
-      await populateGroups();
+    if (!hasTabGroupsApi()) {
+      unsupported.hidden = false;
+      unsupported.textContent =
+        "This browser doesn't have a tab-group API. Use This window or Paste links instead.";
       return;
     }
-    if (granted && !hasTabGroupsApi()) {
-      // Permission is on but the namespace still isn't here → genuinely unsupported.
-      unsupported.hidden = false;
-      return;
-    }
-    // Not granted yet. Offer the button even though chrome.tabGroups isn't visible —
-    // Chrome and Firefox both hide that namespace until the permission is granted,
-    // so an API check here would wrongly report "unsupported" forever.
-    if (api.permissions && typeof api.permissions.request === "function") {
-      needsPerm.hidden = false;
-    } else {
-      unsupported.hidden = false;
-    }
+    await populateGroups();
   }
 
   async function populateGroups() {
@@ -150,7 +144,9 @@
   async function loadGroup(groupId) {
     const tabs = await api.tabs.query({ groupId });
     state.pages = dedupe(
-      tabs.filter((t) => isWebUrl(t.url)).map((t) => ({ url: t.url, title: t.title || "", checked: true }))
+      tabs
+        .filter((t) => isWebUrl(t.url))
+        .map((t) => ({ url: t.url, title: t.title || "", checked: true, favIconUrl: t.favIconUrl }))
     );
     try {
       const g = await api.tabGroups.get(groupId);
@@ -242,6 +238,15 @@
       const mono = $(".mono", node);
       mono.textContent = m.label;
       mono.style.background = m.bg;
+      if (state.settings.showIcons && safeIcon(page.favIconUrl)) {
+        const img = document.createElement("img");
+        img.className = "fav"; // opaque, covers the monogram; removed on error
+        img.alt = "";
+        img.referrerPolicy = "no-referrer";
+        img.src = page.favIconUrl;
+        img.addEventListener("error", () => img.remove());
+        mono.appendChild(img);
+      }
 
       let host = "";
       try {
@@ -280,27 +285,64 @@
 
   /* ---------- create link ---------- */
 
+  let lastLongLink = "";
+
   async function createLink() {
     clearError();
     const pages = selectedPages().map((p) => ({ u: p.url, t: p.title }));
     if (!pages.length) return;
 
     const name = ($("#collection-name").value || "").trim() || defaultTitle();
+    const flags = (state.settings.showIcons ? 1 : 0) | (state.settings.autoPreview ? 2 : 0);
+    const password = $("#protect").checked ? $("#link-pass").value : "";
+    if ($("#protect").checked && !password) {
+      showError("Enter a password, or turn off protection.");
+      return;
+    }
 
     let token;
     try {
-      token = ShareCodec.encode({ title: name, pages });
+      token = ShareCodec.encode({ title: name, pages, flags });
+      if (password) token = await ShareCodec.encrypt(token, password);
     } catch (e) {
       showError(e.message || "Could not build the link.");
       return;
     }
 
     const base = await getViewerBase();
-    const link = base + "#" + token;
+    let link = base + "#" + token;
+    lastLongLink = link;
+
+    if (state.settings.shortProvider && state.settings.shortAuto) {
+      try {
+        link = await shorten(lastLongLink);
+      } catch (e) {
+        toast("Shortener failed — using the full link");
+        link = lastLongLink;
+      }
+    }
 
     await saveRecent(link, name, pages.length);
-    showResult(link, name, pages.length);
+    showResult(link, name, pages.length, !!password);
     autoCopy(link);
+  }
+
+  async function shorten(longUrl) {
+    const p = state.settings.shortProvider;
+    const enc = encodeURIComponent(longUrl);
+    let url;
+    let asJson = false;
+    if (p === "isgd") { url = `https://is.gd/create.php?format=json&url=${enc}`; asJson = true; }
+    else if (p === "vgd") { url = `https://v.gd/create.php?format=json&url=${enc}`; asJson = true; }
+    else if (p === "tinyurl") { url = `https://tinyurl.com/api-create.php?url=${enc}`; }
+    else if (p === "custom" && state.settings.shortEndpoint) { url = state.settings.shortEndpoint + enc; }
+    else throw new Error("no shortener configured");
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const short = asJson ? (await res.json()).shorturl : (await res.text()).trim();
+    if (!short || !/^https?:\/\//i.test(short)) throw new Error("bad response");
+    return short;
   }
 
   async function autoCopy(link) {
@@ -312,7 +354,7 @@
     }
   }
 
-  function showResult(link, name, count) {
+  function showResult(link, name, count, encrypted) {
     $("#view-build").hidden = true;
     $("#foot-build").hidden = true;
     $("#view-result").hidden = false;
@@ -320,6 +362,12 @@
     $("#result-name").textContent = name || "Untitled collection";
     $("#result-sub").textContent = `${count} page${count === 1 ? "" : "s"} · opens as a slideshow, no extension needed`;
     $("#result-link").value = link;
+    $("#pw-note").hidden = !encrypted;
+
+    const shortManual = state.settings.shortProvider && !state.settings.shortAuto && link === lastLongLink;
+    $("#shorten-row").hidden = !shortManual;
+    $("#shorten-link").hidden = false;
+    $("#show-original").hidden = true;
 
     const warn = $("#len-warn");
     if (link.length > (CFG.SOFT_URL_LIMIT || 12000)) {
@@ -413,28 +461,6 @@
 
     $$(".seg").forEach((btn) => btn.addEventListener("click", () => setSource(btn.dataset.source)));
 
-    $("#grant-groups").addEventListener("click", async () => {
-      try {
-        const granted = await api.permissions.request({ permissions: ["tabGroups"] });
-        if (!granted) {
-          toast("Permission not granted");
-          return;
-        }
-        // The chrome.tabGroups namespace usually only appears in a fresh popup
-        // context, so reload and land back on the Tab group tab.
-        try {
-          sessionStorage.setItem("ts:src", "group");
-        } catch (e) {}
-        if (hasTabGroupsApi()) {
-          await refreshGroupPanel();
-        } else {
-          location.reload();
-        }
-      } catch (e) {
-        toast("This browser can't grant that permission");
-      }
-    });
-
     $("#group-picker").addEventListener("change", (e) => loadGroup(Number(e.target.value)));
 
     $("#paste-parse").addEventListener("click", () => parsePasteBox(true));
@@ -459,8 +485,32 @@
 
     $("#collection-name").addEventListener("input", (e) => (state.name = e.target.value));
 
+    $("#protect").addEventListener("change", (e) => {
+      $("#pw-field").hidden = !e.target.checked;
+      if (e.target.checked) $("#link-pass").focus();
+    });
+
     $("#create-link").addEventListener("click", createLink);
     $("#copy-link").addEventListener("click", copyLink);
+    $("#shorten-link").addEventListener("click", async () => {
+      $("#shorten-link").disabled = true;
+      try {
+        const short = await shorten(lastLongLink);
+        $("#result-link").value = short;
+        $("#shorten-link").hidden = true;
+        $("#show-original").hidden = false;
+        await copyLink();
+      } catch (e) {
+        toast("Shortener failed");
+      } finally {
+        $("#shorten-link").disabled = false;
+      }
+    });
+    $("#show-original").addEventListener("click", () => {
+      $("#result-link").value = lastLongLink;
+      $("#show-original").hidden = true;
+      $("#shorten-link").hidden = false;
+    });
     $("#open-preview").addEventListener("click", () => {
       api.tabs.create({ url: $("#result-link").value });
     });
@@ -470,15 +520,9 @@
       $("#foot-build").hidden = false;
     });
 
-    let startSource = "window";
-    try {
-      const wanted = sessionStorage.getItem("ts:src");
-      if (wanted) {
-        startSource = wanted;
-        sessionStorage.removeItem("ts:src");
-      }
-    } catch (e) {}
-    setSource(startSource).catch((e) => showError("Could not read this window's tabs: " + e.message));
+    loadSettings()
+      .then(() => setSource("window"))
+      .catch((e) => showError("Could not read this window's tabs: " + e.message));
   }
 
   document.addEventListener("DOMContentLoaded", init);

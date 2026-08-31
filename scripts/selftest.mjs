@@ -22,17 +22,32 @@ function encodeV1(collection) {
   return LZString.compressToEncodedURIComponent(JSON.stringify(payload));
 }
 
+/** Recreate a v2 token (encode() now emits v3). */
+function encodeV2(collection) {
+  const pages = collection.pages.map((p) => {
+    const u = p.u || p.url;
+    return [u.startsWith("https://") ? u.slice(8) : u, p.t || p.title || ""];
+  });
+  return LZString.compressToEncodedURIComponent(JSON.stringify([2, collection.title || "", Date.now(), pages]));
+}
+
 let pass = 0;
-const ok = (name, fn) => {
-  try {
-    fn();
-    pass++;
-    console.log("  ✓", name);
-  } catch (e) {
-    console.error("  ✗", name, "\n   ", e.message);
-    process.exitCode = 1;
+const tests = [];
+const ok = (name, fn) => tests.push({ name, fn });
+
+async function run() {
+  for (const { name, fn } of tests) {
+    try {
+      await fn();
+      pass++;
+      console.log("  ✓", name);
+    } catch (e) {
+      console.error("  ✗", name, "\n   ", e.message);
+      process.exitCode = 1;
+    }
   }
-};
+  console.log(`\n${pass} checks passed.`);
+}
 
 ok("round-trips a normal collection", () => {
   const input = {
@@ -48,6 +63,7 @@ ok("round-trips a normal collection", () => {
   assert.equal(out.pages.length, 2);
   assert.equal(out.pages[0].url, input.pages[0].u);
   assert.equal(out.pages[1].title, "Slow motion");
+  assert.equal(out.flags, 0);
 });
 
 ok("drops non-http(s) and duplicate links", () => {
@@ -74,6 +90,21 @@ ok("bad fragments decode to null, never throw", () => {
   }
 });
 
+ok("carries the flags bitfield", () => {
+  const token = ShareCodec.encode({ title: "F", flags: 0b11, pages: [{ u: "https://example.com/", t: "x" }] });
+  assert.equal(ShareCodec.decode(token).flags, 3);
+});
+
+ok("tokens never contain a '+' (chat apps form-decode it to space)", () => {
+  const pages = Array.from({ length: 40 }, (_, i) => ({
+    u: `https://example.com/section/${i}/some-slug-${i}-${i * 7}`,
+    t: `A representative page title number ${i} of middling length`,
+  }));
+  const token = ShareCodec.encode({ title: "Plus check", pages });
+  assert.ok(!token.includes("+"), "token still has a '+'");
+  assert.equal(ShareCodec.decode(token).pages.length, 40);
+});
+
 ok("large collection stays a sane URL length", () => {
   const pages = Array.from({ length: 30 }, (_, i) => ({
     u: `https://example.com/section/${i}/a-fairly-long-slug-for-the-page-${i}`,
@@ -83,7 +114,7 @@ ok("large collection stays a sane URL length", () => {
   const v1len = encodeV1({ title: "Big set", pages }).length;
   console.log(`      (30 pages -> ${token.length} chars, was ${v1len} under v1)`);
   assert.ok(token.length < 4000, `token too long: ${token.length}`);
-  assert.ok(token.length < v1len, `v2 (${token.length}) should be shorter than v1 (${v1len})`);
+  assert.ok(token.length < v1len, `v3 (${token.length}) should be shorter than v1 (${v1len})`);
   assert.equal(ShareCodec.decode(token).pages.length, 30);
 });
 
@@ -104,9 +135,17 @@ ok("still decodes legacy v1 links", () => {
     "http://example.org/plain",
   ]);
   assert.equal(out.pages[0].title, "Aurora");
+  assert.equal(out.flags, 0);
 });
 
-ok("v2 keeps http:// but drops https:// prefix internally", () => {
+ok("still decodes v2 links", () => {
+  const token = encodeV2({ title: "v2 link", pages: [{ u: "https://a.example/x", t: "A" }] });
+  const out = ShareCodec.decode(token);
+  assert.equal(out.title, "v2 link");
+  assert.deepEqual(out.pages.map((p) => p.url), ["https://a.example/x"]);
+});
+
+ok("keeps http:// but drops https:// prefix internally", () => {
   const token = ShareCodec.encode({
     pages: [{ u: "https://a.example/x", t: "A" }, { u: "http://b.example/y", t: "B" }],
   });
@@ -117,6 +156,34 @@ ok("v2 keeps http:// but drops https:// prefix internally", () => {
   assert.deepEqual(out.pages.map((p) => p.url), ["https://a.example/x", "http://b.example/y"]);
 });
 
+ok("password links round-trip and reject a wrong password", async () => {
+  const input = {
+    title: "Secret set",
+    pages: [{ u: "https://example.com/one", t: "One" }, { u: "https://example.com/two", t: "Two" }],
+  };
+  const plain = ShareCodec.encode(input);
+  const token = await ShareCodec.encrypt(plain, "correct horse");
+  assert.ok(token.startsWith("E1."), "encrypted token has the E1. tag");
+
+  const dec = ShareCodec.decode("#" + token);
+  assert.equal(dec.encrypted, true);
+
+  const bad = await ShareCodec.decrypt(dec._params, "wrong");
+  assert.equal(bad, null, "wrong password decrypts to null");
+
+  const good = await ShareCodec.decrypt(dec._params, "correct horse");
+  assert.equal(good.title, "Secret set");
+  assert.deepEqual(good.pages.map((p) => p.url), ["https://example.com/one", "https://example.com/two"]);
+});
+
+ok("an encrypted token exposes no readable URLs", async () => {
+  const token = await ShareCodec.encrypt(
+    ShareCodec.encode({ pages: [{ u: "https://very-secret.example/path", t: "x" }] }),
+    "pw"
+  );
+  assert.ok(!token.includes("very-secret"), "the host must not appear in the ciphertext token");
+});
+
 ok("monogram is deterministic and offline", () => {
   const a = Monogram.forUrl("https://www.github.com/x");
   const b = Monogram.forUrl("https://github.com/y");
@@ -124,4 +191,4 @@ ok("monogram is deterministic and offline", () => {
   assert.equal(a.label, "GI");
 });
 
-console.log(`\n${pass} checks passed.`);
+run();

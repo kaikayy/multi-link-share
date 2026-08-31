@@ -6,8 +6,20 @@
   <meta name="referrer" content="no-referrer" />
   <meta name="robots" content="noindex" />
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-src https: http:; base-uri 'none'; form-action 'none'" />
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https://icons.duckduckgo.com; frame-src https: http:; base-uri 'none'; form-action 'none'" />
   <title>Shared tabs</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Tab Share" />
+  <meta property="og:title" content="A Tab Share collection" />
+  <meta property="og:description" content="A link to a set of web pages that opens as a slideshow — the page list lives entirely in the link. No account, no server, nothing tracked." />
+  <meta property="og:url" content="https://kaikayy.github.io/multi-link-share/" />
+  <meta property="og:image" content="https://kaikayy.github.io/multi-link-share/assets/og-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="A Tab Share collection" />
+  <meta name="twitter:description" content="Opens as a slideshow. No account, no server, nothing tracked." />
+  <meta name="twitter:image" content="https://kaikayy.github.io/multi-link-share/assets/og-card.png" />
+
   <link rel="stylesheet" href="tab-share.css" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 </head>
@@ -17,9 +29,10 @@
       <symbol id="v-prev" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M15 5l-7 7 7 7"/></symbol>
       <symbol id="v-next" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></symbol>
       <symbol id="v-ext" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></symbol>
-      <symbol id="v-grid" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></symbol>
-      <symbol id="v-slides" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 5h16v11H4z"/><path fill="currentColor" d="M8 19h8v2H8z"/></symbol>
+      <symbol id="v-view" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h16v3H4zM4 10.5h16v3H4zM4 16h16v3H4z"/></symbol>
       <symbol id="v-copy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M9 9V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4M5 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/></symbol>
+      <symbol id="v-gear" viewBox="0 0 24 24"><path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Zm7.4-2.1 1.8-1-1.7-3-2 .5a6 6 0 0 0-1.7-1l-.3-2h-3.4l-.3 2a6 6 0 0 0-1.7 1l-2-.5-1.7 3 1.8 1a6 6 0 0 0 0 2l-1.8 1 1.7 3 2-.5a6 6 0 0 0 1.7 1l.3 2h3.4l.3-2a6 6 0 0 0 1.7-1l2 .5 1.7-3-1.8-1a6 6 0 0 0 0-2Z"/></symbol>
+      <symbol id="v-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></symbol>
     </defs>
   </svg>
 
@@ -38,9 +51,26 @@
       <button id="btn-copy" class="v-btn ghost" type="button">
         <svg class="vi"><use href="#v-copy" /></svg><span>Copy list</span>
       </button>
-      <button id="btn-view" class="v-btn" type="button" aria-pressed="false">
-        <svg class="vi"><use href="#v-grid" /></svg><span id="view-label">Grid</span>
-      </button>
+      <div class="v-menu-wrap">
+        <button id="btn-view" class="v-btn" type="button" aria-haspopup="true" aria-expanded="false">
+          <svg class="vi"><use href="#v-view" /></svg><span id="view-label">Slideshow</span>
+        </button>
+        <div id="view-menu" class="v-menu" hidden role="menu">
+          <button class="v-menu-item" data-mode="slides" role="menuitemradio"><svg class="vi tick"><use href="#v-check"/></svg><span>Slideshow</span></button>
+          <button class="v-menu-item" data-mode="grid" role="menuitemradio"><svg class="vi tick"><use href="#v-check"/></svg><span>Grid</span></button>
+          <button class="v-menu-item" data-mode="list" role="menuitemradio"><svg class="vi tick"><use href="#v-check"/></svg><span>List (copyable)</span></button>
+          <button class="v-menu-item" data-mode="biggrid" role="menuitemradio"><svg class="vi tick"><use href="#v-check"/></svg><span>Large grid</span></button>
+        </div>
+      </div>
+      <div class="v-menu-wrap">
+        <button id="btn-settings" class="v-btn ghost icon-only" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Settings">
+          <svg class="vi"><use href="#v-gear" /></svg>
+        </button>
+        <div id="settings-menu" class="v-menu" hidden role="menu">
+          <label class="v-menu-check"><input type="checkbox" id="set-autopreview" /><span>Auto-load live previews for sites that allow it</span></label>
+          <label class="v-menu-check"><input type="checkbox" id="set-icons" /><span>Show site icons (loads from duckduckgo.com)</span></label>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -52,12 +82,20 @@
        Ask the sender to copy the whole thing again.</p>
   </main>
 
+  <!-- LOCKED STATE -->
+  <main id="state-locked" class="v-error" hidden>
+    <div class="v-logo big" aria-hidden="true"></div>
+    <h2>This collection is password-protected</h2>
+    <p>The sender set a password. Enter it to open the pages.</p>
+    <form id="unlock-form" class="v-unlock">
+      <input id="unlock-pw" type="password" autocomplete="off" placeholder="Password" />
+      <button class="v-btn primary" type="submit">Unlock</button>
+    </form>
+    <p id="unlock-err" class="v-unlock-err" hidden>That password didn't work.</p>
+  </main>
+
   <!-- SLIDESHOW -->
   <main id="state-slides" class="v-stage" hidden>
-    <button id="nav-prev" class="v-nav prev" type="button" aria-label="Previous page">
-      <svg class="vi lg"><use href="#v-prev" /></svg>
-    </button>
-
     <figure class="v-frame">
       <div class="v-frame-bar">
         <span class="v-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -68,7 +106,6 @@
       </div>
 
       <div class="v-viewport" id="viewport">
-        <!-- rich card (default) -->
         <div class="v-card" id="slide-card">
           <span class="v-card-mono" id="slide-mono"></span>
           <p class="v-card-title" id="card-title"></p>
@@ -80,34 +117,52 @@
             </a>
             <button class="v-btn ghost" id="card-preview" type="button">Try live preview</button>
           </div>
-          <p class="v-card-note">Live preview is best-effort — many sites (banks, Google, X…) refuse to
-            display inside another page. Use “Open this page” if the preview stays blank.</p>
+          <p class="v-card-note" id="card-note">Live preview is best-effort — many sites refuse to display inside another page.</p>
         </div>
-        <!-- iframe host (on demand) -->
         <div class="v-embed" id="slide-embed" hidden></div>
       </div>
     </figure>
 
-    <button id="nav-next" class="v-nav next" type="button" aria-label="Next page">
-      <svg class="vi lg"><use href="#v-next" /></svg>
-    </button>
-
     <nav class="v-counter" aria-label="Page navigation">
-      <button id="mini-prev" class="v-mini" type="button" aria-label="Previous">
-        <svg class="vi"><use href="#v-prev" /></svg>
+      <button id="nav-prev" class="v-nav" type="button" aria-label="Previous page">
+        <svg class="vi lg"><use href="#v-prev" /></svg>
       </button>
-      <span id="counter" class="v-count">1 / 1</span>
-      <button id="mini-next" class="v-mini" type="button" aria-label="Next">
-        <svg class="vi"><use href="#v-next" /></svg>
+      <button id="counter" class="v-count" type="button" aria-label="Jump to page">1 / 1</button>
+      <input id="jump-input" class="v-jump" type="number" min="1" hidden />
+      <button id="nav-next" class="v-nav" type="button" aria-label="Next page">
+        <svg class="vi lg"><use href="#v-next" /></svg>
       </button>
-      <span class="v-progress"><span id="progress-fill"></span></span>
     </nav>
+    <div class="v-segwrap"><div id="seg-bar" class="v-seg" role="tablist" aria-label="Pages"></div></div>
+    <p id="frame-footnote" class="v-footnote" hidden></p>
   </main>
 
   <!-- GRID -->
   <main id="state-grid" class="v-grid" hidden></main>
 
+  <!-- LIST -->
+  <main id="state-list" class="v-list" hidden>
+    <div class="v-list-head">
+      <button id="list-copy" class="v-btn ghost" type="button"><svg class="vi"><use href="#v-copy"/></svg><span>Copy all</span></button>
+      <span class="v-list-hint">Select any lines and copy with Ctrl/Cmd+C.</span>
+    </div>
+    <pre id="list-body" class="v-list-body"></pre>
+  </main>
+
+  <!-- LARGE GRID -->
+  <main id="state-biggrid" class="v-biggrid" hidden></main>
+
+  <footer class="v-source">
+    <a href="https://github.com/kaikayy/multi-link-share" target="_blank" rel="noopener">Tab Share</a>
+    · open source (AGPL-3.0) · nothing on this page is tracked
+  </footer>
+
   <div id="v-toast" class="v-toast" hidden></div>
+  <div id="v-icon-note" class="v-icon-note" hidden>
+    <span>Site icons load from duckduckgo.com.</span>
+    <button id="icon-note-off" type="button">Turn off</button>
+    <button id="icon-note-ok" type="button" aria-label="Dismiss">✕</button>
+  </div>
 
   <template id="tpl-grid-card">
     <a class="g-card" target="_blank" rel="noopener noreferrer">
@@ -120,9 +175,21 @@
     </a>
   </template>
 
+  <template id="tpl-big-card">
+    <div class="bg-card">
+      <div class="bg-head">
+        <span class="bg-mono"></span>
+        <span class="bg-meta"><span class="bg-title"></span><span class="bg-host"></span></span>
+        <a class="bg-open" target="_blank" rel="noopener noreferrer" aria-label="Open"><svg class="vi"><use href="#v-ext"/></svg></a>
+      </div>
+      <button class="bg-view" type="button"></button>
+    </div>
+  </template>
+
   <script src="lib/lzstring.min.js"></script>
   <script src="lib/share-codec.js"></script>
   <script src="lib/monogram.js"></script>
+  <script src="frame-hosts.js"></script>
   <script src="tab-share.js"></script>
 </body>
 </html>

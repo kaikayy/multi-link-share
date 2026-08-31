@@ -34,4 +34,7 @@ render(R("extension/icons/icon.svg"), 128, 128, R("extension/icons/icon-128.png"
 // are real captures of the built extension — not generated here.
 render(R("assets/promo-440x280.svg"), 440, 280, R("assets/promo-440x280.png"));
 
+// link-unfurl card served with the viewer
+render(R("assets/og-card.svg"), 1200, 630, R("viewer/assets/og-card.png"));
+
 console.log("Icons rebuilt.");

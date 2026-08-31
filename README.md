@@ -8,14 +8,16 @@ person you send it to needs no extension, no account, and hits no server.
 ## What it does
 
 1. Click the toolbar button. Pick your pages from:
-   - **This window** — every open tab, pre-checked;
-   - **Tab group** — a Chrome/Firefox tab group (optional permission);
+   - **This window** — every open tab, pre-checked (with site icons);
+   - **Tab group** — a Chrome/Firefox tab group;
    - **Paste links** — one URL per line, or pull in the current window.
-2. Reorder / trim / name the collection.
-3. **Create share link** → copy it.
-4. The recipient opens it in any browser and gets a slideshow: a framed page
-   view with a title bar, ◀ ▶ arrows, keyboard nav, a `3 / 12` counter and a
-   progress bar, plus a **grid** overview and **open-all-in-tabs**.
+2. Reorder / trim / name the collection. Optionally set a password.
+3. **Create share link** → it's copied automatically.
+4. The recipient opens it in any browser. Four views: **slideshow** (framed page,
+   ◀ ▶, keyboard nav, a clickable segmented `5 / 14` pager, jump-to-page),
+   **grid**, a copyable **numbered list**, and a **large preview grid**.
+   Framing-friendly sites preview live; the rest show a card. "Open all" opens
+   every page in tabs.
 
 ## How one link can carry everything
 
@@ -24,11 +26,21 @@ The collection (page URLs + titles) is compressed with
 **fragment** — the part after `#`. Browsers never transmit the fragment, so:
 
 - no backend, no database, no accounts;
-- the extension makes **zero network requests**;
-- the link is self-contained (≈500 chars for 5 pages, ≈1.5 KB for 30).
+- the extension makes **no network requests** (unless you turn on a URL shortener);
+- the viewer makes **none** (unless you leave the site-icons option on, which
+  fetches favicons from `icons.duckduckgo.com`);
+- the link is self-contained (≈500 chars for 5 pages, ≈1.5 KB for 30);
+- `"+"` is swapped out of the token so chat apps can't mangle it.
 
-A ~6 KB static page (`viewer/`) decodes the fragment in the recipient's browser
-and renders the slideshow. You host it anywhere (see `BUILD.md`).
+A small static page (`viewer/`) decodes the fragment in the recipient's browser
+and renders the views. You host it anywhere (see `BUILD.md`).
+
+### Password-protected links
+
+Tick **Protect with a password** and the whole collection is encrypted in your
+browser (WebCrypto: PBKDF2-SHA-256 → AES-256-GCM) before it goes in the link.
+The recipient types the password into the viewer to decrypt locally — the
+password is never stored or sent. Lose it and the link can't be opened.
 
 ### The one honest limitation
 
@@ -53,16 +65,17 @@ options page asks you to approve that one host before the banner appears there.
 
 | Permission | Required? | Why |
 |---|---|---|
-| `tabs` | yes | Read URL + title of the current window's tabs, only on button click. |
-| `storage` | yes | Remember your viewer URL + last 50 links, on-device (`storage.local`). |
-| `scripting` | yes | Register the import banner for a **custom** viewer URL you set. |
-| `tabGroups` | **optional**, asked at runtime | Tab-group names for the "Tab group" source; titling a group on import. |
-| host access to a custom viewer URL | **optional**, asked when you save one | Show the import banner on your own viewer host. |
+| `tabs` | yes | Read URL + title + icon of the current window's tabs, only on button click. |
+| `storage` | yes | Remember your viewer URL, setup choices, last 50 links, on-device (`storage.local`). |
+| `tabGroups` | yes | The "Tab group" source, and creating a group on import (a content script can't request it at runtime). |
+| `scripting` | yes | Register the import banner for a self-hosted viewer URL you set. |
+| host access to a non-default viewer URL | **optional**, asked when you save one | Show the import banner on your own viewer host. |
+| host access to a shortener | **optional**, asked when you enable one | Send the generated link to is.gd / v.gd / TinyURL / your endpoint. |
 
-No static `host_permissions`. One content script, scoped to the viewer page
-only. A minimal background worker (import actions + content-script registration).
-No remote code. No data collection. Full rationale in `STORE-LISTING.md`;
-user-facing statement in `PRIVACY.md`.
+No static `host_permissions`. One content script, scoped to the packaged viewer
+host only (plus any host you opt into). A minimal background worker (import
+actions + content-script registration). No remote code. No data collection.
+Full rationale in `STORE-LISTING.md`; user-facing statement in `PRIVACY.md`.
 
 ## Repo layout
 
@@ -73,8 +86,9 @@ extension/
   src/             popup + options + background worker (plain HTML/CSS/JS)
   src/content/     import-banner.js — viewer-page "open with the extension" banner
   icons/           icon.svg + generated PNGs
-viewer/            self-contained static slideshow site
-assets/            store artwork (promo tile, screenshots)
+viewer/            self-contained static site (slideshow / grid / list / large grid)
+  frame-hosts.js   curated allow/deny list for auto-previewing sites
+assets/            store artwork (promo tile, screenshots, og-card source)
 dev/               mocked-chrome harness for eyeballing the UI (not shipped)
 scripts/           build / sync / icons / selftest / dev-server
 ```

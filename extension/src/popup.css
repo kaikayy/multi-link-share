@@ -198,7 +198,19 @@ input[type="text"]:focus, textarea:focus, select:focus {
   font-size: 10px;
   font-weight: 700;
   flex: none;
+  position: relative;
+  overflow: hidden;
 }
+.mono .fav {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+
+.pw-toggle { align-self: flex-start; }
 
 .meta { min-width: 0; display: flex; flex-direction: column; }
 .p-title {

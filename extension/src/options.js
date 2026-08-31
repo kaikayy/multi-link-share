@@ -38,6 +38,88 @@
     }
   }
 
+  /* ---------------- preferences ---------------- */
+
+  const PREF_KEYS = ["showIcons", "autoPreview", "import.disabled", "import.default"];
+
+  async function loadPrefs() {
+    const s = await api.storage.local.get(PREF_KEYS);
+    $("#pref-icons").checked = s.showIcons !== false; // default on
+    $("#pref-autopreview").checked = s.autoPreview !== false; // default on
+    $("#pref-banner").checked = !s["import.disabled"]; // default on
+    $("#pref-default").value = s["import.default"] || "";
+  }
+
+  async function savePrefs() {
+    await api.storage.local.set({
+      showIcons: $("#pref-icons").checked,
+      autoPreview: $("#pref-autopreview").checked,
+      "import.disabled": !$("#pref-banner").checked,
+      "import.default": $("#pref-default").value || "",
+    });
+    flash("#pref-msg");
+  }
+
+  function flash(sel) {
+    const el = $(sel);
+    el.hidden = false;
+    clearTimeout(flash._t);
+    flash._t = setTimeout(() => (el.hidden = true), 1600);
+  }
+
+  /* ---------------- shortener ---------------- */
+
+  const PROVIDER_ORIGIN = {
+    isgd: "https://is.gd/*",
+    vgd: "https://v.gd/*",
+    tinyurl: "https://tinyurl.com/*",
+  };
+
+  async function loadShortener() {
+    const s = await api.storage.local.get(["shortProvider", "shortEndpoint", "shortAuto"]);
+    $("#short-provider").value = s.shortProvider || "";
+    $("#short-endpoint").value = s.shortEndpoint || "";
+    $("#short-auto").checked = !!s.shortAuto;
+    $("#short-endpoint-wrap").hidden = $("#short-provider").value !== "custom";
+  }
+
+  async function saveShortener() {
+    $("#short-msg").hidden = true;
+    $("#short-err").hidden = true;
+    const provider = $("#short-provider").value;
+    const endpoint = ($("#short-endpoint").value || "").trim();
+
+    let pattern = PROVIDER_ORIGIN[provider] || null;
+    if (provider === "custom") {
+      try {
+        pattern = new URL(endpoint).origin + "/*";
+      } catch (e) {
+        $("#short-err").textContent = "Enter a valid https:// endpoint.";
+        $("#short-err").hidden = false;
+        return;
+      }
+    }
+
+    if (pattern) {
+      try {
+        const has = await api.permissions.contains({ origins: [pattern] });
+        if (!has) {
+          const granted = await api.permissions.request({ origins: [pattern] });
+          if (!granted) {
+            $("#short-err").textContent = "Not saved — the shortener needs access to that host.";
+            $("#short-err").hidden = false;
+            return;
+          }
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
+    await api.storage.local.set({ shortProvider: provider, shortEndpoint: endpoint, shortAuto: $("#short-auto").checked });
+    flash("#short-msg");
+  }
+
   /* ---------------- viewer address ---------------- */
 
   async function loadViewer() {
@@ -146,8 +228,21 @@
   /* ---------------- wire up ---------------- */
 
   document.addEventListener("DOMContentLoaded", () => {
+    loadPrefs();
+    loadShortener();
     loadViewer();
     renderHistory();
+
+    ["#pref-icons", "#pref-autopreview", "#pref-banner", "#pref-default"].forEach((sel) =>
+      $(sel).addEventListener("change", savePrefs)
+    );
+
+    $("#short-provider").addEventListener("change", () => {
+      $("#short-endpoint-wrap").hidden = $("#short-provider").value !== "custom";
+      saveShortener();
+    });
+    $("#short-endpoint").addEventListener("change", saveShortener);
+    $("#short-auto").addEventListener("change", saveShortener);
 
     $("#save").addEventListener("click", save);
     $("#viewer-base").addEventListener("input", () => {

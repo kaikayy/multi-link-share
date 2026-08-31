@@ -40,15 +40,7 @@
 
     <!-- group-permission / paste panels -->
     <section id="panel-group" class="panel" hidden>
-      <div id="group-needs-perm" hidden>
-        <p class="hint">To read tab-group names and colours, Tab Share needs the optional
-          <code>tabGroups</code> permission. Nothing else changes.</p>
-        <button id="grant-groups" class="btn btn-ghost" type="button">Enable tab-group detection</button>
-      </div>
-      <div id="group-unsupported" hidden>
-        <p class="hint">This browser doesn't expose the tab-group API to extensions yet.
-          Use <strong>This window</strong> or <strong>Paste links</strong> instead.</p>
-      </div>
+      <p id="group-unsupported" class="hint" hidden></p>
       <label id="group-picker-wrap" hidden>
         <span class="label">Group</span>
         <select id="group-picker"></select>
@@ -71,6 +63,15 @@
     <label class="field">
       <span class="label">Collection name <span class="opt">(optional)</span></span>
       <input id="collection-name" type="text" maxlength="200" placeholder="e.g. Research on hummingbirds" />
+    </label>
+
+    <label class="chk pw-toggle">
+      <input id="protect" type="checkbox" />
+      <span class="label" style="font-weight:600">Protect with a password</span>
+    </label>
+    <label class="field" id="pw-field" hidden>
+      <span class="label">Password <span class="opt">(the recipient needs it; it's never stored)</span></span>
+      <input id="link-pass" type="password" autocomplete="new-password" placeholder="a phrase you'll share separately" />
     </label>
 
     <div class="list-head">
@@ -106,6 +107,12 @@
       </button>
     </div>
     <p id="len-warn" class="warn" hidden></p>
+    <p id="pw-note" class="warn" hidden>Password link — the recipient must type the password to open it.</p>
+
+    <div class="row-actions" id="shorten-row" hidden>
+      <button id="shorten-link" class="btn btn-ghost btn-sm" type="button">Shorten link</button>
+      <button id="show-original" class="linklike" type="button" hidden>show original</button>
+    </div>
 
     <div class="result-actions">
       <button id="open-preview" class="btn btn-ghost" type="button">

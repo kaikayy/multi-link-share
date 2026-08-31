@@ -38,8 +38,7 @@
       "run_at": "document_idle"
     }
   ],
-  "permissions": ["tabs", "storage", "scripting"],
-  "optional_permissions": ["tabGroups"],
+  "permissions": ["tabs", "storage", "scripting", "tabGroups"],
   "optional_host_permissions": ["*://*/*"],
   "minimum_chrome_version": "116"
 }

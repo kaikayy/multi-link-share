@@ -45,17 +45,17 @@
 
     <h2>What the extension accesses</h2>
     <ul>
-      <li><strong>Open tabs in the current window</strong> — their URLs and titles.
-        Read only at the moment you click <strong>Create share link</strong> (or one
-        of the "add this window's tabs" buttons), only for the window you triggered
-        it from, and only to build the list you see in the popup.</li>
-      <li><strong>Tab group names</strong> — only if you grant the optional
-        <code>tabGroups</code> permission, and only to label the collection, populate
-        the group picker, and (on import) name a group it creates for you.</li>
-      <li><strong>Local extension storage</strong> — your chosen "viewer address" and
-        a list of up to 50 links you recently generated, stored on your device via the
-        browser's <code>storage.local</code>. Never synced, never transmitted. Clear
-        all or individual entries any time from the options page.</li>
+      <li><strong>Open tabs in the current window</strong> — their URLs, titles and
+        icons. Read only at the moment you click <strong>Create share link</strong> (or
+        an "add tabs" button), only for the window you triggered it from, and only to
+        build the list you choose from. Tab icons are shown in the popup, never uploaded.</li>
+      <li><strong>Tab groups</strong> — names and colours, and (on import) the ability
+        to create a group. Used for the "Tab group" source and the "open as a tab
+        group" action.</li>
+      <li><strong>Local extension storage</strong> — your viewer address, your setup
+        choices, and up to 50 links you recently generated, stored on your device via
+        <code>storage.local</code>. Never synced, never transmitted. Clear all or
+        individual entries any time from the options page.</li>
       <li><strong>The viewer page only</strong> — one content script runs on the
         slideshow viewer page. It reads the collection from that page's URL fragment
         so it can offer to open the pages with the extension instead of the web view.
@@ -65,9 +65,19 @@
         there. It runs on no other site.</li>
     </ul>
 
-    <h2>What is sent over the network</h2>
-    <p>Nothing. The extension makes no network requests. It has no server, no
-      analytics, no telemetry, no accounts.</p>
+    <h2>What can make a network request</h2>
+    <p>Two things, both optional. If <strong>site icons</strong> are left on, the viewer
+      requests one icon per domain in the link from <code>icons.duckduckgo.com</code> when
+      the link is opened — those domain names go to DuckDuckGo's icon service and nowhere
+      else. If you turn on a <strong>URL shortener</strong> in the extension, creating a
+      link sends that one generated URL to the service you chose. With icons off and no
+      shortener, nothing on this page or in the extension makes any network request.</p>
+
+    <h2>Password-protected links</h2>
+    <p>When the sender sets a password, the collection is encrypted in the sender's
+      browser (PBKDF2-SHA-256 → AES-256-GCM) before it goes in the link. The password is
+      never stored or transmitted; you type it here to decrypt locally. A lost password
+      means the link can't be opened — there is no recovery.</p>
 
     <h2>The share link</h2>
     <p>When you create a link, the selected page URLs and titles are compressed and

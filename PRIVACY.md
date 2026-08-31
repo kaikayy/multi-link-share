@@ -2,54 +2,66 @@
 
 _Last updated: 2026-08-31_
 
-Tab Share is built so that there is nothing to collect.
+Tab Share is built so that there is nothing to collect. It has no server, no
+account, no analytics, and no tracking.
 
 ## What the extension accesses
 
-- **Open tabs in the current window** — their URLs and titles. Read only at the
-  moment you click **Create share link** (or one of the "add this window's tabs"
-  buttons), only for the window you triggered it from, and only to build the
-  list you see in the popup.
-- **Tab group names** — only if you grant the optional `tabGroups` permission,
-  and only to label the collection, populate the group picker, and (on import)
-  name a group it creates for you.
-- **Local extension storage** — your chosen "viewer address" and a list of up to
-  50 links you recently generated, stored on your device via the browser's
-  `storage.local`. Never synced, never transmitted. Clear all or individual
-  entries any time from the options page.
+- **Open tabs in the current window** — their URLs, titles and icons. Read only
+  at the moment you click **Create share link** (or an "add tabs" button), only
+  for the window you triggered it from, and only to build the list you choose
+  from. Tab icons are shown in the popup and never uploaded.
+- **Tab groups** — names and colours, and (on import) the ability to create a
+  group. Used for the "Tab group" source and the "open as a tab group" action.
+- **Local extension storage** (`storage.local`) — your viewer address, your
+  setup choices, and up to 50 recently created links, on this device. Never
+  synced, never transmitted. Clear all or individual entries in the options
+  page.
 - **The viewer page only** — one content script runs on the slideshow viewer
   page. It reads the collection from that page's URL fragment so it can offer to
   open the pages with the extension instead of the web view. It ships enabled
-  only for the packaged viewer address; if you point the extension at your own
-  viewer (including `localhost` for testing), the options page asks you to
-  approve that one host before the script runs there. It runs on no other site.
+  only for the packaged viewer address; a self-hosted viewer (or `localhost`)
+  runs it only after you approve that one host in the options page. It runs on
+  no other site.
 
-## What is sent over the network
+## What can make a network request — and only if you turn it on
 
-Nothing. The extension makes no network requests. It has no server, no
-analytics, no telemetry, no accounts.
+- **Site icons** in the shared viewer. If left on, when a recipient opens a link
+  the viewer requests one icon per domain in the collection from
+  `icons.duckduckgo.com`. Those domain names go to DuckDuckGo's icon service and
+  nowhere else. Turn it off at first run or in options, and the viewer makes
+  **zero** network requests.
+- **A URL shortener**. Off by default. If you pick one (is.gd / v.gd / TinyURL /
+  your own endpoint), creating a link sends that one generated URL to the
+  service you chose.
+
+Everything else — the extension itself, the viewer with icons off — makes no
+network requests at all.
 
 ## The share link
 
-When you create a link, the selected page URLs and titles are compressed and
-placed in the **fragment** of the link — the part after the `#`. Per web
-standards, browsers do **not** send the fragment to any server. The link is
-readable by anyone you give it to (and by anyone they forward it to), so treat
-it like the list of pages it contains.
+The selected page URLs and titles are compressed and placed in the **fragment**
+of the link — the part after `#`. Per web standards, browsers do **not** send
+the fragment to any server. The link is readable by anyone you give it to (and
+by anyone they forward it to), so treat it like the list of pages it contains.
+
+## Password-protected links
+
+When you set a password, the collection is **encrypted in your browser**
+(PBKDF2-SHA-256, 210 000 iterations → AES-256-GCM) before it goes in the link.
+The password is never stored and never transmitted. The recipient types it into
+the viewer to decrypt locally. **If the password is lost, the link cannot be
+opened** — there is no recovery, and history entries for password links still
+need the password.
 
 ## The viewer page
 
-The recipient opens the link in a normal browser tab. The viewer page is a
-static file (no backend). It reads the collection from the fragment in the
-recipient's browser and renders it. It loads no third-party scripts, fonts, or
-images and sends no data anywhere. "Open all" and "live preview" simply
-navigate to, or embed, the pages you chose — the same as clicking the links
-yourself.
-
-If the recipient also has Tab Share installed, the content script described
-above adds an in-page banner offering to open the collection into a window or a
-tab group, or to save it to the recipient's own on-device history. That choice,
-and the pages opened, never leave the recipient's device.
+The viewer is a static file (no backend). It reads the collection from the
+fragment in the recipient's browser and renders it. "Open all" and the live
+preview simply navigate to, or embed, the pages you chose — the same as
+clicking the links yourself. If the recipient also has Tab Share, an in-page
+banner offers to open the collection into a window or tab group, or save it to
+their own on-device history — that choice never leaves their device.
 
 ## Contact
 

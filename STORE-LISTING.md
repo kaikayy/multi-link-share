@@ -24,14 +24,19 @@ Tab Share bundles a set of pages into a single link.
   clean slideshow: framed page view, title bar, next/previous arrows, and a
   "3 / 12" counter. There's also a grid overview and an "open all in tabs"
   button.
+• Four ways to view a link: slideshow, grid, a copyable numbered list, and a
+  large preview grid. Sites that allow it preview live; the rest show a card.
+• Optional: protect a link with a password (encrypted in your browser), or run
+  it through a URL shortener you choose.
 • If the recipient also has Tab Share, the viewer offers to open the whole set
   straight into a window or tab group, or save it to their history.
 
 How it works — and why it's private:
 The whole list is packed into the part of the link after "#", which browsers
 never send to a server. There is no backend, no database, and no tracking. The
-extension makes zero network requests. It reads your tabs only when you press
-the button, and asks for the bare minimum permissions.
+extension makes no network requests unless you turn on a URL shortener; the
+viewer makes none unless you leave site icons on. It reads your tabs only when
+you press a button.
 
 You host the tiny viewer page yourself (GitHub Pages, Netlify, …) or use the
 one configured by whoever packaged the extension. Open source (GNU AGPL-3.0).
@@ -62,17 +67,17 @@ content script below) it also opens the shared pages into tabs/windows the user
 asked for. The data never leaves the device except inside the share link the
 user explicitly creates.
 
-### `tabGroups` (optional)
+### `tabGroups` (required)
 
-Requested at runtime, only if the user opens the "Tab group" tab or picks
-"Tab group" on the import banner. Reads tab group titles for the picker and to
-name the collection; sets the title of a group it creates when importing.
-Declined by default; the rest of the extension works without it.
+Reads tab group names and colours for the "Tab group" source and to name a
+collection after its group; creates and titles a group when the user picks
+"Tab group" on the import banner. Required because a content script cannot
+request an optional permission at runtime, which made the import action fail.
 
 ### `storage` (required)
 
-`storage.local` only. Stores the user's chosen viewer URL and up to 50 recently
-created links, on the device. Not synced, not transmitted.
+`storage.local` only. Stores the user's viewer URL, setup choices, and up to 50
+recently created links, on the device. Not synced, not transmitted.
 
 ### `scripting` (required)
 
@@ -104,6 +109,20 @@ Event-driven, no persistent state of its own. Handles the import-banner actions
 (open pages / save to history) and keeps the custom-host content script
 registration in sync with the saved viewer address. No network access.
 
+### Network requests
+
+The extension makes none, unless the user turns on a URL shortener in options
+(is.gd / v.gd / TinyURL / a custom endpoint) — then creating a link POSTs that
+one generated URL to the chosen service. The viewer makes none, unless the
+"site icons" option is left on — then it fetches one icon per domain from
+`icons.duckduckgo.com` when a link is opened. Both are user-visible toggles.
+
+### Password protection
+
+Optional. When set, the collection is encrypted client-side (WebCrypto:
+PBKDF2-SHA-256 → AES-256-GCM) before it goes in the link fragment. The password
+is never stored or transmitted.
+
 ### Remote code
 
 None. The single third-party library (lz-string, MIT) is bundled in the
@@ -127,8 +146,9 @@ None. (Firefox manifest declares
   > `dist/firefox/`. `src/lib/lzstring.min.js` is lz-string 1.5.0, copied
   > verbatim from
   > https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js
-  > All other files are the original source, unminified. No network requests
-  > and no remote code. One content script (`src/content/import-banner.js`)
+  > All other files are the original source, unminified. No remote code. The
+  > only outbound request is an optional, off-by-default URL shortener the user
+  > configures in options. One content script (`src/content/import-banner.js`)
   > runs only on the configured viewer page; the background worker
   > (`src/background.js`) is offline and event-driven.
 

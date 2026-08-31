@@ -1,7 +1,15 @@
 # Building & testing
 
-Requires **Node 18+**. The only system dependency for artwork is
-`rsvg-convert` (package `librsvg`); it is not needed for a normal build.
+Requires **Node 20+** (the codec uses WebCrypto for password-protected links).
+The only system dependency for artwork is `rsvg-convert` (package `librsvg`); it
+is not needed for a normal build.
+
+`npm run icons` also renders `assets/og-card.svg` → `viewer/assets/og-card.png`
+(1200×630), the image chat apps show when a viewer link is unfurled.
+
+`viewer/frame-hosts.js` is a curated, hand-maintained list of which sites are
+worth auto-previewing in an `<iframe>` — it ships with the viewer verbatim (no
+build step) and only changes which preview affordance the slideshow shows.
 
 ```bash
 npm test            # round-trip tests for the URL codec
