@@ -23,6 +23,12 @@
 
   window.chrome = {
     runtime: {
+      id: "mock-extension-id",
+      getManifest: () => ({
+        manifest_version: 3,
+        version: "0.0.0-dev",
+        optional_host_permissions: ["https://*/*", "http://localhost/*", "http://127.0.0.1/*"],
+      }),
       openOptionsPage: () => console.log("(mock) would open the options page"),
       sendMessage: (msg) => {
         console.log("(mock) runtime.sendMessage", msg);

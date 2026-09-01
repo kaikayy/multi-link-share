@@ -27,7 +27,6 @@
         "shortBase",
         "shortMode",
         "shortAuto",
-        "shortMigratedBase",
       ]);
       // is.gd / v.gd reject '#'-fragment and github.io URLs, so they never worked
       // for share links -- retired in favour of TinyURL / a custom endpoint.
@@ -35,17 +34,23 @@
       let endpoint = s.shortEndpoint || "";
       const mode = s.shortMode === "words" ? "words" : "code";
 
-      // One-time: a "Tab Share shortener" left pointing at localhost (from an
-      // older DEV_LOCALHOST build) can't work in a shipped build -- move it to
-      // the packaged default, e.g. after the first-party instance went live.
+      // A "Tab Share shortener" left pointing at localhost (an old DEV_LOCALHOST
+      // build) can't be granted in a shipped build -- move it to the packaged
+      // default. Skipped where localhost IS a grantable host (a DEV build).
       const dflt = ((CFG && CFG.DEFAULT_SHORTENER_BASE) || "").replace(/\/+$/, "");
-      const wasLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
-      if (!s.shortMigratedBase && /^https:\/\//i.test(dflt) && provider === "tabshare" &&
-          (wasLocal.test((s.shortBase || "").trim()) || wasLocal.test(endpoint))) {
+      const local = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
+      let localhostGrantable = false;
+      try {
+        localhostGrantable = (api.runtime.getManifest().optional_host_permissions || []).some((p) =>
+          /^https?:\/\/(localhost|127\.0\.0\.1)\//.test(p),
+        );
+      } catch (e) {}
+      if (provider === "tabshare" && /^https:\/\//i.test(dflt) && !localhostGrantable &&
+          (local.test((s.shortBase || "").trim()) || local.test(endpoint))) {
         endpoint = dflt + "/new?" + (mode === "words" ? "mode=words&" : "") + "url=";
-        await api.storage.local.set({ shortBase: dflt, shortEndpoint: endpoint, shortMigratedBase: true });
-      } else if (!s.shortMigratedBase) {
-        await api.storage.local.set({ shortMigratedBase: true });
+        try {
+          await api.storage.local.set({ shortBase: dflt, shortEndpoint: endpoint });
+        } catch (e) {}
       }
 
       state.settings = {

@@ -40,7 +40,9 @@ Manifests: chrome `version_name` -> `1.0.0-beta.6`, firefox `version` ->
   instance, which allow-lists the built-in viewer -- so the default viewer +
   shortener work with no configuration. Still Off until you turn it on; still
   opt-in per link. A stored address left pointing at `localhost` (from an old
-  `DEV_LOCALHOST` build) is moved to the packaged default automatically, once.
+  `DEV_LOCALHOST` build) is moved to the packaged default automatically -- both
+  the popup and the options page do it on load, so the address field stops
+  showing the dead `localhost` endpoint.
 - **Long-link nudge.** When a created link is over the soft length limit and no
   shortener is set up, the result screen suggests turning one on and offers a
   *Set up the shortener* button. `shorten()` also requests the host permission
