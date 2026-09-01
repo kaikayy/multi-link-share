@@ -5,10 +5,11 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
-## [1.0.0-beta.6] - 2026-09-01
+## [1.0.0-beta.7] - 2026-09-01
 
-Manifests: chrome `version_name` -> `1.0.0-beta.6`, firefox `version` ->
-`1.0.0.6`. Same permission set as beta.5.5.
+Manifests: chrome `version_name` -> `1.0.0-beta.7`, firefox `version` ->
+`1.0.0.7`. Same permission set as beta.5.5. (Supersedes the dev-only beta.6
+tag, which never reached a store.)
 
 ### Changed
 
