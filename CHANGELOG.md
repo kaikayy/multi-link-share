@@ -3,7 +3,7 @@
 All notable changes to Tab Share. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); dates are `YYYY-MM-DD`.
 
-## [1.0.0-beta.5] -- 2026-08-31
+## [1.0.0-beta.5] - 2026-08-31
 
 ### Changed
 
@@ -14,7 +14,7 @@ All notable changes to Tab Share. Format loosely follows
   wildcard was never used. Custom shortener endpoints must now be `https://`
   (localhost excepted), matching the viewer-URL rule.
 
-## [1.0.0-beta.4] -- 2026-08-31
+## [1.0.0-beta.4] - 2026-08-31
 
 _(beta.3 was tagged but not released -- its fix is folded in here.)_
 
@@ -48,7 +48,7 @@ _(beta.3 was tagged but not released -- its fix is folded in here.)_
   (Cloudflare Worker / Deno / YOURLS samples) and connect it. `ROADMAP.md` now
   lists a first-party Tab Share shortener as the intended default.
 
-## [1.0.0-beta.2] -- 2026-08-31
+## [1.0.0-beta.2] - 2026-08-31
 
 ### Fixed
 
@@ -64,7 +64,7 @@ _(beta.3 was tagged but not released -- its fix is folded in here.)_
   malware / phishing / adult / gambling hosts from public blocklists) and link
   expiry.
 
-## [1.0.0-beta.1] -- 2026-08-31
+## [1.0.0-beta.1] - 2026-08-31
 
 First public beta. Not on any store -- install via
 [`SELF-HOSTING.md`](SELF-HOSTING.md).
