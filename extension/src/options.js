@@ -73,6 +73,7 @@
 
   const PROVIDER_ORIGIN = {
     tinyurl: "https://tinyurl.com/*",
+    dagd: "https://da.gd/*",
   };
 
   const DEFAULT_SHORT_BASE = (CFG && CFG.DEFAULT_SHORTENER_BASE) || "";

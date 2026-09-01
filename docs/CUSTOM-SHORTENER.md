@@ -8,10 +8,20 @@ Tab Share can run every share link through a shortener of your choice. Options:
   or *Readable words* short codes, and only shortens links that point at your own
   viewer host. Pick it in **Options -> Shorten links**, enter its address, choose a
   style. This is the easiest option if you want to run your own.
+- **da.gd** -- built in, no setup, no account. A small open-source shortener
+  (running since 2011) that -- unlike is.gd / TinyURL's older API -- keeps the
+  `#…` fragment intact and swallows multi-kilobyte links. `GET https://da.gd/s?url=`.
 - **TinyURL** -- built in, no setup, but a public third party sees every link.
 - **Custom endpoint** -- any other tiny web service, described below.
 
-All three are **off by default**; nothing is sent anywhere until you turn one on.
+All of these are **off by default**; nothing is sent anywhere until you turn one on.
+
+> **On public shorteners.** da.gd and TinyURL are free services run by other
+> people. With any public shortener that is not your own, performance, uptime,
+> and how long a shortened link keeps resolving cannot be guaranteed -- if the
+> service goes away or drops old links, the short URL breaks (the full link you
+> also copied still works). For links you need to keep working, run your own
+> **Tab Share shortener**.
 
 ## The Tab Share shortener
 

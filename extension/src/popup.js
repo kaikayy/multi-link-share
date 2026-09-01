@@ -482,6 +482,7 @@
     const enc = encodeURIComponent(longUrl);
     let url;
     if (p === "tinyurl") url = `https://tinyurl.com/api-create.php?url=${enc}`;
+    else if (p === "dagd") url = `https://da.gd/s?url=${enc}`;
     else if ((p === "custom" || p === "tabshare") && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
     else throw new Error("no shortener is set up -- see the options page");
 

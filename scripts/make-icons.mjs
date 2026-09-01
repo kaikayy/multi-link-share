@@ -56,9 +56,10 @@ for (const b of ["promo-banner-tab-share", "promo-banner-suite"]) {
   if (fs.existsSync(R(`assets/${b}-3x1.svg`))) render(R(`assets/${b}-3x1.svg`), 2400, 800, R(`assets/${b}-3x1.png`));
 }
 
-// Ko-fi "Buy me a Beer" sticker, one file per colour (git-ignored palette). The
-// purple one is copied to viewer/assets/kofi-beer.svg (shipped) and the red one
-// lives at extension/src/kofi-button.svg (shipped).
+// Ko-fi "Buy me a Beer" sticker, one file per colour (git-ignored palette).
+// The red one is copied to extension/src/kofi-button.svg (options page, 240px).
+// viewer/assets/kofi-beer.svg is a separate hand-tuned compact version (pinned
+// bottom-right of the viewport) -- not generated here, don't overwrite it.
 const KOFI_FAM = "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 const KOFI = {
   red: ["#FF5E5B", "#ffffff"], purple: ["#8b7dff", "#ffffff"], blue: ["#3B9EFF", "#ffffff"],
@@ -82,7 +83,6 @@ for (const [name, [pill, ink]] of Object.entries(KOFI)) {
   fs.writeFileSync(svgPath, kofiSvg(pill, ink));
   render(svgPath, 300, 52, R(`assets/kofi-sticker-${name}.png`));
 }
-fs.copyFileSync(R("assets/kofi-sticker-purple.svg"), R("viewer/assets/kofi-beer.svg"));
 fs.copyFileSync(R("assets/kofi-sticker-red.svg"), R("extension/src/kofi-button.svg"));
 
 console.log("Icons rebuilt.");

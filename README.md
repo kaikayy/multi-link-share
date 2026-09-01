@@ -1,7 +1,31 @@
 # Tab Share
 
-Bundle a group of tabs into **one link** that opens as a slideshow -- and the
-person you send it to needs no extension, no account, and hits no server.
+**A browser extension that turns a group of open tabs into one shareable link.**
+
+- Pick a **window**, a **tab group**, or a **pasted list** -> get a single link,
+  copied to your clipboard.
+- The whole page list is packed into the link itself (everything after the `#`)
+  -- **no account, no server, no database**, and the extension makes no network
+  requests.
+- Whoever you send it to opens it as a **slideshow / grid / list** in any
+  browser -- they need no extension.
+- Optional: **password-protect** the link, or run it through a **URL shortener**.
+
+**Browsers:** Chrome, Chromium, Edge, Brave, Opera, Vivaldi, Arc, and Firefox
+(plus forks like Zen / LibreWolf). Desktop today; mobile is on the roadmap --
+see the [support matrix](#browser-support).
+
+### Install
+
+Not on a store yet -- **[install it yourself](docs/SELF-HOSTING.md)** (about two minutes).
+
+| Store | Link |
+| --- | --- |
+| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | [_listing coming soon_][cws] |
+| **Firefox Add-ons** (Firefox and forks) | [_listing coming soon_][amo] |
+
+[cws]: https://chromewebstore.google.com/ "Tab Share on the Chrome Web Store -- not published yet"
+[amo]: https://addons.mozilla.org/firefox/ "Tab Share on Firefox Add-ons -- not published yet"
 
 ![Tab Share -- one link for a whole group of tabs](assets/promo-master-3000x2000.png)
 
@@ -36,6 +60,29 @@ person you send it to needs no extension, no account, and hits no server.
    checkboxes to any view and opens the checked pages in this window, a new
    window, or a new tab group. **Open all pages** opens every (filtered) page.
    **Light / dark** toggle, dark by default.
+
+## Browser support
+
+One MV3 codebase, two manifests (`dist/chrome`, `dist/firefox`). **Sending** a
+link is the extension; **opening** one is the static viewer and works in any
+modern browser, mobile included, with no extension.
+
+| Browser | Create links | Tab Groups source | Tested |
+| --- | :---: | :---: | --- |
+| **Chrome / Chromium** | ✅ | ✅ | ✅ end-to-end |
+| **Edge** | ✅ | ✅ | ⬜ same engine as Chrome; not separately click-tested |
+| **Brave** | ✅ | ✅ | ⬜ should work; a localhost shortener may need a Shields exception (moot on HTTPS) |
+| **Opera** | ✅ | ✅ | ⬜ TBD |
+| **Vivaldi** | ✅ | ✅ | ⬜ TBD |
+| **Arc** | ✅ | ✅ | ⬜ TBD |
+| **Firefox** (≥ 139) | ✅ | ✅ | ⬜ builds + `web-ext lint` clean; UI not click-tested |
+| **Zen / LibreWolf / Waterfox / Floorp / Mullvad** | ✅ | ✅ | ⬜ TBD (Firefox forks) |
+| **Firefox for Android** | ⬜ blocked | ❌ no tab-groups API on Android | ⬜ roadmap -- `tabGroups` must become optional first |
+| **Safari** | ⬜ needs porting | ✅ | ⬜ `safari-web-extension-converter`, not attempted |
+| **Chrome / Safari on iOS & Android** | ❌ no extension support | -- | -- |
+| _Opening a shared link (any of the above + mobile)_ | -- | -- | ✅ responsive viewer, no extension needed |
+
+`✅` works · `⬜` expected to work / not yet verified · `❌` not possible
 
 ## How one link can carry everything
 
@@ -98,7 +145,7 @@ own menu or the options page; bring it back from the viewer's settings menu.
 | `tabGroups` | yes | The Tab Groups source, and creating a group on import (a content script can't request it at runtime). |
 | `scripting` | yes | Register the import banner for a self-hosted viewer URL you set. |
 | host access to a non-default viewer URL | **optional**, asked when you save one | Show the import button on your own viewer host. |
-| host access to a shortener | **optional**, asked when you enable one | Send the generated link to is.gd / v.gd / TinyURL / your endpoint. |
+| host access to a shortener | **optional**, asked when you enable one | Send the generated link to da.gd / TinyURL / your own endpoint. |
 
 No static `host_permissions`. One content script, scoped to the packaged viewer
 host only (plus any host you opt into). A minimal background worker (import
