@@ -13,8 +13,10 @@ Manifests: chrome `version_name` -> `1.0.0-beta.6`, firefox `version` ->
 ### Changed
 
 - **Options page rebuilt.** One scroll, card layout: a one-line welcome header
-  (highlighted the first time you open it -- along with the *Show real site
-  icons* choice -- and plain on every open after), then a two-column body --
+  that reads "Thanks for installing Tab Share!" and is highlighted the first
+  time you open it -- along with the *Show real site icons* choice -- then
+  reverts to "Welcome to Tab Share", plain, on every open after. Below it a
+  two-column body --
   **Preferences**, **Support & feedback** and **Privacy** on the left, the
   bigger tiles (**Viewer base URL**, **Shorten links**, **History**) on the
   right. On a 1080p display the History card's first line is visible without

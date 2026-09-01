@@ -33,6 +33,10 @@
     .welcome.seen { background: var(--bg-sunken); border-color: var(--border); }
     .welcome.seen h2 { color: color-mix(in srgb, var(--brand) 58%, var(--text-dim)); }
     .welcome.seen > p { color: var(--text-dim); }
+    /* "Thanks for installing" on the first visit, "Welcome to Tab Share" after */
+    .welcome .w-later { display: none; }
+    .welcome.seen .w-first { display: none; }
+    .welcome.seen .w-later { display: inline; }
 
     /* two-column body */
     .grid { display: grid; grid-template-columns: 264px minmax(0, 1fr); gap: 16px; align-items: start; }
@@ -90,7 +94,7 @@
     </div>
 
     <section class="card welcome" id="welcome">
-      <h2>Welcome to Tab Share</h2>
+      <h2><span class="w-first">Thanks for installing Tab Share!</span><span class="w-later">Welcome to Tab Share</span></h2>
       <p>Pick your setup below, then use the toolbar button to turn a group of tabs into one link.</p>
     </section>
 
