@@ -103,12 +103,7 @@ function buildExtension(target, manifestFile) {
     o = o.replace(/const localhost = [^;]+;\n\s*/g, "");
     o = o.replace(/ && !localhost\b/g, "");
     o = o.replace(/ \(localhost is allowed for testing\)/g, "");
-    o = o.replace("e.g. http://localhost:8779", "e.g. https://s.example.com");
     fs.writeFileSync(opath, o);
-    const hpath = path.join(out, "src", "options.html");
-    let h = fs.readFileSync(hpath, "utf8");
-    h = h.replace('placeholder="http://localhost:8779"', 'placeholder="https://s.example.com"');
-    fs.writeFileSync(hpath, h);
   }
   // dev-only helper art not needed in the package
   fs.rmSync(path.join(out, "icons", "icon-small.svg"), { force: true });

@@ -35,12 +35,18 @@ Manifests: chrome `version_name` -> `1.0.0-beta.6`, firefox `version` ->
 
 ### Added
 
+- **First-party Tab Share shortener at `s.kaikay.de`.** Picking *Tab Share
+  shortener* now pre-fills the address with the public instance, which
+  allow-lists the built-in viewer -- so the default viewer + shortener work with
+  no configuration. Still Off until you turn it on; still opt-in per link.
+  `SHORTENER_BASE=... npm run build` overrides the baked address.
 - **da.gd as a built-in shortener option.** A small, no-account open-source
   shortener that keeps the `#…` fragment and takes multi-kilobyte links (where
   is.gd fails and TinyURL is hit-or-miss). Off by default like the rest. The
-  Shorten-links card now notes that public shorteners -- da.gd and TinyURL --
-  can't promise uptime or link longevity; a self-hosted **Tab Share shortener**
-  is the durable choice. See [`docs/CUSTOM-SHORTENER.md`](docs/CUSTOM-SHORTENER.md).
+  Shorten-links card now notes that hosted shorteners -- `s.kaikay.de`, da.gd,
+  TinyURL -- can't promise uptime or link longevity; a self-hosted **Tab Share
+  shortener** is the durable choice. See
+  [`docs/CUSTOM-SHORTENER.md`](docs/CUSTOM-SHORTENER.md).
 - The options page carries a **Ko-fi "Buy me a Beer" button** (a bundled local
   SVG, not a remote image) plus **Report a bug** / **Request a feature** links
   to the GitHub issue forms, and a **Full privacy policy** link.

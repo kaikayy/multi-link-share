@@ -5,9 +5,12 @@ Tab Share can run every share link through a shortener of your choice. Options:
 - **Tab Share shortener** -- a purpose-built, self-hostable service
   ([tab-share-shortener](https://github.com/kaikayy/tab-share-shortener)). Handles
   the multi-kilobyte links the public shorteners choke on, offers *Normal* (random)
-  or *Readable words* short codes, and only shortens links that point at your own
-  viewer host. Pick it in **Options -> Shorten links**, enter its address, choose a
-  style. This is the easiest option if you want to run your own.
+  or *Readable words* short codes, and only shortens links that point at an
+  allow-listed viewer host. Picking it in **Options -> Shorten links** pre-fills
+  the address with the first-party instance at `https://s.kaikay.de`, which
+  allow-lists the built-in viewer (`kaikayy.github.io`) -- so the default setup
+  works with no configuration. Point it at your own instance instead if you want
+  to run it yourself.
 - **da.gd** -- built in, no setup, no account. A small open-source shortener
   (running since 2011) that -- unlike is.gd / TinyURL's older API -- keeps the
   `#…` fragment intact and swallows multi-kilobyte links. `GET https://da.gd/s?url=`.
@@ -16,26 +19,29 @@ Tab Share can run every share link through a shortener of your choice. Options:
 
 All of these are **off by default**; nothing is sent anywhere until you turn one on.
 
-> **On public shorteners.** da.gd and TinyURL are free services run by other
-> people. With any public shortener that is not your own, performance, uptime,
-> and how long a shortened link keeps resolving cannot be guaranteed -- if the
-> service goes away or drops old links, the short URL breaks (the full link you
-> also copied still works). For links you need to keep working, run your own
-> **Tab Share shortener**.
+> **On public shorteners.** `s.kaikay.de`, da.gd and TinyURL are all hosted by
+> other people (the first two by the Tab Share author, on a small server). With
+> any shortener that is not your own, performance, uptime, and how long a
+> shortened link keeps resolving cannot be guaranteed -- if the service goes away
+> or drops old links, the short URL breaks (the full link you also copied still
+> works). For links you need to keep working, run your own **Tab Share
+> shortener**.
 
 ## The Tab Share shortener
 
-Set it up from its own repo
-([SELF-HOSTING.md](https://github.com/kaikayy/tab-share-shortener/blob/main/SELF-HOSTING.md))
--- Node on a box you own, or a Cloudflare Worker. Then in **Options -> Shorten
-links**:
+**Options -> Shorten links**:
 
 1. **Shortener** -> *Tab Share shortener*
-2. **Shortener address** -> e.g. `https://s.example.com` (must be `https://`;
-   a `DEV_LOCALHOST=1` build also accepts `http://localhost:8779` for testing)
+2. **Shortener address** -> pre-filled with `https://s.kaikay.de`. Leave it, or
+   swap in your own instance (must be `https://`; a `DEV_LOCALHOST=1` build also
+   accepts `http://localhost:8779` for testing).
 3. **Short link style** -> *Normal* or *Readable words*
 4. Save, approve the one host-permission prompt, optionally tick *Shorten
    automatically*.
+
+To run your own instead of `s.kaikay.de`, set it up from its own repo
+([SELF-HOSTING.md](https://github.com/kaikayy/tab-share-shortener/blob/main/SELF-HOSTING.md))
+-- Node on a box you own, or a Cloudflare Worker -- and put its address in step 2.
 
 Under the hood the extension just calls `<address>/new?url=` (or
 `<address>/new?mode=words&url=`) -- the same GET contract as a custom endpoint

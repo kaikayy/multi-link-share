@@ -210,13 +210,14 @@
               <option value="custom">Custom endpoint</option>
             </select>
           </label>
-          <p class="muted">TinyURL and da.gd are public services — free, no account, but their
-            uptime and how long a link keeps working are not something anyone can promise. Your
-            own <strong>Tab Share shortener</strong> is the durable choice.</p>
+          <p class="muted"><strong>Tab Share shortener</strong> is pre-filled with the first-party
+            instance at <code>s.kaikay.de</code>. It, TinyURL and da.gd are all best-effort public
+            services — free, no account, but nobody can promise a hosted short link resolves forever.
+            Self-host the Tab Share shortener for links you fully control.</p>
           <div id="short-tabshare-wrap" hidden>
             <label class="field">
               <span class="label">Shortener address</span>
-              <input id="short-base" type="text" placeholder="http://localhost:8779" />
+              <input id="short-base" type="text" placeholder="https://s.kaikay.de" />
             </label>
             <label class="field">
               <span class="label">Short link style</span>
@@ -225,10 +226,11 @@
                 <option value="words">Readable words (e.g. /swift-amber-otter)</option>
               </select>
             </label>
-            <p class="note">Your <strong>Viewer base URL</strong> is always yours to set. A shortener only
-              shortens links whose <strong>viewer host is on its allowlist</strong> — your own shortener
-              allows your own viewer; someone else's has to opt your host in. Otherwise the full link still
-              works, just un-shortened. See
+            <p class="note">A shortener only shortens links whose <strong>viewer host is on its
+              allowlist</strong>. The <code>s.kaikay.de</code> instance allows the built-in viewer
+              (<code>kaikayy.github.io</code>), so the default setup just works. If you've set a custom
+              <strong>Viewer base URL</strong>, that host has to be allow-listed by whoever runs the
+              shortener — otherwise the full link still works, just un-shortened. Self-host with
               <a href="https://github.com/kaikayy/tab-share-shortener" target="_blank" rel="noopener">tab-share-shortener</a>.</p>
           </div>
           <label class="field" id="short-endpoint-wrap" hidden>

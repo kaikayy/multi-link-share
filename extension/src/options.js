@@ -154,7 +154,7 @@
       try {
         parsed = new URL(base);
       } catch (e) {
-        $("#short-err").textContent = "Enter the shortener's address, e.g. http://localhost:8779";
+        $("#short-err").textContent = "Enter the shortener's address, e.g. https://s.kaikay.de";
         $("#short-err").hidden = false;
         return;
       }

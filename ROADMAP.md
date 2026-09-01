@@ -34,21 +34,23 @@ Done:
 - Built-in **"Tab Share shortener"** provider in the extension options, with a
   *Normal / Readable words* style toggle. Off by default, alongside the
   custom-endpoint option ([docs/CUSTOM-SHORTENER.md](docs/CUSTOM-SHORTENER.md)).
+- **Public deployment live at `s.kaikay.de`.** Runs as a `systemctl --user`
+  service (JSON store) behind Apache reverse proxy + Let's Encrypt on a KeyHelp
+  box; allow-lists `kaikayy.github.io` only. The built-in provider's address
+  field is pre-filled with it, so the default viewer + this shortener work with
+  no configuration (still Off until the user turns it on).
 
 Still open:
 
-- **Public deployment on `s.kaikay.de`.** Domain is bought (`kaikay.de`).
-  Blocked on getting access to the server it'll run on -- once that lands:
-  reverse proxy + TLS, `SHORTENER_STORE_BACKEND=sqlite`, `deploy/install.sh`,
-  point DNS at it, bake it in as the built-in provider's default address.
-  Allowlists only `kaikayy.github.io` to start (see below).
-- Make it *the recommended* option (not just available) once there's a public
-  deployment.
-- The first public deployment allowlists **only the first-party viewer**
-  (`kaikayy.github.io`). Letting other people route their own self-hosted
-  viewers through it -- via the allowlist-request issue form the shortener repo
-  already ships -- is a later step, once the verification workflow is settled.
-  Self-hosters can already do all of this on their own instance today.
+- Make it *the recommended* option in the popup UI (not just pre-filled) now
+  that there's a public deployment.
+- Move the `s.kaikay.de` instance to the sqlite backend + backups (needs Node
+  22.5+ on the box, currently 20). Small `HEAD`-request fix in the shortener
+  (returns 405 today).
+- Letting other people route their own self-hosted viewers through `s.kaikay.de`
+  -- via the allowlist-request issue form the shortener repo already ships -- is
+  a later step, once the verification workflow is settled. Self-hosters can
+  already do all of this on their own instance today.
 
 Decided against: a server-side collection store (would shrink stored rows and
 allow editing a shared collection, but the recipient would have to fetch the
