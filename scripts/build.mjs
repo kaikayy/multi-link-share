@@ -8,6 +8,10 @@
  *
  * Optional env:
  *   VIEWER_BASE=https://you.github.io/tab-share-ext/  (bakes the default viewer URL)
+ *   DEV_LOCALHOST=1  keep http://localhost + http://127.0.0.1 in
+ *                    optional_host_permissions (for local end-to-end testing).
+ *                    Auto-on when VIEWER_BASE or SHORTENER_BASE is a localhost
+ *                    URL. Off otherwise -- every shipped build is https-only.
  *
  * No dependencies. Uses the system `zip` binary.
  */
@@ -22,12 +26,19 @@ const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"))
 const version = pkg.version;
 const VIEWER_BASE = process.env.VIEWER_BASE || "";
 const SHORTENER_BASE = process.env.SHORTENER_BASE || "";
-// NO_LOCALHOST=1 drops the http://localhost + http://127.0.0.1 entries from
-// optional_host_permissions. Use for store uploads (Chrome Web Store / AMO):
-// fewer requested permissions, faster review, and no plaintext-localhost
-// question from Brave's Shields. A localhost shortener is a dev-only setup and
-// still works in a plain `npm run build`.
-const NO_LOCALHOST = /^(1|true|yes)$/i.test(process.env.NO_LOCALHOST || "");
+// Shipped builds are https-only: the http://localhost + http://127.0.0.1
+// entries are stripped from optional_host_permissions and the options page
+// rejects non-https shortener/viewer addresses. Fewer requested permissions
+// (faster Chrome Web Store / AMO review) and nothing for Brave's localhost
+// Shield to question. Local end-to-end testing keeps localhost -- either
+// explicitly (DEV_LOCALHOST=1) or automatically when a localhost VIEWER_BASE /
+// SHORTENER_BASE is baked in (npm run build:local, serve:local, the post-commit
+// dev build).
+const isLocalhostUrl = (u) => /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/i.test(u || "");
+const LOCALHOST_PERMS =
+  /^(1|true|yes)$/i.test(process.env.DEV_LOCALHOST || "") ||
+  isLocalhostUrl(VIEWER_BASE) ||
+  isLocalhostUrl(SHORTENER_BASE);
 
 const SHARED = ["lzstring.min.js", "share-codec.js", "monogram.js"];
 
@@ -73,7 +84,7 @@ function buildExtension(target, manifestFile) {
   for (const f of ["manifest.chrome.json", "manifest.firefox.json"]) {
     fs.rmSync(path.join(out, f), { force: true });
   }
-  if (NO_LOCALHOST) {
+  if (!LOCALHOST_PERMS) {
     const mpath = path.join(out, "manifest.json");
     const m = JSON.parse(fs.readFileSync(mpath, "utf8"));
     if (Array.isArray(m.optional_host_permissions)) {
@@ -85,11 +96,12 @@ function buildExtension(target, manifestFile) {
     // Keep options.js from advertising a localhost shortener it can't be granted.
     const opath = path.join(out, "src", "options.js");
     let o = fs.readFileSync(opath, "utf8");
-    o = o.replace(/const localhost = [^;]+;/g, "const localhost = false;");
     o = o.replace(
-      /parsed\.hostname !== "localhost" && parsed\.hostname !== "127\.0\.0\.1"/g,
-      "true",
+      /parsed\.protocol !== "https:" && parsed\.hostname !== "localhost" && parsed\.hostname !== "127\.0\.0\.1"/g,
+      'parsed.protocol !== "https:"',
     );
+    o = o.replace(/const localhost = [^;]+;\n\s*/g, "");
+    o = o.replace(/ && !localhost\b/g, "");
     o = o.replace(/ \(localhost is allowed for testing\)/g, "");
     o = o.replace("e.g. http://localhost:8779", "e.g. https://s.example.com");
     fs.writeFileSync(opath, o);
@@ -121,7 +133,7 @@ console.log(
   `Tab Share build -- v${version}` +
     `${VIEWER_BASE ? ` (viewer: ${VIEWER_BASE})` : ""}` +
     `${SHORTENER_BASE ? ` (shortener: ${SHORTENER_BASE})` : ""}` +
-    `${NO_LOCALHOST ? " (no-localhost)" : ""}`,
+    `${LOCALHOST_PERMS ? " (dev: localhost perms kept)" : ""}`,
 );
 buildExtension("chrome", "manifest.chrome.json");
 buildExtension("firefox", "manifest.firefox.json");

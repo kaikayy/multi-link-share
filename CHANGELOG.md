@@ -5,6 +5,18 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
+### Changed
+
+- **Shipped builds are https-only.** `npm run build` now strips
+  `http://localhost/*` and `http://127.0.0.1/*` from `optional_host_permissions`
+  and the options page rejects non-https viewer and shortener addresses. Store
+  uploads request one permission group (`https://*/*`) instead of three, and
+  there is nothing for Brave's localhost Shield to flag. Local end-to-end
+  testing still gets the localhost entries -- automatically when a localhost
+  `VIEWER_BASE` / `SHORTENER_BASE` is baked in (`build:local`, `serve:local`,
+  the post-commit dev build), or explicitly with `DEV_LOCALHOST=1 npm run
+  build`. See [`docs/BUILD.md`](docs/BUILD.md).
+
 ### Added
 
 - **"Tab Share shortener" as a built-in shortener option.** A dedicated,

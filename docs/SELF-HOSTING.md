@@ -60,8 +60,9 @@ icons" option on -- it is off by default.
 
 ### HTTPS is required
 
-The extension refuses any viewer URL that isn't `https://` -- **except**
-`http://localhost` and `http://127.0.0.1`, which are allowed for testing.
+Shipped builds refuse any viewer URL that isn't `https://`. A local
+end-to-end test build (`npm run serve:local`, or `DEV_LOCALHOST=1 npm run
+build`) also accepts `http://localhost` and `http://127.0.0.1`.
 
 ### Test it locally first
 
@@ -230,7 +231,7 @@ extension.
 
 | Symptom | Cause |
 |---|---|
-| "This viewer address must be https" when saving in options | non-HTTPS URL that isn't `localhost` |
+| "Use an https:// address" when saving in options | shipped builds are https-only; use a `DEV_LOCALHOST=1` build to test against `localhost` |
 | Links open a blank / "no pages" viewer | viewer files not deployed, or deployed at a different path than the URL you set |
 | Share links point at `kaikayy.github.io` | you didn't set `VIEWER_BASE` at build time *and* didn't set the URL in options |
 | "Open with Tab Share" banner never appears on your viewer | set the viewer URL in the **options page** (not just at build time) and approve the host prompt; then reload the extension |

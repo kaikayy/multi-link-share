@@ -40,18 +40,23 @@ VIEWER_BASE=https://example.com/viewer/ npm run build
 This overrides the baked-in default for that build only. Users can also change
 it in the extension's options page.
 
-## Store builds: drop localhost (NO_LOCALHOST)
+## Shipped builds are https-only
+
+Every build is https-only by default: `npm run build` strips
+`http://localhost/*` and `http://127.0.0.1/*` from `optional_host_permissions`
+and the options page rejects non-https viewer and shortener addresses. Fewer
+requested permissions (faster Chrome Web Store / AMO review) and nothing for
+Brave's localhost Shield to question. This is the only build you should upload
+to a store.
+
+Local end-to-end testing keeps the localhost entries. It turns on
+automatically when a localhost address is baked in -- `npm run build:local`,
+`npm run serve:local`, and the post-commit dev build all do this -- or
+explicitly:
 
 ```bash
-NO_LOCALHOST=1 npm run build
+DEV_LOCALHOST=1 npm run build
 ```
-
-Removes `http://localhost/*` and `http://127.0.0.1/*` from
-`optional_host_permissions` and switches the options page to https-only
-shortener addresses. Use this for the Chrome Web Store and addons.mozilla.org
-uploads: fewer requested permissions (faster review) and nothing for Brave's
-localhost Shield to question. A localhost shortener is a dev-only setup and
-still works in a plain `npm run build`.
 
 ## Test the custom viewer URL locally
 
@@ -69,8 +74,9 @@ Then:
    open the collection into this window / a new window / a tab group, or save it
    to history.
 
-A plain `npm run build` (and the post-commit hook) resets the baked default, so
-re-run `serve:local` whenever you want the localhost build back.
+A plain `npm run build` (and the post-commit hook, unless you export
+`SHORTENER_BASE=`) resets the baked default and drops the localhost permissions
+again, so re-run `serve:local` whenever you want the localhost build back.
 
 ## Deploying the viewer
 

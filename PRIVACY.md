@@ -21,8 +21,8 @@ account, no analytics, and no tracking.
   page. It reads the collection from that page's URL fragment so it can add an
   "Open with Tab Share" button that opens the pages with the extension instead
   of the web view. It ships enabled only for the packaged viewer address; a
-  self-hosted viewer (or `localhost`) runs it only after you approve that one
-  host in the options page. It runs on no other site.
+  self-hosted (https) viewer runs it only after you approve that one host in
+  the options page. It runs on no other site.
 
 ## What can make a network request -- and only if you turn it on
 

@@ -21,8 +21,8 @@ Set it up from its own repo
 links**:
 
 1. **Shortener** -> *Tab Share shortener*
-2. **Shortener address** -> e.g. `https://s.example.com` (or `http://localhost:8779`
-   while testing)
+2. **Shortener address** -> e.g. `https://s.example.com` (must be `https://`;
+   a `DEV_LOCALHOST=1` build also accepts `http://localhost:8779` for testing)
 3. **Short link style** -> *Normal* or *Readable words*
 4. Save, approve the one host-permission prompt, optionally tick *Shorten
    automatically*.
