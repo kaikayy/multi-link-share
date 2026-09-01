@@ -650,6 +650,25 @@
     } catch (e) {}
   }
 
+  /* ---------- "use a shortener" tip ---------- */
+
+  // Shown at the top of the build view until the user sets up a shortener or
+  // x-es it away (the dismissal sticks).
+  async function refreshShortenerNotice() {
+    const el = $("#shortener-notice");
+    if (!el) return;
+    if (state.settings.shortProvider) {
+      el.hidden = true; // already using one — nothing to recommend
+      return;
+    }
+    let dismissed = false;
+    try {
+      const s = await api.storage.local.get("shortenerNoticeDismissed");
+      dismissed = !!s.shortenerNoticeDismissed;
+    } catch (e) {}
+    el.hidden = dismissed;
+  }
+
   /* ---------- source switching ---------- */
 
   async function setSource(source, keepList) {
@@ -677,6 +696,14 @@
   function init() {
     $("#open-options").addEventListener("click", () => api.runtime.openOptionsPage());
     $("#enable-shortener").addEventListener("click", () => api.runtime.openOptionsPage());
+
+    $("#notice-setup").addEventListener("click", () => api.runtime.openOptionsPage());
+    $("#notice-dismiss").addEventListener("click", () => {
+      $("#shortener-notice").hidden = true;
+      try {
+        api.storage.local.set({ shortenerNoticeDismissed: true });
+      } catch (e) {}
+    });
 
     $$(".seg").forEach((btn) => btn.addEventListener("click", () => setSource(btn.dataset.source)));
 
@@ -764,6 +791,7 @@
 
     Promise.all([loadDrafts(), loadSettings()])
       .then(() => {
+        refreshShortenerNotice();
         const src = ["window", "group", "paste"].includes(state.source) ? state.source : "window";
         const keepList = state.pages.length > 0; // a restored draft list takes precedence
         if (keepList) state.groupPristine = false;
