@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800"
+     font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#191527"/><stop offset="1" stop-color="#241a33"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7dff"/><stop offset="0.55" stop-color="#d76ad4"/><stop offset="1" stop-color="#ff9d6c"/>
+    </linearGradient>
+    <filter id="win" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="20" stdDeviation="38" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="800" fill="url(#bg)"/>
+  <circle cx="1150" cy="80" r="340" fill="#8b7dff" opacity="0.10"/>
+
+  <g transform="translate(56,48)" filter="url(#win)">
+    <rect width="1168" height="704" rx="18" fill="#17171d" stroke="#33333d"/>
+    <clipPath id="clipO"><rect width="1168" height="704" rx="18"/></clipPath>
+    <g clip-path="url(#clipO)">
+      <!-- browser tab strip -->
+      <rect width="1168" height="40" fill="#101016"/>
+      <path d="M24 40 v-24 a8 8 0 0 1 8 -8 h150 a8 8 0 0 1 8 8 v24 Z" fill="#17171d"/>
+      <rect x="40" y="18" width="12" height="12" rx="3" fill="url(#mark)"/>
+      <text x="60" y="28" fill="#c9c4de" font-size="11.5" font-weight="600">Tab Share &#8212; Options</text>
+      <!-- address bar -->
+      <rect width="1168" height="40" y="40" fill="#1c1c22"/>
+      <rect x="24" y="49" width="1120" height="22" rx="11" fill="#0f0f16"/>
+      <text x="40" y="64" fill="#7c7c8c" font-size="11.5" font-family="ui-monospace, Menlo, monospace">chrome-extension://&#8230;/src/options.html</text>
+
+      <!-- page -->
+      <text x="140" y="132" fill="#f2f0ff" font-size="24" font-weight="800">Tab Share settings</text>
+      <text x="140" y="158" fill="#9a9aa8" font-size="13">Everything is optional and stored on this device only.</text>
+
+      <!-- card: viewer -->
+      <g transform="translate(140,186)">
+        <rect width="888" height="118" rx="14" fill="#1d1d25" stroke="#33333d"/>
+        <text x="22" y="34" fill="#ececf1" font-size="15" font-weight="700">Viewer base URL</text>
+        <text x="22" y="56" fill="#9a9aa8" font-size="12">Where a share link opens. Must be an https:// address you control.</text>
+        <rect x="22" y="70" width="844" height="34" rx="9" fill="#24242e" stroke="#3a3a47"/>
+        <text x="36" y="92" fill="#ececf1" font-size="12.5" font-family="ui-monospace, Menlo, monospace">https://kaikayy.github.io/multi-link-share/</text>
+      </g>
+
+      <!-- card: shorten -->
+      <g transform="translate(140,320)">
+        <rect width="888" height="250" rx="14" fill="#1d1d25" stroke="#33333d"/>
+        <text x="22" y="34" fill="#ececf1" font-size="15" font-weight="700">Shorten links <tspan fill="#8a8a98" font-weight="500" font-size="12">(optional)</tspan></text>
+
+        <g transform="translate(22,50)" font-size="12.5">
+          <rect width="270" height="34" rx="9" fill="#24242e" stroke="#3a3a47"/>
+          <text x="14" y="22" fill="#ececf1">Tab Share shortener</text>
+          <path d="M250 15l6 6 6-6" stroke="#7c7c8c" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+          <rect x="286" width="360" height="34" rx="9" fill="#24242e" stroke="#3a3a47"/>
+          <text x="300" y="22" fill="#ececf1" font-family="ui-monospace, Menlo, monospace">https://s.example.com</text>
+
+          <rect x="662" width="182" height="34" rx="9" fill="#24242e" stroke="#3a3a47"/>
+          <text x="676" y="22" fill="#ececf1">Readable words</text>
+          <path d="M824 15l6 6 6-6" stroke="#7c7c8c" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </g>
+
+        <!-- the allowlist note -->
+        <g transform="translate(22,100)">
+          <rect width="844" height="78" rx="10" fill="#221d3a" stroke="#4a4276"/>
+          <rect width="4" height="78" rx="2" fill="#9a8dff"/>
+          <text x="18" y="24" fill="#c9c4de" font-size="12.5" font-weight="600">Your Viewer base URL is always yours to set.</text>
+          <text x="18" y="44" fill="#9a9aa8" font-size="12">A shortener only shortens links whose viewer host is on its allowlist. Your own</text>
+          <text x="18" y="60" fill="#9a9aa8" font-size="12">shortener allows your own viewer; someone else's has to opt your host in.</text>
+        </g>
+
+        <rect x="22" y="196" width="16" height="16" rx="4" fill="#2c2748" stroke="#4a4276"/>
+        <path d="M26 204l3 3 5-6" stroke="#9a8dff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="48" y="209" fill="#ececf1" font-size="12.5" font-weight="600">Shorten automatically</text>
+      </g>
+
+      <!-- card: history -->
+      <g transform="translate(140,586)">
+        <rect width="888" height="88" rx="14" fill="#1d1d25" stroke="#33333d"/>
+        <text x="22" y="30" fill="#ececf1" font-size="15" font-weight="700">History <tspan fill="#8a8a98" font-weight="500" font-size="12">(last 50, this device)</tspan></text>
+        <text x="22" y="56" fill="#9a9aa8" font-size="12" font-family="ui-monospace, Menlo, monospace">Research on hummingbirds &#183; 7 pages &#183; today</text>
+        <text x="22" y="74" fill="#9a9aa8" font-size="12" font-family="ui-monospace, Menlo, monospace">Q3 launch reading &#183; 12 pages &#183; yesterday</text>
+      </g>
+    </g>
+  </g>
+
+  <text x="640" y="778" text-anchor="middle" fill="#6b6b78" font-size="13">Options page &#183; viewer URL, shortener, history &#8212; all on-device</text>
+</svg>

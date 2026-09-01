@@ -3,10 +3,17 @@
 Bundle a group of tabs into **one link** that opens as a slideshow -- and the
 person you send it to needs no extension, no account, and hits no server.
 
-![promo](assets/promo-440x280.png)
+![Tab Share -- one link for a whole group of tabs](assets/promo-master-3000x2000.png)
 
-> **Status: `1.0.0-beta.1`.** Feature-complete and tested; not yet on any store.
+> **Status: `1.0.0-beta.5.5`.** Feature-complete and tested; not yet on any store.
 > Run your own copy with **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
+
+|  |  |
+| --- | --- |
+| ![Popup](assets/screenshot-1-popup.png) | ![Slideshow viewer](assets/screenshot-2-viewer.png) |
+| ![Grid view](assets/screenshot-3-viewer-grid.png) | ![Options](assets/screenshot-4-options.png) |
+
+<sub>Screenshots are simulated mockups of the UI.</sub>
 
 ## What it does
 
@@ -111,7 +118,7 @@ viewer/            self-contained static site (slideshow / preview grid / grid /
   frame-hosts.js   header-probed allow/deny list for auto-previewing sites
 tools/frame-probe/ regenerates that list from live response headers
 docs/              SELF-HOSTING, BUILD, SECURITY, THIRD-PARTY, CUSTOM-SHORTENER
-assets/            store artwork (promo tile, screenshots, og-card source)
+assets/            artwork -- icon, promo tiles, simulated screenshots, og-card (svg sources; PNGs via `npm run icons`)
 dev/               mocked-chrome harness for eyeballing the UI (not shipped)
 scripts/           build / sync / icons / selftest / dev-server
 ```
