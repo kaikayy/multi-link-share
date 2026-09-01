@@ -7,8 +7,18 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [1.0.0-beta.6] - 2026-09-01
 
-No extension changes -- both MV3 manifests stay at their `1.0.0-beta.5.5`
-values. This release is the hosted viewer and the docs only.
+Manifests: chrome `version_name` -> `1.0.0-beta.6`, firefox `version` ->
+`1.0.0.6`. Same permission set as beta.5.5.
+
+### Changed
+
+- **Options page rebuilt.** Card layout on a single scroll: a welcome header
+  (highlighted the first time you open it, plain after that), then a two-column
+  body -- **Preferences** and **Support & feedback** on the left, the bigger
+  tiles (**Viewer base URL**, **Shorten links**, **History**) on the right --
+  with **Privacy** underneath. On a 1080p display nothing needs scrolling except
+  that Privacy card. "Show real site icons" moved from the welcome box into
+  Preferences.
 
 ### Added
 
@@ -16,7 +26,15 @@ values. This release is the hosted viewer and the docs only.
   *Privacy*. It is a plain `<a href>` to a Ko-fi page, so it makes no network
   request until you click it -- the viewer's zero-network-on-load behaviour is
   unchanged.
+- The options page carries the same **Ko-fi button** (a bundled local SVG, not a
+  remote image) plus **Report a bug** / **Request a feature** links to the
+  GitHub issue forms.
 - A **Support** section in `README.md` with a Ko-fi button.
+
+### Removed
+
+- The "is.gd and v.gd were removed" note under the shortener options -- long
+  stale; the migration of a stored `isgd`/`vgd` choice to "off" stays.
 
 ## [1.0.0-beta.5.5] - 2026-09-01
 

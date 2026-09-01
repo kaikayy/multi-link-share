@@ -305,7 +305,23 @@
 
   /* ---------------- wire up ---------------- */
 
+  /** The welcome header is highlighted on the first visit only; after that it
+   *  stays at the top but drops the accent. */
+  async function markWelcomeSeen() {
+    try {
+      const { optionsSeen } = await api.storage.local.get("optionsSeen");
+      if (optionsSeen) {
+        $("#welcome").classList.add("seen");
+      } else {
+        await api.storage.local.set({ optionsSeen: true });
+      }
+    } catch (e) {
+      /* storage unavailable -- leave the highlight on */
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
+    markWelcomeSeen();
     loadPrefs();
     loadShortener();
     loadViewer();
