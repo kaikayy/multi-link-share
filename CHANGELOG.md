@@ -5,6 +5,8 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
+## [1.0.0-beta.5.5] - 2026-09-01
+
 ### Changed
 
 - **Shipped builds are https-only.** `npm run build` now strips
@@ -31,6 +33,13 @@ All notable changes to Tab Share. Format loosely follows
   build (pre-fills the address field only; the shortener still starts Off),
   mirroring `VIEWER_BASE`.
 
+- **Clearer shortener/viewer split in the options page and docs.** The
+  "Shorten links" section now explains that your Viewer base URL is always
+  yours to set, but a shortener only shortens links whose *viewer host is on
+  that shortener's allowlist* -- your own shortener always allows your own
+  viewer; someone else's has to opt your host in. `docs/CUSTOM-SHORTENER.md`
+  gets a section on the same.
+
 ### Fixed
 
 - Shortener host-permission requests were built from `URL.origin`, which
@@ -38,6 +47,9 @@ All notable changes to Tab Share. Format loosely follows
   rejected it and the failure was silently swallowed (the popup would just say
   "couldn't be reached"). Patterns are now `scheme://host/*` and request
   failures surface an error.
+- When a shortener rejects a link, the popup now shows the reason it sent back
+  (e.g. "host ... is not on this shortener's allowlist") instead of a bare
+  "HTTP 400".
 
 ## [1.0.0-beta.5] - 2026-08-31
 

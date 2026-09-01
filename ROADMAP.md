@@ -39,6 +39,11 @@ Still open:
 
 - Make it *the recommended* option (not just available) once there's a public
   deployment.
+- The first public deployment allowlists **only the first-party viewer**
+  (`kaikayy.github.io`). Letting other people route their own self-hosted
+  viewers through it -- via the allowlist-request issue form the shortener repo
+  already ships -- is a later step, once the verification workflow is settled.
+  Self-hosters can already do all of this on their own instance today.
 
 Decided against: a server-side collection store (would shrink stored rows and
 allow editing a shared collection, but the recipient would have to fetch the

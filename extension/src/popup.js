@@ -491,9 +491,18 @@
     } catch (e) {
       throw new Error("the shortener couldn’t be reached (offline, or the options page never got host access)");
     }
-    if (!res.ok) throw new Error("the shortener returned HTTP " + res.status);
+    const text = await res.text();
+    if (!res.ok) {
+      let detail = "";
+      try {
+        detail = JSON.parse(text).error || "";
+      } catch (e) {}
+      // The Tab Share shortener rejects a link whose viewer host it does not
+      // allowlist -- surface that instead of a bare status code.
+      throw new Error(detail || "the shortener returned HTTP " + res.status);
+    }
 
-    const short = pickShortUrl(await res.text());
+    const short = pickShortUrl(text);
     if (!short) throw new Error("the shortener returned no link (it may reject long or '#'-fragment URLs)");
     if (short.length >= longUrl.length) throw new Error("the shortened link came back no shorter than the original");
     return short;

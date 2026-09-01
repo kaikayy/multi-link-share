@@ -31,6 +31,23 @@ Under the hood the extension just calls `<address>/new?url=` (or
 `<address>/new?mode=words&url=`) -- the same GET contract as a custom endpoint
 below, so the rest of this page applies to it too.
 
+### Viewer host and the allowlist
+
+A Tab Share shortener only shortens links whose **viewer host is on that
+shortener's allowlist** -- this is what stops it being turned into an open
+redirect. Two independent settings meet here:
+
+- **Viewer base URL** (top of the options page) -- always yours to set to any
+  `https://` viewer. This alone always works; the link just is not shortened if
+  the next point fails.
+- **Shortener** -- if you run your **own** shortener it allows your own viewer
+  by default, so nothing to do. If you point at **someone else's** shortener,
+  your viewer host has to be one *its operator* allows; otherwise the popup
+  says the host is not on that shortener's allowlist and keeps the full link.
+
+Operators grow the list with `SHORTENER_HOSTS` / `SHORTENER_HOSTS_FILE` (see
+the shortener's SELF-HOSTING.md).
+
 ## Custom endpoint
 
 Any other tiny web service you point the extension at. This section shows what it

@@ -130,7 +130,10 @@
           <span class="label">Shortener address</span>
           <input id="short-base" type="text" placeholder="http://localhost:8779" />
           <span class="s-desc">Base URL of a Tab Share shortener (self-hosted). Runs the <code>/new</code> endpoint. See
-            <a href="https://github.com/kaikayy/tab-share-shortener" target="_blank" rel="noopener">tab-share-shortener</a>.</span>
+            <a href="https://github.com/kaikayy/tab-share-shortener" target="_blank" rel="noopener">tab-share-shortener</a>.
+            A shortener only shortens links whose <strong>viewer host is on its allowlist</strong> — if you set a custom
+            Viewer base URL above, that host has to be one the shortener's operator allows (your own shortener always
+            allows your own viewer). Otherwise the full link still works, it just is not shortened.</span>
         </label>
         <label class="field">
           <span class="label">Short link style</span>
