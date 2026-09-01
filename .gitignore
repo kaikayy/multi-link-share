@@ -3,3 +3,6 @@ dist/
 *.log
 .DS_Store
 STORE-LISTING.md
+
+# promo banners -- generated/iterated locally, not tracked
+assets/promo-banner-*
