@@ -5,6 +5,19 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
+## [1.0.0-beta.6] - 2026-09-01
+
+No extension changes -- both MV3 manifests stay at their `1.0.0-beta.5.5`
+values. This release is the hosted viewer and the docs only.
+
+### Added
+
+- A **"Buy me a Beer"** link in the viewer footer, next to *Tab Share* and
+  *Privacy*. It is a plain `<a href>` to a Ko-fi page, so it makes no network
+  request until you click it -- the viewer's zero-network-on-load behaviour is
+  unchanged.
+- A **Support** section in `README.md` with a Ko-fi button.
+
 ## [1.0.0-beta.5.5] - 2026-09-01
 
 ### Changed

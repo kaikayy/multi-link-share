@@ -5,7 +5,7 @@ person you send it to needs no extension, no account, and hits no server.
 
 ![Tab Share -- one link for a whole group of tabs](assets/promo-master-3000x2000.png)
 
-> **Status: `1.0.0-beta.5.5`.** Feature-complete and tested; not yet on any store.
+> **Status: `1.0.0-beta.6`.** Feature-complete and tested; not yet on any store.
 > Run your own copy with **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
 
 |  |  |
