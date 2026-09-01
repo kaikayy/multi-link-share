@@ -135,6 +135,19 @@
 
     let pattern = PROVIDER_ORIGIN[provider] || null;
 
+    // Provider picked but not configured yet (e.g. just chosen from the dropdown):
+    // persist the choice quietly and wait for an address -- no error, no prompt.
+    if ((provider === "tabshare" && !base) || (provider === "custom" && !endpoint)) {
+      await api.storage.local.set({
+        shortProvider: provider,
+        shortEndpoint: endpoint,
+        shortAuto: $("#short-auto").checked,
+        shortBase: base,
+        shortMode: mode,
+      });
+      return;
+    }
+
     if (provider === "tabshare") {
       let parsed;
       try {

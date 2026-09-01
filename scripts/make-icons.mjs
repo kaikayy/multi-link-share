@@ -56,4 +56,33 @@ for (const b of ["promo-banner-tab-share", "promo-banner-suite"]) {
   if (fs.existsSync(R(`assets/${b}-3x1.svg`))) render(R(`assets/${b}-3x1.svg`), 2400, 800, R(`assets/${b}-3x1.png`));
 }
 
+// Ko-fi "Buy me a Beer" sticker, one file per colour (git-ignored palette). The
+// purple one is copied to viewer/assets/kofi-beer.svg (shipped) and the red one
+// lives at extension/src/kofi-button.svg (shipped).
+const KOFI_FAM = "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+const KOFI = {
+  red: ["#FF5E5B", "#ffffff"], purple: ["#8b7dff", "#ffffff"], blue: ["#3B9EFF", "#ffffff"],
+  green: ["#2FB170", "#ffffff"], orange: ["#FF8A3D", "#ffffff"], pink: ["#E85B9E", "#ffffff"],
+  mono: ["#1b1b22", "#ffffff"], "mono-light": ["#f0f0f5", "#1b1b22"],
+};
+const kofiSvg = (pill, ink) => `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="52" viewBox="0 0 300 52" role="img" aria-label="Buy me a Beer on Ko-fi">
+  <rect width="300" height="52" rx="14" fill="${pill}"/>
+  <g transform="translate(18,9)">
+    <g fill="${ink}"><circle cx="7" cy="8" r="5.5"/><circle cx="15" cy="5" r="6.5"/><circle cx="23" cy="8" r="5.5"/></g>
+    <rect x="3" y="9" width="22" height="25" rx="3.5" fill="${ink}"/>
+    <path d="M25 13 h5 a6 6 0 0 1 0 13 h-5" fill="none" stroke="${ink}" stroke-width="3.6"/>
+    <circle cx="9" cy="19" r="2" fill="${pill}"/><circle cx="17" cy="25" r="2" fill="${pill}"/><circle cx="11" cy="29" r="1.6" fill="${pill}"/>
+  </g>
+  <text x="70" y="32" font-family="${KOFI_FAM}" font-size="17" font-weight="700" fill="${ink}">Buy me a Beer</text>
+  <text x="282" y="33" text-anchor="end" font-family="${KOFI_FAM}" font-size="12" font-weight="600" fill="${ink}" opacity="0.9">ko-fi</text>
+</svg>
+`;
+for (const [name, [pill, ink]] of Object.entries(KOFI)) {
+  const svgPath = R(`assets/kofi-sticker-${name}.svg`);
+  fs.writeFileSync(svgPath, kofiSvg(pill, ink));
+  render(svgPath, 300, 52, R(`assets/kofi-sticker-${name}.png`));
+}
+fs.copyFileSync(R("assets/kofi-sticker-purple.svg"), R("viewer/assets/kofi-beer.svg"));
+fs.copyFileSync(R("assets/kofi-sticker-red.svg"), R("extension/src/kofi-button.svg"));
+
 console.log("Icons rebuilt.");

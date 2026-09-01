@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="52" viewBox="0 0 300 52" role="img" aria-label="Buy me a Beer on Ko-fi">
-  <rect width="300" height="52" rx="14" fill="#FF5E5B"/>
+  <rect width="300" height="52" rx="14" fill="#8b7dff"/>
   <g transform="translate(18,9)">
     <g fill="#ffffff"><circle cx="7" cy="8" r="5.5"/><circle cx="15" cy="5" r="6.5"/><circle cx="23" cy="8" r="5.5"/></g>
     <rect x="3" y="9" width="22" height="25" rx="3.5" fill="#ffffff"/>
     <path d="M25 13 h5 a6 6 0 0 1 0 13 h-5" fill="none" stroke="#ffffff" stroke-width="3.6"/>
-    <circle cx="9" cy="19" r="2" fill="#FF5E5B"/><circle cx="17" cy="25" r="2" fill="#FF5E5B"/><circle cx="11" cy="29" r="1.6" fill="#FF5E5B"/>
+    <circle cx="9" cy="19" r="2" fill="#8b7dff"/><circle cx="17" cy="25" r="2" fill="#8b7dff"/><circle cx="11" cy="29" r="1.6" fill="#8b7dff"/>
   </g>
   <text x="70" y="32" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff">Buy me a Beer</text>
   <text x="282" y="33" text-anchor="end" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#ffffff" opacity="0.9">ko-fi</text>

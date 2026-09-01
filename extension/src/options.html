@@ -9,13 +9,18 @@
     html, body { width: auto; background: var(--bg); }
     body { font-size: 13.5px; }
 
-    .wrap { max-width: 960px; margin: 0 auto; padding: 24px 20px 64px; display: flex; flex-direction: column; gap: 16px; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 24px 20px 40px; display: flex; flex-direction: column; gap: 16px; }
 
-    .page-head h1 { font-size: 18px; margin: 0; }
-    .page-head .sub { margin: 4px 0 0; color: var(--text-dim); font-size: 12.5px; }
+    .page-head { display: flex; align-items: center; gap: 9px; }
+    .page-head h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 9px; }
+    .page-head .gear { width: 20px; height: 20px; color: var(--text-dim); flex: none; }
 
     .card { background: var(--bg-sunken); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-    .card h2 { font-size: 12px; margin: 0; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.6px; }
+    .card h2 {
+      font-size: 12px; margin: 0; text-transform: uppercase; letter-spacing: 0.6px;
+      color: var(--brand);
+      color: color-mix(in srgb, var(--brand) 58%, var(--text-dim));
+    }
     .card > p { margin: 0; color: var(--text-dim); font-size: 12.5px; }
     code { background: var(--surface); padding: 1px 5px; border-radius: 4px; }
     .ok-note { color: var(--ok); font-size: 12.5px; margin: 0; }
@@ -26,9 +31,10 @@
     .welcome h2 { color: var(--brand); }
     .welcome > p { color: var(--text); }
     .welcome.seen { background: var(--bg-sunken); border-color: var(--border); }
-    .welcome.seen h2, .welcome.seen > p { color: var(--text-dim); }
+    .welcome.seen h2 { color: color-mix(in srgb, var(--brand) 58%, var(--text-dim)); }
+    .welcome.seen > p { color: var(--text-dim); }
 
-    /* two-column body: preferences + support on the left, the big tiles on the right */
+    /* two-column body */
     .grid { display: grid; grid-template-columns: 264px minmax(0, 1fr); gap: 16px; align-items: start; }
     .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
     @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
@@ -37,7 +43,14 @@
     .setting > input[type="checkbox"] { width: 15px; height: 15px; margin-top: 2px; accent-color: var(--brand); flex: none; }
     .setting .s-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .setting .s-title { font-weight: 600; font-size: 12.5px; color: var(--text); }
-    .setting .s-desc { color: var(--text-dim); font-size: 11px; }
+    .setting .s-desc { color: var(--text-dim); font-size: 12px; line-height: 1.4; }
+
+    /* spotlight the site-icons choice while the welcome banner is still highlighted */
+    #row-icons { border-radius: 6px; }
+    #welcome:not(.seen) ~ .grid #row-icons {
+      background: var(--brand-soft);
+      box-shadow: 0 0 0 8px var(--brand-soft);
+    }
 
     #short-tabshare-wrap:not([hidden]) { display: flex; flex-direction: column; gap: 10px; }
 
@@ -63,19 +76,22 @@
     .kofi img { display: block; width: 240px; height: auto; }
     .kofi:hover img { filter: brightness(1.05); }
     .fb-links { font-size: 12px; display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; }
+
+    .wrap-foot { color: var(--text-dim); font-size: 11.5px; text-align: center; margin: 6px 0 0; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="page-head">
-      <h1>Tab Share settings</h1>
-      <p class="sub">Everything is optional and stored on this device only.</p>
+      <h1 aria-label="Tab Share settings">
+        <svg class="gear" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Zm7.4-2.1 1.8-1-1.7-3-2 .5a6 6 0 0 0-1.7-1l-.3-2h-3.4l-.3 2a6 6 0 0 0-1.7 1l-2-.5-1.7 3 1.8 1a6 6 0 0 0 0 2l-1.8 1 1.7 3 2-.5a6 6 0 0 0 1.7 1l.3 2h3.4l.3-2a6 6 0 0 0 1.7-1l2 .5 1.7-3-1.8-1a6 6 0 0 0 0-2Z"/></svg>
+        Tab Share
+      </h1>
     </div>
 
     <section class="card welcome" id="welcome">
       <h2>Welcome to Tab Share</h2>
-      <p>Pick your setup below, then use the toolbar button to turn a group of tabs into one link.
-        Nothing here leaves this device, and you can change any of it later.</p>
+      <p>Pick your setup below, then use the toolbar button to turn a group of tabs into one link.</p>
     </section>
 
     <div class="grid">
@@ -84,7 +100,7 @@
         <section class="card">
           <h2>Preferences</h2>
 
-          <label class="setting">
+          <label class="setting" id="row-icons">
             <input id="pref-icons" type="checkbox" />
             <span class="s-body">
               <span class="s-title">Show real site icons</span>
@@ -142,6 +158,17 @@
             <a href="https://github.com/kaikayy/multi-link-share/issues/new?template=bug_report.yml" target="_blank" rel="noopener">Report a bug</a>
             <a href="https://github.com/kaikayy/multi-link-share/issues/new?template=feature_request.yml" target="_blank" rel="noopener">Request a feature</a>
             <a href="https://github.com/kaikayy/multi-link-share" target="_blank" rel="noopener">Source &amp; docs</a>
+          </p>
+        </section>
+
+        <section class="card">
+          <h2>Privacy</h2>
+          <p>The page list lives in the URL after <code>#</code>, which browsers never send to a server.
+            <code>tabs</code> and <code>tabGroups</code> are read only when you press a button. One content
+            script runs on the viewer page only. Password links are encrypted in your browser. Site icons and
+            the shortener are the only things that can make a network request — both off-able above.</p>
+          <p class="fb-links">
+            <a href="https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md" target="_blank" rel="noopener">Full privacy policy →</a>
           </p>
         </section>
       </div>
@@ -228,18 +255,7 @@
       </div>
     </div>
 
-    <section class="card">
-      <h2>Privacy</h2>
-      <p>
-        The page list lives entirely in the part of the URL after <code>#</code>, which browsers never send to
-        a server. <code>tabs</code> reads the current window's URLs and titles only when you press a button;
-        <code>tabGroups</code> reads and names tab groups. One content script runs on the
-        <strong>viewer page only</strong> (the packaged host, plus a viewer address you set above after
-        approving that one host). Password links are encrypted in your browser — the password is never stored
-        or sent. Site icons and the shortener are the only features that can make a network request, both
-        off-able above.
-      </p>
-    </section>
+    <p class="wrap-foot">Everything on this page is optional and stored on this device only.</p>
   </div>
 
   <div id="toast" class="toast" hidden></div>
