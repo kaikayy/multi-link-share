@@ -1,0 +1,75 @@
+name: Bug report
+description: Something is broken or behaves differently than documented
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. For security problems, do **not** use this form --
+        follow [docs/SECURITY.md](https://github.com/kaikayy/multi-link-share/blob/main/docs/SECURITY.md).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what actually happened.
+      placeholder: |
+        1. Clicked the toolbar button, picked 5 tabs
+        2. Clicked "Create share link"
+        3. Opened the link -- the slideshow was empty
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options:
+        - Extension popup / options
+        - Extension background / import button
+        - Viewer (slideshow / grid / list)
+        - Share link / codec
+        - URL shortener
+        - Build / dev scripts
+        - Docs
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 140 / Firefox 130
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Extension or viewer version
+      description: From the extension's options page, or the commit you built from.
+      placeholder: 1.0.0-beta.5
+    validations:
+      required: true
+  - type: input
+    id: viewer
+    attributes:
+      label: Viewer URL
+      description: The default hosted viewer, or your own deployment?
+      placeholder: https://kaikayy.github.io/multi-link-share/
+    validations:
+      required: false
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      description: Anything in the extension or page devtools console. Redact link tokens.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: I can reproduce this on a fresh reload of the extension
+          required: false

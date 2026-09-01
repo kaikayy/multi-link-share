@@ -1,0 +1,48 @@
+name: Feature request
+description: Suggest an improvement or a new capability
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check `ROADMAP.md` first -- it lists what is planned and what is
+        intentionally out of scope. This project stays small on purpose: no
+        backend, tiny permission surface, recipient needs no extension.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do that is hard or impossible today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Fit with the project
+      options:
+        - label: This does not require a backend, analytics, or remote code
+          required: false
+        - label: This does not require a new or wider browser permission
+          required: false
+        - label: This still works for a recipient with no extension installed
+          required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and the roadmap and this is not a duplicate
+          required: true
