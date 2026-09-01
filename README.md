@@ -141,6 +141,14 @@ Pages via `.github/workflows/deploy-viewer.yml`; the privacy policy is published
 at `/privacy.html` alongside it. See `CHANGELOG.md` for what's changed and
 `ROADMAP.md` for what's planned (notably an offline safer-links filter).
 
+## Support
+
+If Tab Share is useful to you, you can support development on Ko-fi:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B3L1265MM0)
+
+## License
+
 Licensed under the **GNU AGPL-3.0** -- free to use, study, share, and modify, but
 any modified version you distribute or run as a network service must be offered
 under the same license with source available. Bundles lz-string (MIT) -- see
