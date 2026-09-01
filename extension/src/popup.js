@@ -14,14 +14,21 @@
     pages: [],
     name: "",
     groupPristine: true, // true = a picker change may replace the list wholesale
-    settings: { showIcons: true, autoPreview: true, shortProvider: "", shortEndpoint: "", shortAuto: false },
+    settings: { showIcons: true, autoPreview: true, shortProvider: "", shortEndpoint: "", shortAuto: false, shortMode: "code" },
   };
 
   async function loadSettings() {
     try {
-      const s = await api.storage.local.get(["showIcons", "autoPreview", "shortProvider", "shortEndpoint", "shortAuto"]);
+      const s = await api.storage.local.get([
+        "showIcons",
+        "autoPreview",
+        "shortProvider",
+        "shortEndpoint",
+        "shortAuto",
+        "shortMode",
+      ]);
       // is.gd / v.gd reject '#'-fragment and github.io URLs, so they never worked
-      // for share links — retired in favour of TinyURL / a custom endpoint.
+      // for share links -- retired in favour of TinyURL / a custom endpoint.
       const provider = s.shortProvider === "isgd" || s.shortProvider === "vgd" ? "" : s.shortProvider || "";
       state.settings = {
         showIcons: s.showIcons === true, // default OFF
@@ -29,6 +36,7 @@
         shortProvider: provider,
         shortEndpoint: s.shortEndpoint || "",
         shortAuto: !!s.shortAuto,
+        shortMode: s.shortMode === "words" ? "words" : "code",
       };
     } catch (e) {}
   }
@@ -474,8 +482,8 @@
     const enc = encodeURIComponent(longUrl);
     let url;
     if (p === "tinyurl") url = `https://tinyurl.com/api-create.php?url=${enc}`;
-    else if (p === "custom" && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
-    else throw new Error("no shortener is set up — see the options page");
+    else if ((p === "custom" || p === "tabshare") && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
+    else throw new Error("no shortener is set up -- see the options page");
 
     let res;
     try {

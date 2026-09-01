@@ -1,9 +1,40 @@
 # Bring your own link shortener
 
-Tab Share can run every share link through a shortener of your choice. TinyURL is
-built in; anything else is a **custom endpoint** -- a tiny web service you point
-the extension at. This page shows what it has to do and gives a few
-copy-paste implementations.
+Tab Share can run every share link through a shortener of your choice. Options:
+
+- **Tab Share shortener** -- a purpose-built, self-hostable service
+  ([tab-share-shortener](https://github.com/kaikayy/tab-share-shortener)). Handles
+  the multi-kilobyte links the public shorteners choke on, offers *Normal* (random)
+  or *Readable words* short codes, and only shortens links that point at your own
+  viewer host. Pick it in **Options -> Shorten links**, enter its address, choose a
+  style. This is the easiest option if you want to run your own.
+- **TinyURL** -- built in, no setup, but a public third party sees every link.
+- **Custom endpoint** -- any other tiny web service, described below.
+
+All three are **off by default**; nothing is sent anywhere until you turn one on.
+
+## The Tab Share shortener
+
+Set it up from its own repo
+([SELF-HOSTING.md](https://github.com/kaikayy/tab-share-shortener/blob/main/SELF-HOSTING.md))
+-- Node on a box you own, or a Cloudflare Worker. Then in **Options -> Shorten
+links**:
+
+1. **Shortener** -> *Tab Share shortener*
+2. **Shortener address** -> e.g. `https://s.example.com` (or `http://localhost:8779`
+   while testing)
+3. **Short link style** -> *Normal* or *Readable words*
+4. Save, approve the one host-permission prompt, optionally tick *Shorten
+   automatically*.
+
+Under the hood the extension just calls `<address>/new?url=` (or
+`<address>/new?mode=words&url=`) -- the same GET contract as a custom endpoint
+below, so the rest of this page applies to it too.
+
+## Custom endpoint
+
+Any other tiny web service you point the extension at. This section shows what it
+has to do and gives a few copy-paste implementations.
 
 ## What the extension does
 

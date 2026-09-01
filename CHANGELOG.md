@@ -3,6 +3,30 @@
 All notable changes to Tab Share. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); dates are `YYYY-MM-DD`.
 
+## [Unreleased]
+
+### Added
+
+- **"Tab Share shortener" as a built-in shortener option.** A dedicated,
+  self-hostable service ([tab-share-shortener](https://github.com/kaikayy/tab-share-shortener))
+  that shortens long share links -- including the multi-kilobyte ones TinyURL
+  and is.gd choke on. Options -> Shorten links -> pick **Tab Share shortener**,
+  enter its address, and choose a **Short link style**: *Normal* (random code,
+  e.g. `/k7Rm2pq`) or *Readable words* (e.g. `/swift-amber-otter`). Off by
+  default, same as the other shortener options; nothing is sent anywhere until
+  you turn it on. See [`docs/CUSTOM-SHORTENER.md`](docs/CUSTOM-SHORTENER.md).
+- `SHORTENER_BASE=... npm run build` bakes a default shortener address into the
+  build (pre-fills the address field only; the shortener still starts Off),
+  mirroring `VIEWER_BASE`.
+
+### Fixed
+
+- Shortener host-permission requests were built from `URL.origin`, which
+  includes the port -- not a valid match pattern, so `permissions.request()`
+  rejected it and the failure was silently swallowed (the popup would just say
+  "couldn't be reached"). Patterns are now `scheme://host/*` and request
+  failures surface an error.
+
 ## [1.0.0-beta.5] - 2026-08-31
 
 ### Changed

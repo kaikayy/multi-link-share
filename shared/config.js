@@ -17,6 +17,10 @@
     // Trailing slash required. Override at build time with VIEWER_BASE=...
     DEFAULT_VIEWER_BASE: "https://kaikayy.github.io/multi-link-share/",
     PROJECT_URL: "https://github.com/kaikayy/multi-link-share",
+    // Optional: bake a default Tab Share shortener address into a build with
+    // SHORTENER_BASE=... npm run build. Empty = the shortener stays unset until
+    // the user fills it in on the options page.
+    DEFAULT_SHORTENER_BASE: "",
     // Warn in the popup when a link gets unwieldy (browsers handle far more,
     // but some chat apps truncate).
     SOFT_URL_LIMIT: 12000,

@@ -120,10 +120,26 @@
         <span class="label">Shortener</span>
         <select id="short-provider">
           <option value="">Off</option>
+          <option value="tabshare">Tab Share shortener</option>
           <option value="tinyurl">TinyURL</option>
           <option value="custom">Custom endpoint</option>
         </select>
       </label>
+      <div id="short-tabshare-wrap" hidden>
+        <label class="field">
+          <span class="label">Shortener address</span>
+          <input id="short-base" type="text" placeholder="http://localhost:8779" />
+          <span class="s-desc">Base URL of a Tab Share shortener (self-hosted). Runs the <code>/new</code> endpoint. See
+            <a href="https://github.com/kaikayy/tab-share-shortener" target="_blank" rel="noopener">tab-share-shortener</a>.</span>
+        </label>
+        <label class="field">
+          <span class="label">Short link style</span>
+          <select id="short-mode">
+            <option value="code">Normal (random, e.g. /k7Rm2pq)</option>
+            <option value="words">Readable words (e.g. /swift-amber-otter)</option>
+          </select>
+        </label>
+      </div>
       <label class="field" id="short-endpoint-wrap" hidden>
         <span class="label">Custom endpoint (the encoded long URL is appended)</span>
         <input id="short-endpoint" type="text" placeholder="https://your-shortener.example/api/new?url=" />

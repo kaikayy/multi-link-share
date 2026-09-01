@@ -75,9 +75,37 @@
     tinyurl: "https://tinyurl.com/*",
   };
 
+  const DEFAULT_SHORT_BASE = (CFG && CFG.DEFAULT_SHORTENER_BASE) || "";
+
+  /** Turn a Tab Share shortener base + style into the endpoint string the popup
+   *  appends the encoded long URL to. */
+  function tabshareEndpoint(base, mode) {
+    const b = String(base || "").replace(/\/+$/, "");
+    return b + "/new?" + (mode === "words" ? "mode=words&" : "") + "url=";
+  }
+
+  function toggleShortFields() {
+    const p = $("#short-provider").value;
+    $("#short-tabshare-wrap").hidden = p !== "tabshare";
+    $("#short-endpoint-wrap").hidden = p !== "custom";
+  }
+
+  /** A Chrome host match pattern for `parsed` -- scheme + host, NO port
+   *  (ports are not allowed in match patterns; `origin` would include one and
+   *  `permissions.request` then rejects it). */
+  function hostPattern(parsed) {
+    return parsed.protocol + "//" + parsed.hostname + "/*";
+  }
+
   async function loadShortener() {
-    const s = await api.storage.local.get(["shortProvider", "shortEndpoint", "shortAuto"]);
-    // is.gd / v.gd never worked for share links (they reject '#'-fragment URLs) —
+    const s = await api.storage.local.get([
+      "shortProvider",
+      "shortEndpoint",
+      "shortAuto",
+      "shortBase",
+      "shortMode",
+    ]);
+    // is.gd / v.gd never worked for share links (they reject '#'-fragment URLs) --
     // drop a stored value silently.
     let prov = s.shortProvider || "";
     if (prov === "isgd" || prov === "vgd") {
@@ -86,20 +114,45 @@
         await api.storage.local.set({ shortProvider: "", shortAuto: false });
       } catch (e) {}
     }
+
     $("#short-provider").value = prov;
     $("#short-endpoint").value = s.shortEndpoint || "";
+    // Only pre-fills the address field (if a build baked one) as a convenience --
+    // the shortener stays Off until the user picks it and presses Save.
+    $("#short-base").value = s.shortBase || DEFAULT_SHORT_BASE || "";
+    $("#short-mode").value = s.shortMode === "words" ? "words" : "code";
     $("#short-auto").checked = !!s.shortAuto;
-    $("#short-endpoint-wrap").hidden = $("#short-provider").value !== "custom";
+    toggleShortFields();
   }
 
   async function saveShortener() {
     $("#short-msg").hidden = true;
     $("#short-err").hidden = true;
     const provider = $("#short-provider").value;
-    const endpoint = ($("#short-endpoint").value || "").trim();
+    let endpoint = ($("#short-endpoint").value || "").trim();
+    const base = ($("#short-base").value || "").trim();
+    const mode = $("#short-mode").value === "words" ? "words" : "code";
 
     let pattern = PROVIDER_ORIGIN[provider] || null;
-    if (provider === "custom") {
+
+    if (provider === "tabshare") {
+      let parsed;
+      try {
+        parsed = new URL(base);
+      } catch (e) {
+        $("#short-err").textContent = "Enter the shortener's address, e.g. http://localhost:8779";
+        $("#short-err").hidden = false;
+        return;
+      }
+      const localhost = parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
+      if (parsed.protocol !== "https:" && !localhost) {
+        $("#short-err").textContent = "The address must be https:// (localhost is allowed for testing).";
+        $("#short-err").hidden = false;
+        return;
+      }
+      endpoint = tabshareEndpoint(base, mode);
+      pattern = hostPattern(parsed);
+    } else if (provider === "custom") {
       let parsed;
       try {
         parsed = new URL(endpoint);
@@ -114,7 +167,7 @@
         $("#short-err").hidden = false;
         return;
       }
-      pattern = parsed.origin + "/*";
+      pattern = hostPattern(parsed);
     }
 
     if (pattern) {
@@ -123,17 +176,25 @@
         if (!has) {
           const granted = await api.permissions.request({ origins: [pattern] });
           if (!granted) {
-            $("#short-err").textContent = "Not saved — the shortener needs access to that host.";
+            $("#short-err").textContent = "Not saved -- the shortener needs access to that host.";
             $("#short-err").hidden = false;
             return;
           }
         }
       } catch (e) {
-        /* ignore */
+        $("#short-err").textContent = "Couldn't request access to that host (" + (e.message || e) + ").";
+        $("#short-err").hidden = false;
+        return;
       }
     }
 
-    await api.storage.local.set({ shortProvider: provider, shortEndpoint: endpoint, shortAuto: $("#short-auto").checked });
+    await api.storage.local.set({
+      shortProvider: provider,
+      shortEndpoint: endpoint,
+      shortAuto: $("#short-auto").checked,
+      shortBase: base,
+      shortMode: mode,
+    });
     flash("#short-msg");
   }
 
@@ -267,10 +328,12 @@
     );
 
     $("#short-provider").addEventListener("change", () => {
-      $("#short-endpoint-wrap").hidden = $("#short-provider").value !== "custom";
+      toggleShortFields();
       saveShortener();
     });
     $("#short-endpoint").addEventListener("change", saveShortener);
+    $("#short-base").addEventListener("change", saveShortener);
+    $("#short-mode").addEventListener("change", saveShortener);
     $("#short-auto").addEventListener("change", saveShortener);
 
     $("#save").addEventListener("click", save);

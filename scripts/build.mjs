@@ -21,6 +21,7 @@ const dist = path.join(root, "dist");
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const version = pkg.version;
 const VIEWER_BASE = process.env.VIEWER_BASE || "";
+const SHORTENER_BASE = process.env.SHORTENER_BASE || "";
 
 const SHARED = ["lzstring.min.js", "share-codec.js", "monogram.js"];
 
@@ -44,6 +45,10 @@ function syncShared(libDir, withConfig) {
     if (VIEWER_BASE) {
       const safe = VIEWER_BASE.endsWith("/") ? VIEWER_BASE : VIEWER_BASE + "/";
       cfg = cfg.replace(/DEFAULT_VIEWER_BASE:\s*"[^"]*"/, `DEFAULT_VIEWER_BASE: "${safe}"`);
+    }
+    if (SHORTENER_BASE) {
+      const safe = SHORTENER_BASE.replace(/\/+$/, "");
+      cfg = cfg.replace(/DEFAULT_SHORTENER_BASE:\s*"[^"]*"/, `DEFAULT_SHORTENER_BASE: "${safe}"`);
     }
     fs.writeFileSync(path.join(libDir, "config.js"), cfg);
   }
@@ -81,7 +86,11 @@ function buildViewer() {
 }
 
 fs.mkdirSync(dist, { recursive: true });
-console.log(`Tab Share build — v${version}${VIEWER_BASE ? ` (viewer: ${VIEWER_BASE})` : ""}`);
+console.log(
+  `Tab Share build -- v${version}` +
+    `${VIEWER_BASE ? ` (viewer: ${VIEWER_BASE})` : ""}` +
+    `${SHORTENER_BASE ? ` (shortener: ${SHORTENER_BASE})` : ""}`,
+);
 buildExtension("chrome", "manifest.chrome.json");
 buildExtension("firefox", "manifest.firefox.json");
 buildViewer();
