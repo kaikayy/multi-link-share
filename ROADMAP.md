@@ -19,19 +19,31 @@ Planned work, roughly ordered. Nothing here is committed to a release yet.
 
 ## First-party link shortener
 
-- **Build a dedicated Tab Share shortener** and make it the built-in default
-  (replacing TinyURL as the recommended option). A small, self-hostable service
-  that either stores the whole collection under a short code, or just shortens
-  the long fragment link -- TBD which.
-- **Free for everyone, no account.** Still opt-in per link; the default without
-  it stays the fully self-contained fragment link with no server involved.
-- Reference deployment (Cloudflare Worker / Deno Deploy) plus a one-file source
-  drop so anyone can run their own and point the extension at it -- same
-  mechanism as the custom viewer URL and today's custom endpoint
-  ([docs/CUSTOM-SHORTENER.md](docs/CUSTOM-SHORTENER.md)).
-- Minimal data model (collection blob or long URL + code + optional expiry);
-  document exactly what it stores. Must preserve the `#...` fragment on redirect.
-- Ships alongside the custom-endpoint option, not replacing it.
+Built and shipping in its own repo:
+[tab-share-shortener](https://github.com/kaikayy/tab-share-shortener) (AGPL-3.0).
+
+Done:
+
+- Dedicated, self-hostable service. Architecture chosen: **shortens the long
+  fragment link** (302 / meta-refresh), no viewer changes, recipient still makes
+  zero requests. Free, no account, opt-in per link.
+- Node zero-dep + a Cloudflare Worker port. Storage: JSON file or `node:sqlite`.
+  Linux + Windows installers.
+- Host-allowlisted (only shortens links to your own viewer). Optional expiry,
+  identical-link dedup, clean size limits (256 KB).
+- Built-in **"Tab Share shortener"** provider in the extension options, with a
+  *Normal / Readable words* style toggle. Off by default, alongside the
+  custom-endpoint option ([docs/CUSTOM-SHORTENER.md](docs/CUSTOM-SHORTENER.md)).
+
+Still open:
+
+- Make it *the recommended* option (not just available) once there's a public
+  deployment.
+
+Decided against: a server-side collection store (would shrink stored rows and
+allow editing a shared collection, but the recipient would have to fetch the
+collection from the server on open -- that breaks the zero-request / serverless
+property, which stays. Shortener keeps only the long URL + code.)
 
 ## Safer-links filter
 
@@ -64,6 +76,23 @@ Planned work, roughly ordered. Nothing here is committed to a release yet.
 - Per-collection metadata surfaced when the extension is installed (notes,
   tags) -- read from `ext` in schema v4.
 - Keyboard shortcut to jump straight to a page number.
+
+## Self-hosted viewer
+
+The viewer is static files today (`viewer/`, hosted anywhere). Two ideas for
+people who want to run a fuller instance:
+
+- **Single-file executable** -- bundle the viewer + a tiny static server into one
+  binary per OS (e.g. Node SEA, `deno compile`, or Bun), so self-hosting is
+  "download, run, done" with no web server to configure. HTTPS still needs a
+  proxy or a bundled cert helper.
+- **Admin / dashboard panel** for a self-hosted instance -- a small authenticated
+  UI showing collections opened through this viewer, per-link stats, and (if
+  paired with the first-party shortener on the same box) the shortener's link
+  table: search, hit counts, expiry, revoke a code. Opt-in; the default viewer
+  stays zero-knowledge and serverless.
+- **Safer-links filter** (see its own section) lives in the viewer -- surface its
+  toggles and any per-instance blocklist config in this same panel.
 
 ## Platform
 
