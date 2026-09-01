@@ -37,11 +37,11 @@ Done:
 
 Still open:
 
-- **Public deployment on `tabsha.re`.** Domain is available (~$12/yr at inwx,
-  reads as "tab share") but not yet registered -- it's a **Ko-fi donation
-  goal**. Once funded it becomes the first-party instance, allowlisting only
-  `kaikayy.github.io` (see below) and shipping as the default endpoint for the
-  built-in provider.
+- **Public deployment on `s.kaikay.de`.** Domain is bought (`kaikay.de`).
+  Blocked on getting access to the server it'll run on -- once that lands:
+  reverse proxy + TLS, `SHORTENER_STORE_BACKEND=sqlite`, `deploy/install.sh`,
+  point DNS at it, bake it in as the built-in provider's default address.
+  Allowlists only `kaikayy.github.io` to start (see below).
 - Make it *the recommended* option (not just available) once there's a public
   deployment.
 - The first public deployment allowlists **only the first-party viewer**
@@ -89,18 +89,25 @@ property, which stays. Shortener keeps only the long URL + code.)
 
 ## Self-hosted viewer
 
-The viewer is static files today (`viewer/`, hosted anywhere). Two ideas for
-people who want to run a fuller instance:
+The viewer is static files today (`viewer/`, hosted anywhere). **The shipped
+default stays `kaikayy.github.io`** -- that's the "hits no server you don't
+already trust, makes zero requests" promise, and it doesn't change just
+because a domain exists. A `kaikay.de`-hosted viewer (apex or `tabs.kaikay.de`)
+is an *optional* alternative to work out later on `dev`, not a replacement.
+
+Two ideas for people who want to run a fuller instance (whether that's
+`kaikay.de` once the server's up, or anyone else):
 
 - **Single-file executable** -- bundle the viewer + a tiny static server into one
   binary per OS (e.g. Node SEA, `deno compile`, or Bun), so self-hosting is
   "download, run, done" with no web server to configure. HTTPS still needs a
   proxy or a bundled cert helper.
-- **Admin / dashboard panel** for a self-hosted instance -- a small authenticated
-  UI showing collections opened through this viewer, per-link stats, and (if
-  paired with the first-party shortener on the same box) the shortener's link
-  table: search, hit counts, expiry, revoke a code. Opt-in; the default viewer
-  stays zero-knowledge and serverless.
+- **Admin / dashboard panel** -- a small authenticated UI showing collections
+  opened through this viewer, per-link stats, and (paired with the first-party
+  shortener on the same box, i.e. `s.kaikay.de`) the shortener's link table:
+  search, hit counts, expiry, revoke a code. Opt-in; the default viewer stays
+  zero-knowledge and serverless. Depends on the shortener deploy above (same
+  server, same blocker: pending access).
 - **Safer-links filter** (see its own section) lives in the viewer -- surface its
   toggles and any per-instance blocklist config in this same panel.
 
