@@ -1,18 +1,18 @@
 # Bring your own link shortener
 
 Tab Share can run every share link through a shortener of your choice. TinyURL is
-built in; anything else is a **custom endpoint** — a tiny web service you point
+built in; anything else is a **custom endpoint** -- a tiny web service you point
 the extension at. This page shows what it has to do and gives a few
 copy-paste implementations.
 
 ## What the extension does
 
-When you set a custom endpoint in **Options → Shorten links**, Tab Share takes
+When you set a custom endpoint in **Options -> Shorten links**, Tab Share takes
 your endpoint string and **appends the percent-encoded long link**, then does a
 plain `GET`:
 
 ```
-<your endpoint><encodeURIComponent(the full https://…/#token link)>
+<your endpoint><encodeURIComponent(the full https://.../#token link)>
 ```
 
 So if your endpoint is `https://s.example.com/new?url=` the request is:
@@ -24,18 +24,18 @@ GET https://s.example.com/new?url=https%3A%2F%2Fkaikayy.github.io%2Fmulti-link-s
 Your service must:
 
 1. **Accept that GET** (no auth, or bake a key into the endpoint string).
-2. **Return the short URL** — either as `text/plain` (just the URL) **or** JSON
+2. **Return the short URL** -- either as `text/plain` (just the URL) **or** JSON
    with one of these keys: `shorturl`, `short_url`, `shortUrl`, `short`, `url`,
    `link`, or `result.full_short_link` (YOURLS).
-3. **Keep the `#…` fragment.** The whole collection lives after the `#`. Your
-   redirect (301/302) must send the browser to `https://…/#token`, fragment
+3. **Keep the `#...` fragment.** The whole collection lives after the `#`. Your
+   redirect (301/302) must send the browser to `https://.../#token`, fragment
    intact. Store the URL verbatim; don't normalise or strip it.
-4. **Allow long URLs.** A 10-page collection is ~1–3 KB; 40 pages ~4 KB. Don't
+4. **Allow long URLs.** A 10-page collection is ~1-3 KB; 40 pages ~4 KB. Don't
    cap the input at a few hundred characters.
 5. Ideally send `Access-Control-Allow-Origin: *` (see [CORS](#cors) below).
 
 The extension rejects the response if it isn't an `https://` URL, or if it comes
-back **no shorter than the original** — so a service that echoes the input, or
+back **no shorter than the original** -- so a service that echoes the input, or
 returns an error page, shows a clear "couldn't shorten" message instead of a
 broken link.
 
@@ -118,7 +118,7 @@ Make sure `YOURLS_URL_CONVERT` isn't stripping fragments (default is fine).
 
 ## Connecting it
 
-**Options → Shorten links → Custom endpoint**, paste the endpoint string ending
+**Options -> Shorten links -> Custom endpoint**, paste the endpoint string ending
 in `url=` (or `&url=`), Save, and approve the one-time host-access prompt.
 Optionally tick **Shorten automatically**.
 
@@ -136,7 +136,7 @@ it robust and lets you test the endpoint from a browser console.
 
 ## Privacy note
 
-Whatever you run, it now sees the **full share link** — which contains every
+Whatever you run, it now sees the **full share link** -- which contains every
 page URL in the collection (in the `#` fragment). Run it yourself, or trust the
 operator the way you'd trust any shortener. The default (no shortener) sends the
 link to no one.

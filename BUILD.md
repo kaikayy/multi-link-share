@@ -4,24 +4,24 @@
 > This file is the dev workflow.
 
 Requires **Node 20+** (`npm test` uses WebCrypto) and the system **`zip`**
-command. No npm dependencies — `web-ext` (Firefox packaging / lint) is optional
+command. No npm dependencies -- `web-ext` (Firefox packaging / lint) is optional
 and run via `npx`. `rsvg-convert` (package `librsvg`) is only needed for
 `npm run icons`.
 
-`npm run icons` also renders `assets/og-card.svg` → `viewer/assets/og-card.png`
+`npm run icons` also renders `assets/og-card.svg` -> `viewer/assets/og-card.png`
 (1200×630), the image chat apps show when a viewer link is unfurled.
 
 `viewer/frame-hosts.js` classifies which sites are worth auto-previewing in an
 `<iframe>`. It ships with the viewer verbatim (no build step). Regenerate it
-from live response headers with `tools/frame-probe/` (see its README) — probe
+from live response headers with `tools/frame-probe/` (see its README) -- probe
 the domain list, then fold the results plus the hand-review overrides into the
 `GOOD` / `BAD` arrays.
 
 ```bash
 npm test            # round-trip tests for the URL codec
 npm run sync        # copy shared/ libs into extension/ and viewer/
-npm run dev         # http://localhost:8778/dev/  — popup/options/viewer with a mocked chrome.*
-npm run serve:viewer # http://localhost:8777/     — the real viewer, append #<token>
+npm run dev         # http://localhost:8778/dev/  -- popup/options/viewer with a mocked chrome.*
+npm run serve:viewer # http://localhost:8777/     -- the real viewer, append #<token>
 npm run icons       # regenerate PNG icons + store art from the SVG sources
 npm run build       # produce dist/chrome, dist/firefox, dist/viewer + zips
 npm run zip:source  # produce dist/tab-share-source-*.zip for AMO
@@ -49,9 +49,9 @@ npm run serve:local        # builds against http://localhost:8777/ and serves di
 Then:
 
 1. Load `dist/chrome/` (or `dist/firefox/manifest.json`) unpacked.
-2. Options page → **Viewer base URL** → `http://localhost:8777/` → **Save**, and
+2. Options page -> **Viewer base URL** -> `http://localhost:8777/` -> **Save**, and
    grant the one-time host-access prompt.
-3. Create a share link — it now points at `localhost:8777`.
+3. Create a share link -- it now points at `localhost:8777`.
 4. Open the link. Because the extension is installed, the **import banner** shows:
    open the collection into this window / a new window / a tab group, or save it
    to history.
@@ -61,7 +61,7 @@ re-run `serve:local` whenever you want the localhost build back.
 
 ## Deploying the viewer
 
-`viewer/` (or `dist/viewer/`) is a plain static site — no build step, no server
+`viewer/` (or `dist/viewer/`) is a plain static site -- no build step, no server
 code. Any of:
 
 - **GitHub Pages:** push the repo, enable Pages, set the source to `/viewer`
@@ -75,12 +75,12 @@ The viewer must be served over **https** for the extension to accept it.
 
 ## Load the extension unpacked
 
-- **Chrome:** `chrome://extensions` → Developer mode → *Load unpacked* →
+- **Chrome:** `chrome://extensions` -> Developer mode -> *Load unpacked* ->
   `dist/chrome/`
-- **Firefox:** `about:debugging#/runtime/this-firefox` → *Load Temporary
-  Add-on* → `dist/firefox/manifest.json`
+- **Firefox:** `about:debugging#/runtime/this-firefox` -> *Load Temporary
+  Add-on* -> `dist/firefox/manifest.json`
 
-Content scripts and the background worker do **not** hot-reload — after a
+Content scripts and the background worker do **not** hot-reload -- after a
 rebuild, click the reload icon in the extensions page. Every OS / browser combo,
 and the permanent-install (signing) options, are in `SELF-HOSTING.md`.
 

@@ -3,27 +3,27 @@
 All notable changes to Tab Share. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); dates are `YYYY-MM-DD`.
 
-## [1.0.0-beta.5] — 2026-08-31
+## [1.0.0-beta.5] -- 2026-08-31
 
 ### Changed
 
 - **Narrowed `optional_host_permissions`** from `*://*/*` to
   `https://*/*` + `http://localhost/*` + `http://127.0.0.1/*`. The extension only
-  ever requests one specific `https` (or localhost) origin at a time — for a
-  self-hosted viewer URL or a custom shortener endpoint — so the plain-`http`
+  ever requests one specific `https` (or localhost) origin at a time -- for a
+  self-hosted viewer URL or a custom shortener endpoint -- so the plain-`http`
   wildcard was never used. Custom shortener endpoints must now be `https://`
   (localhost excepted), matching the viewer-URL rule.
 
-## [1.0.0-beta.4] — 2026-08-31
+## [1.0.0-beta.4] -- 2026-08-31
 
-_(beta.3 was tagged but not released — its fix is folded in here.)_
+_(beta.3 was tagged but not released -- its fix is folded in here.)_
 
 ### Fixed
 
 - **URL shorteners actually work now, and tell you when they don't.**
-  - **is.gd and v.gd removed** — they reject any URL with a `#` fragment (every
+  - **is.gd and v.gd removed** -- they reject any URL with a `#` fragment (every
     share link has one) and block `github.io`, so they always failed.
-  - **TinyURL kept** — it preserves the fragment and handles multi-KB links.
+  - **TinyURL kept** -- it preserves the fragment and handles multi-KB links.
   - `shorten()` reports the real reason (unreachable / HTTP error / rejected
     long-or-fragment URL / result not actually shorter) instead of a silent
     fail.
@@ -35,8 +35,8 @@ _(beta.3 was tagged but not released — its fix is folded in here.)_
 - **The viewer can now tell when the recipient has the extension.** It was
   checking a content-script global (`window.__tabShare`) that lives in an
   isolated world the page can't read, so it *always* thought the extension was
-  absent. As a result **"Open all pages" and "Open selected → new window / tab
-  group" never used the extension** even when it was installed — they fell back
+  absent. As a result **"Open all pages" and "Open selected -> new window / tab
+  group" never used the extension** even when it was installed -- they fell back
   to `window.open` (pop-up-blocked) and a misleading "install Tab Share" toast.
   Now the content script sets a `data-tabshare-ext` attribute and the two sides
   talk over `postMessage` (same-origin only), so with the extension installed
@@ -44,11 +44,11 @@ _(beta.3 was tagged but not released — its fix is folded in here.)_
 
 ### Added
 
-- **`docs/CUSTOM-SHORTENER.md`** — how to run your own shortener endpoint
+- **`docs/CUSTOM-SHORTENER.md`** -- how to run your own shortener endpoint
   (Cloudflare Worker / Deno / YOURLS samples) and connect it. `ROADMAP.md` now
   lists a first-party Tab Share shortener as the intended default.
 
-## [1.0.0-beta.2] — 2026-08-31
+## [1.0.0-beta.2] -- 2026-08-31
 
 ### Fixed
 
@@ -56,17 +56,17 @@ _(beta.3 was tagged but not released — its fix is folded in here.)_
   a `setTimeout` loop, so the browser blocked every tab. It now hands the list
   to the extension when one is present (opens every tab cleanly), and otherwise
   opens synchronously inside the click and tells you if pop-ups were blocked.
-  Same fix for **Select → Open selected → In this window**.
+  Same fix for **Select -> Open selected -> In this window**.
 
 ### Docs
 
-- `ROADMAP.md` added — the planned **safer-links filter** (offline warnings for
+- `ROADMAP.md` added -- the planned **safer-links filter** (offline warnings for
   malware / phishing / adult / gambling hosts from public blocklists) and link
   expiry.
 
-## [1.0.0-beta.1] — 2026-08-31
+## [1.0.0-beta.1] -- 2026-08-31
 
-First public beta. Not on any store — install via
+First public beta. Not on any store -- install via
 [`SELF-HOSTING.md`](SELF-HOSTING.md).
 
 ### Extension
@@ -76,8 +76,8 @@ First public beta. Not on any store — install via
 - Reorder / trim / rename the list; select-all / none. The list, the collection
   name, and the last-used source survive closing the popup.
 - Adding a tab group seeds the collection name from the group title.
-- **Password-protected links** — client-side WebCrypto (PBKDF2-SHA-256, 210 000
-  iterations → AES-256-GCM); the password is never stored or sent.
+- **Password-protected links** -- client-side WebCrypto (PBKDF2-SHA-256, 210 000
+  iterations -> AES-256-GCM); the password is never stored or sent.
 - Optional **URL shortener** (is.gd / v.gd / TinyURL / custom endpoint),
   off by default, host-permission gated.
 - Options page with first-run welcome, a per-device history of the last 50
@@ -86,19 +86,19 @@ First public beta. Not on any store — install via
   into this window / a new window / a tab group, or save it to history. Closed
   shadow-DOM menu, `event.isTrusted`-guarded, sender-validated background
   messages. Reversible-hide from the button's menu, the options page, or the
-  viewer's ⚙ menu — all in sync.
+  viewer's ⚙ menu -- all in sync.
 
 ### Viewer (static site)
 
-- Four views: **Slideshow**, **Preview Grid**, **Grid**, **List** — switched
+- Four views: **Slideshow**, **Preview Grid**, **Grid**, **List** -- switched
   from a **Change View** tile menu.
 - Slideshow: framed page, side + bottom arrows, first/last, keyboard nav, a
   clickable segmented pager that scales to any page count, jump-to-page.
 - Per-view **search** (title / site / URL) and **Select** mode (checkboxes in
-  every view → open the checked pages in this window / a new window / a tab
+  every view -> open the checked pages in this window / a new window / a tab
   group). **Open all pages** opens every filtered page.
 - **Light / dark** toggle, dark by default, applied before first paint.
-- Optional **site icons** from `icons.duckduckgo.com` — off by default; with it
+- Optional **site icons** from `icons.duckduckgo.com` -- off by default; with it
   off the viewer makes **zero** network requests.
 - `frame-hosts.js` built from a live `X-Frame-Options` / CSP probe of ~730 of
   the most-visited / most-shared domains (`tools/frame-probe/`): framing-friendly
@@ -111,12 +111,12 @@ First public beta. Not on any store — install via
 ### Codec
 
 - Schema **v3** `[3, name, created, pages, flags]` (`flags` bit 0 = suggest
-  icons, bit 1 = auto-preview); v1 / v2 links still decode. `+`→`_` swap so chat
+  icons, bit 1 = auto-preview); v1 / v2 links still decode. `+`->`_` swap so chat
   apps can't mangle a token.
 
 ### Packaging
 
 - Chrome + Firefox MV3 manifests; `web-ext lint` clean (0/0/0). Chrome shows the
   beta tag via `version_name`; the Firefox manifest version is numeric-only as
-  MV3 now requires. `npm run build` → `dist/{chrome,firefox,viewer}` + zips.
+  MV3 now requires. `npm run build` -> `dist/{chrome,firefox,viewer}` + zips.
 - Relicensed to **GNU AGPL-3.0-only**.

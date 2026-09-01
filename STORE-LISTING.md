@@ -3,14 +3,14 @@
 Reusable text for the Chrome Web Store and Firefox AMO dashboards, plus the
 permission justifications reviewers ask for.
 
-> The current release (`1.0.0-beta.1`) ships without a store — see
+> The current release (`1.0.0-beta.1`) ships without a store -- see
 > `SELF-HOSTING.md`. This file is kept ready for when it does.
 
 ---
 
 ## Name
 
-Tab Share — one link for a group of tabs
+Tab Share -- one link for a group of tabs
 
 ## Summary (Chrome: 132 chars max)
 
@@ -21,32 +21,32 @@ link that opens as a slideshow. No account, no server.
 
 Tab Share bundles a set of pages into a single link.
 
-• Share the current window's tabs, a browser tab group, or links you paste in.
-• Reorder, trim and rename the list before you create the link. The list and
+- Share the current window's tabs, a browser tab group, or links you paste in.
+- Reorder, trim and rename the list before you create the link. The list and
   name survive closing the popup.
-• The recipient just clicks the link — no extension, no sign-up. It opens as a
+- The recipient just clicks the link -- no extension, no sign-up. It opens as a
   clean slideshow: framed page view, title bar, next/previous arrows, a
   clickable segmented pager and jump-to-page.
-• Four ways to view a link: slideshow, a large preview grid, a compact grid, and
+- Four ways to view a link: slideshow, a large preview grid, a compact grid, and
   a copyable numbered list. Sites that allow it preview live; the rest show a
   card with "Open this page".
-• Filter any view by title, site or URL. Selection mode adds checkboxes to open
+- Filter any view by title, site or URL. Selection mode adds checkboxes to open
   the pages you pick in this window, a new window, or a new tab group. Or open
   every page at once.
-• Light and dark theme, dark by default.
-• Optional: protect a link with a password (encrypted in your browser), or run
+- Light and dark theme, dark by default.
+- Optional: protect a link with a password (encrypted in your browser), or run
   it through a URL shortener you choose.
-• If the recipient also has Tab Share, a button in the viewer offers to open the
+- If the recipient also has Tab Share, a button in the viewer offers to open the
   whole set straight into a window or tab group, or save it to their history.
 
-How it works — and why it's private:
+How it works -- and why it's private:
 The whole list is packed into the part of the link after "#", which browsers
 never send to a server. There is no backend, no database, and no tracking. The
 extension makes no network requests unless you turn on a URL shortener; the
 viewer makes none unless you leave site icons on. It reads your tabs only when
 you press a button.
 
-You host the tiny viewer page yourself (GitHub Pages, Netlify, …) or use the
+You host the tiny viewer page yourself (GitHub Pages, Netlify, ...) or use the
 one configured by whoever packaged the extension. Open source (GNU AGPL-3.0).
 
 ## Category
@@ -56,7 +56,7 @@ Productivity
 ## Screenshots
 
 `assets/screenshot-1-popup.png` (the popup), `assets/screenshot-2-viewer.png`
-(the slideshow viewer) — 1280×800, captured from the current UI. They're a touch
+(the slideshow viewer) -- 1280×800, captured from the current UI. They're a touch
 soft (automated capture); a manual retake at full resolution would be sharper,
 and it's worth adding a few more: Preview Grid, List view, and the Change-View /
 ⚙ menus. Recipe:
@@ -99,11 +99,11 @@ recently created links, on the device. Not synced, not transmitted.
 ### `scripting` (required)
 
 Used only to register the single content script (below) for a viewer address
-the user sets in the options page that isn't the packaged default — a
+the user sets in the options page that isn't the packaged default -- a
 self-hosted viewer, or `localhost` for testing. The script is registered only
 after the user approves that one host, and unregistered if the address changes.
 
-### `content_scripts` — viewer page only
+### `content_scripts` -- viewer page only
 
 The static entry matches **only the packaged viewer host**
 (`https://kaikayy.github.io/multi-link-share/*`). It reads the current page's
@@ -139,15 +139,15 @@ registration in sync with the saved viewer address. No network access.
 ### Network requests
 
 The extension makes none, unless the user turns on a URL shortener in options
-(is.gd / v.gd / TinyURL / a custom endpoint) — then creating a link POSTs that
+(is.gd / v.gd / TinyURL / a custom endpoint) -- then creating a link POSTs that
 one generated URL to the chosen service. The viewer makes none, unless the
-"site icons" option is left on — then it fetches one icon per domain from
+"site icons" option is left on -- then it fetches one icon per domain from
 `icons.duckduckgo.com` when a link is opened. Both are user-visible toggles.
 
 ### Password protection
 
 Optional. When set, the collection is encrypted client-side (WebCrypto:
-PBKDF2-SHA-256 → AES-256-GCM) before it goes in the link fragment. The password
+PBKDF2-SHA-256 -> AES-256-GCM) before it goes in the link fragment. The password
 is never stored or transmitted.
 
 ### Remote code
