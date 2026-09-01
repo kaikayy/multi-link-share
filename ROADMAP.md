@@ -37,6 +37,11 @@ Done:
 
 Still open:
 
+- **Public deployment on `tabsha.re`.** Domain is available (~$12/yr at inwx,
+  reads as "tab share") but not yet registered -- it's a **Ko-fi donation
+  goal**. Once funded it becomes the first-party instance, allowlisting only
+  `kaikayy.github.io` (see below) and shipping as the default endpoint for the
+  built-in provider.
 - Make it *the recommended* option (not just available) once there's a public
   deployment.
 - The first public deployment allowlists **only the first-party viewer**
