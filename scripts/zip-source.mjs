@@ -2,7 +2,7 @@
 /** Produces dist/tab-share-source-v<version>.zip for Mozilla AMO.
  *  AMO requires the full source whenever a reviewer can't read the submitted
  *  files directly (this add-on vendors the minified lz-string library, so
- *  attach this and point BUILD.md at `npm run build`). */
+ *  attach this and point docs/BUILD.md at `npm run build`). */
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";

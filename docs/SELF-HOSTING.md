@@ -237,5 +237,4 @@ extension.
 | Firefox: "This add-on could not be installed because it has not been verified" | you're on Firefox Release/Beta -- use AMO unlisted signing, or a channel that allows `xpinstall.signatures.required = false` |
 | Chromium: extension vanishes after restart | the `dist/chrome/` folder was moved or deleted -- reload unpacked from a stable path |
 
-See also **`BUILD.md`** (dev workflow) and **`STORE-LISTING.md`** (the store
-path, for later).
+See also **[`BUILD.md`](BUILD.md)** (dev workflow).

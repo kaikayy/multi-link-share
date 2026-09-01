@@ -6,7 +6,7 @@ person you send it to needs no extension, no account, and hits no server.
 ![promo](assets/promo-440x280.png)
 
 > **Status: `1.0.0-beta.1`.** Feature-complete and tested; not yet on any store.
-> Run your own copy with **[`SELF-HOSTING.md`](SELF-HOSTING.md)**.
+> Run your own copy with **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
 
 ## What it does
 
@@ -44,7 +44,7 @@ The collection (page URLs + titles) is compressed with
 - `"+"` is swapped out of the token so chat apps can't mangle it.
 
 A small static page (`viewer/`) decodes the fragment in the recipient's browser
-and renders the views. You host it anywhere -- see **[`SELF-HOSTING.md`](SELF-HOSTING.md)**.
+and renders the views. You host it anywhere -- see **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
 
 ### Password-protected links
 
@@ -96,7 +96,7 @@ own menu or the options page; bring it back from the viewer's ⚙ menu.
 No static `host_permissions`. One content script, scoped to the packaged viewer
 host only (plus any host you opt into). A minimal background worker (import
 actions + content-script registration). No remote code. No data collection.
-Full rationale in `STORE-LISTING.md`; user-facing statement in `PRIVACY.md`.
+User-facing statement in `PRIVACY.md`.
 
 ## Repo layout
 
@@ -110,6 +110,7 @@ extension/
 viewer/            self-contained static site (slideshow / preview grid / grid / list)
   frame-hosts.js   header-probed allow/deny list for auto-previewing sites
 tools/frame-probe/ regenerates that list from live response headers
+docs/              SELF-HOSTING, BUILD, SECURITY, THIRD-PARTY, CUSTOM-SHORTENER
 assets/            store artwork (promo tile, screenshots, og-card source)
 dev/               mocked-chrome harness for eyeballing the UI (not shipped)
 scripts/           build / sync / icons / selftest / dev-server
@@ -126,8 +127,8 @@ npm run serve:viewer     # serve the real viewer at localhost:8777, append #<tok
 
 Load `dist/chrome/` (Chromium) or `dist/firefox/manifest.json` (Firefox)
 unpacked. Full instructions for every OS / browser without a store:
-**[`SELF-HOSTING.md`](SELF-HOSTING.md)**. Dev workflow: **`BUILD.md`**. Store
-submission (for later): **`STORE-LISTING.md`**.
+**[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**. Dev workflow:
+**[`docs/BUILD.md`](docs/BUILD.md)**.
 
 ## Status
 
@@ -143,4 +144,5 @@ at `/privacy.html` alongside it. See `CHANGELOG.md` for what's changed and
 Licensed under the **GNU AGPL-3.0** -- free to use, study, share, and modify, but
 any modified version you distribute or run as a network service must be offered
 under the same license with source available. Bundles lz-string (MIT) -- see
-`THIRD-PARTY.md`. Report security issues per `SECURITY.md`.
+[`docs/THIRD-PARTY.md`](docs/THIRD-PARTY.md). Report security issues per
+[`docs/SECURITY.md`](docs/SECURITY.md).

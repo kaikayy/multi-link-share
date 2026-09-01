@@ -67,7 +67,7 @@ _(beta.3 was tagged but not released -- its fix is folded in here.)_
 ## [1.0.0-beta.1] - 2026-08-31
 
 First public beta. Not on any store -- install via
-[`SELF-HOSTING.md`](SELF-HOSTING.md).
+[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md).
 
 ### Extension
 
