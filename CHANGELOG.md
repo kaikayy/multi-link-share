@@ -36,9 +36,15 @@ Manifests: chrome `version_name` -> `1.0.0-beta.6`, firefox `version` ->
 ### Added
 
 - **First-party Tab Share shortener at `s.kaikay.de`.** Picking *Tab Share
-  shortener* now pre-fills the address with the public instance, which
-  allow-lists the built-in viewer -- so the default viewer + shortener work with
-  no configuration. Still Off until you turn it on; still opt-in per link.
+  shortener* (labelled *recommended*) pre-fills the address with the public
+  instance, which allow-lists the built-in viewer -- so the default viewer +
+  shortener work with no configuration. Still Off until you turn it on; still
+  opt-in per link. A stored address left pointing at `localhost` (from an old
+  `DEV_LOCALHOST` build) is moved to the packaged default automatically, once.
+- **Long-link nudge.** When a created link is over the soft length limit and no
+  shortener is set up, the result screen suggests turning one on and offers a
+  *Set up the shortener* button. `shorten()` also requests the host permission
+  itself if it's missing (a provider added or migrated without the grant).
   `SHORTENER_BASE=... npm run build` overrides the baked address.
 - **da.gd as a built-in shortener option.** A small, no-account open-source
   shortener that keeps the `#…` fragment and takes multi-kilobyte links (where

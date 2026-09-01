@@ -24,19 +24,37 @@
         "autoPreview",
         "shortProvider",
         "shortEndpoint",
-        "shortAuto",
+        "shortBase",
         "shortMode",
+        "shortAuto",
+        "shortMigratedBase",
       ]);
       // is.gd / v.gd reject '#'-fragment and github.io URLs, so they never worked
       // for share links -- retired in favour of TinyURL / a custom endpoint.
       const provider = s.shortProvider === "isgd" || s.shortProvider === "vgd" ? "" : s.shortProvider || "";
+      let endpoint = s.shortEndpoint || "";
+      const mode = s.shortMode === "words" ? "words" : "code";
+
+      // One-time: a "Tab Share shortener" left pointing at localhost (from an
+      // older DEV_LOCALHOST build) can't work in a shipped build -- move it to
+      // the packaged default, e.g. after the first-party instance went live.
+      const dflt = ((CFG && CFG.DEFAULT_SHORTENER_BASE) || "").replace(/\/+$/, "");
+      const wasLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
+      if (!s.shortMigratedBase && /^https:\/\//i.test(dflt) && provider === "tabshare" &&
+          (wasLocal.test((s.shortBase || "").trim()) || wasLocal.test(endpoint))) {
+        endpoint = dflt + "/new?" + (mode === "words" ? "mode=words&" : "") + "url=";
+        await api.storage.local.set({ shortBase: dflt, shortEndpoint: endpoint, shortMigratedBase: true });
+      } else if (!s.shortMigratedBase) {
+        await api.storage.local.set({ shortMigratedBase: true });
+      }
+
       state.settings = {
         showIcons: s.showIcons === true, // default OFF
         autoPreview: s.autoPreview !== false,
         shortProvider: provider,
-        shortEndpoint: s.shortEndpoint || "",
+        shortEndpoint: endpoint,
         shortAuto: !!s.shortAuto,
-        shortMode: s.shortMode === "words" ? "words" : "code",
+        shortMode: mode,
       };
     } catch (e) {}
   }
@@ -486,6 +504,20 @@
     else if ((p === "custom" || p === "tabshare") && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
     else throw new Error("no shortener is set up -- see the options page");
 
+    // A provider added, or an address migrated, without the matching host grant:
+    // request it now (this runs from the Shorten-link click, a user gesture).
+    try {
+      const pattern = new URL(url).origin + "/*";
+      if (api.permissions && !(await api.permissions.contains({ origins: [pattern] }))) {
+        if (!(await api.permissions.request({ origins: [pattern] }))) {
+          throw new Error("the shortener needs access to that host -- allow it, or set it in the options page");
+        }
+      }
+    } catch (e) {
+      if (e && /needs access/.test(e.message || "")) throw e;
+      /* permissions API unavailable -- let the fetch below try anyway */
+    }
+
     let res;
     try {
       res = await fetch(url, { headers: { Accept: "text/plain, application/json" } });
@@ -528,21 +560,27 @@
     $("#result-link").value = link;
     $("#pw-note").hidden = !encrypted;
 
+    const longLink = link.length > (CFG.SOFT_URL_LIMIT || 12000);
     // A shortener is configured and we're still on the long link — offer the
     // button (whether auto-shorten is off, or it's on but just failed).
     const showShorten = !!state.settings.shortProvider && link === lastLongLink;
-    $("#shorten-row").hidden = !showShorten;
-    $("#shorten-link").hidden = false;
+    // No shortener, but the link is long — nudge toward setting one up.
+    const showEnable = !state.settings.shortProvider && longLink && link === lastLongLink;
+    $("#shorten-row").hidden = !(showShorten || showEnable);
+    $("#shorten-link").hidden = !showShorten;
     $("#shorten-link").textContent = shortenNote ? "Try shortening again" : "Shorten link";
+    $("#enable-shortener").hidden = !showEnable;
     $("#show-original").hidden = true;
 
     const warn = $("#len-warn");
     if (shortenNote) {
       warn.hidden = false;
       warn.textContent = shortenNote;
-    } else if (link.length > (CFG.SOFT_URL_LIMIT || 12000)) {
+    } else if (longLink) {
       warn.hidden = false;
-      warn.textContent = `Heads up: this link is ${link.length.toLocaleString()} characters. It works in browsers, but some chat apps may shorten or break very long links. Consider sharing fewer pages.`;
+      warn.textContent =
+        `Heads up: this link is ${link.length.toLocaleString()} characters. It works in browsers, but some chat apps may shorten or break very long links. ` +
+        (showEnable ? "Turn on the Tab Share shortener for a short link, or share fewer pages." : "Consider sharing fewer pages.");
     } else {
       warn.hidden = true;
     }
@@ -633,6 +671,7 @@
 
   function init() {
     $("#open-options").addEventListener("click", () => api.runtime.openOptionsPage());
+    $("#enable-shortener").addEventListener("click", () => api.runtime.openOptionsPage());
 
     $$(".seg").forEach((btn) => btn.addEventListener("click", () => setSource(btn.dataset.source)));
 
