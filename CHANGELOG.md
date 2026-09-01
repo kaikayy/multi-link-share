@@ -5,6 +5,19 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
+## [1.0.0-beta.7.5] - 2026-09-01
+
+Manifests: chrome `version_name` -> `1.0.0-beta.7.5`, firefox `version` ->
+`1.0.0.8`. Same permission set as beta.7 -- a popup-copy change only, no new
+code paths.
+
+### Added
+
+- **"A link shortener is recommended" tip in the popup.** A dismissable banner
+  at the top of the build view points at the built-in shortener (free, no
+  account) with a *Set it up* link to the options page. Hidden once a shortener
+  is configured; the dismissal sticks (`shortenerNoticeDismissed`).
+
 ## [1.0.0-beta.7] - 2026-09-01
 
 Manifests: chrome `version_name` -> `1.0.0-beta.7`, firefox `version` ->
@@ -49,10 +62,6 @@ tag, which never reached a store.)
   *Set up the shortener* button. `shorten()` also requests the host permission
   itself if it's missing (a provider added or migrated without the grant).
   `SHORTENER_BASE=... npm run build` overrides the baked address.
-- **"A link shortener is recommended" tip in the popup.** A dismissable banner
-  at the top of the build view points at the built-in shortener (free, no
-  account) with a *Set it up* link to the options page. Hidden once a shortener
-  is configured; the dismissal sticks (`shortenerNoticeDismissed`).
 - **da.gd as a built-in shortener option.** A small, no-account open-source
   shortener that keeps the `#…` fragment and takes multi-kilobyte links (where
   is.gd fails and TinyURL is hit-or-miss). Off by default like the rest. The

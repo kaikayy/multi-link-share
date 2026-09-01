@@ -29,7 +29,7 @@ Not on a store yet -- **[install it yourself](docs/SELF-HOSTING.md)** (about two
 
 ![Tab Share -- one link for a whole group of tabs](assets/promo-master-3000x2000.png)
 
-> **Status: `1.0.0-beta.7`.** Feature-complete and tested; not yet on any store.
+> **Status: `1.0.0-beta.7.5`.** Feature-complete and tested; not yet on any store.
 > Run your own copy with **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
 
 |  |  |
