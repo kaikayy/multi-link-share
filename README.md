@@ -13,7 +13,7 @@ person you send it to needs no extension, no account, and hits no server.
 1. Click the toolbar button. Pick your pages from:
    - **Windows** -- the current window's tabs, pre-checked; a picker appears if
      more than one window is open;
-   - **Tab Groups** -- pick a browser tab group and **＋ Add** it (combine several);
+   - **Tab Groups** -- pick a browser tab group and **+ Add** it (combine several);
    - **Paste Links** -- one URL per line, or pull in the current window's tabs.
 2. Reorder / trim / rename the list. The list and the name survive closing the
    popup. Optionally set a password.
@@ -80,7 +80,7 @@ to **save it to history** with a title. Everyone else just gets the slideshow.
 It's a content script that runs **only on the viewer page** (statically, just
 the packaged viewer host); point the extension at your own viewer and the
 options page asks you to approve that one host first. Hide the button from its
-own menu or the options page; bring it back from the viewer's ⚙ menu.
+own menu or the options page; bring it back from the viewer's settings menu.
 
 ## Permissions (deliberately tiny)
 

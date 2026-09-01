@@ -72,7 +72,7 @@ First public beta. Not on any store -- install via
 ### Extension
 
 - Three page sources: **Windows** (with a multi-window picker), **Tab Groups**
-  (pick and **＋ Add**, combine several), **Paste Links** (or pull in open tabs).
+  (pick and **+ Add**, combine several), **Paste Links** (or pull in open tabs).
 - Reorder / trim / rename the list; select-all / none. The list, the collection
   name, and the last-used source survive closing the popup.
 - Adding a tab group seeds the collection name from the group title.
@@ -86,7 +86,7 @@ First public beta. Not on any store -- install via
   into this window / a new window / a tab group, or save it to history. Closed
   shadow-DOM menu, `event.isTrusted`-guarded, sender-validated background
   messages. Reversible-hide from the button's menu, the options page, or the
-  viewer's ⚙ menu -- all in sync.
+  viewer's settings menu -- all in sync.
 
 ### Viewer (static site)
 
