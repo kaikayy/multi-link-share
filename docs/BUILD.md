@@ -40,6 +40,19 @@ VIEWER_BASE=https://example.com/viewer/ npm run build
 This overrides the baked-in default for that build only. Users can also change
 it in the extension's options page.
 
+## Store builds: drop localhost (NO_LOCALHOST)
+
+```bash
+NO_LOCALHOST=1 npm run build
+```
+
+Removes `http://localhost/*` and `http://127.0.0.1/*` from
+`optional_host_permissions` and switches the options page to https-only
+shortener addresses. Use this for the Chrome Web Store and addons.mozilla.org
+uploads: fewer requested permissions (faster review) and nothing for Brave's
+localhost Shield to question. A localhost shortener is a dev-only setup and
+still works in a plain `npm run build`.
+
 ## Test the custom viewer URL locally
 
 ```bash

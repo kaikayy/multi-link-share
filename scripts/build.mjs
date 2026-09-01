@@ -22,6 +22,12 @@ const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"))
 const version = pkg.version;
 const VIEWER_BASE = process.env.VIEWER_BASE || "";
 const SHORTENER_BASE = process.env.SHORTENER_BASE || "";
+// NO_LOCALHOST=1 drops the http://localhost + http://127.0.0.1 entries from
+// optional_host_permissions. Use for store uploads (Chrome Web Store / AMO):
+// fewer requested permissions, faster review, and no plaintext-localhost
+// question from Brave's Shields. A localhost shortener is a dev-only setup and
+// still works in a plain `npm run build`.
+const NO_LOCALHOST = /^(1|true|yes)$/i.test(process.env.NO_LOCALHOST || "");
 
 const SHARED = ["lzstring.min.js", "share-codec.js", "monogram.js"];
 
@@ -67,6 +73,31 @@ function buildExtension(target, manifestFile) {
   for (const f of ["manifest.chrome.json", "manifest.firefox.json"]) {
     fs.rmSync(path.join(out, f), { force: true });
   }
+  if (NO_LOCALHOST) {
+    const mpath = path.join(out, "manifest.json");
+    const m = JSON.parse(fs.readFileSync(mpath, "utf8"));
+    if (Array.isArray(m.optional_host_permissions)) {
+      m.optional_host_permissions = m.optional_host_permissions.filter(
+        (p) => !/^https?:\/\/(localhost|127\.0\.0\.1)\//.test(p),
+      );
+    }
+    fs.writeFileSync(mpath, JSON.stringify(m, null, 2) + "\n");
+    // Keep options.js from advertising a localhost shortener it can't be granted.
+    const opath = path.join(out, "src", "options.js");
+    let o = fs.readFileSync(opath, "utf8");
+    o = o.replace(/const localhost = [^;]+;/g, "const localhost = false;");
+    o = o.replace(
+      /parsed\.hostname !== "localhost" && parsed\.hostname !== "127\.0\.0\.1"/g,
+      "true",
+    );
+    o = o.replace(/ \(localhost is allowed for testing\)/g, "");
+    o = o.replace("e.g. http://localhost:8779", "e.g. https://s.example.com");
+    fs.writeFileSync(opath, o);
+    const hpath = path.join(out, "src", "options.html");
+    let h = fs.readFileSync(hpath, "utf8");
+    h = h.replace('placeholder="http://localhost:8779"', 'placeholder="https://s.example.com"');
+    fs.writeFileSync(hpath, h);
+  }
   // dev-only helper art not needed in the package
   fs.rmSync(path.join(out, "icons", "icon-small.svg"), { force: true });
   syncShared(path.join(out, "src", "lib"), true);
@@ -89,7 +120,8 @@ fs.mkdirSync(dist, { recursive: true });
 console.log(
   `Tab Share build -- v${version}` +
     `${VIEWER_BASE ? ` (viewer: ${VIEWER_BASE})` : ""}` +
-    `${SHORTENER_BASE ? ` (shortener: ${SHORTENER_BASE})` : ""}`,
+    `${SHORTENER_BASE ? ` (shortener: ${SHORTENER_BASE})` : ""}` +
+    `${NO_LOCALHOST ? " (no-localhost)" : ""}`,
 );
 buildExtension("chrome", "manifest.chrome.json");
 buildExtension("firefox", "manifest.firefox.json");
