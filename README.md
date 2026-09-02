@@ -5,8 +5,14 @@ person you send it to needs no extension, no account, and hits no server.
 
 ![promo](assets/promo-440x280.png)
 
-> **Status: `1.0.0-beta.1`.** Feature-complete and tested; not yet on any store.
-> Run your own copy with **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
+> **This `main` branch is frozen at `1.0.0-beta.5.5`** for the Firefox AMO
+> review. Active development and the published builds are on the
+> [**`dev`** branch](https://github.com/kaikayy/multi-link-share/tree/dev) --
+> [its README](https://github.com/kaikayy/multi-link-share/blob/dev/README.md)
+> is the current one.
+>
+> **Install:** [Add to Chrome](https://chromewebstore.google.com/detail/meieckangeakbekjbijbgfkkelneplfe)
+> (`1.0.0-beta.7`), Firefox is in AMO review, or [self-host](docs/SELF-HOSTING.md).
 
 ## What it does
 
