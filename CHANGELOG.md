@@ -5,6 +5,23 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
+## [1.0.0-beta.8] - 2026-09-02
+
+Manifests: chrome `version` -> `1.0.0.2` (`version_name` -> `1.0.0-beta.8`),
+firefox `version` -> `1.0.0.9`. Same permission set as beta.7 -- the shortener
+still only reaches the endpoint you configure.
+
+### Fixed
+
+- **Tab Share shortener: large tab groups no longer fail with "HTTP 414".**
+  A share link for a big group (many tabs, or long page URLs) could be 10 KB+.
+  The extension used to hand that whole link to the shortener in the request
+  URL, and a proxy in front of the server refused it as too long. It now sends
+  the link in the request body instead, so the shortener takes links far larger
+  than any real tab group. da.gd, TinyURL and custom endpoints are unchanged; if
+  one of them rejects a link for being too long, the popup now says so and
+  points you at the Tab Share shortener rather than showing a raw error number.
+
 ### Changed
 
 - **Privacy policy: disclose what the first-party shortener records.** The

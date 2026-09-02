@@ -1,6 +1,6 @@
 {
   "name": "tab-share-ext",
-  "version": "1.0.0-beta.7.5",
+  "version": "1.0.0-beta.8",
   "description": "Bundle a group of tabs (current window, a tab group, or pasted links) into one link that opens as a slideshow — no account, no server, and the recipient needs no extension.",
   "license": "AGPL-3.0-only",
   "private": true,
