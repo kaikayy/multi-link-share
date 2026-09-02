@@ -85,7 +85,11 @@
     <p>When you create a short link, the one full share link is sent to
       <code>s.kaikay.de</code> and stored so the short link can redirect to it. That
       long URL holds every page URL and title in the collection (in its <code>#</code>
-      fragment), so the operator of whichever shortener you pick can see them.</p>
+      fragment). Any shortener has to store its links' destinations, so the operator
+      <em>can</em> read them; the admin panel shows only the target host until a
+      destination is deliberately revealed, and an instance where the operator
+      genuinely cannot read them is
+      <a href="https://github.com/kaikayy/tab-share-shortener/blob/main/ROADMAP.md">on the roadmap</a>.</p>
     <p>When someone opens a short link, the server keeps a per-link <strong>hit
       count</strong> and, aggregated by day, the <strong>host that referred the
       click</strong> (for example <code>news.ycombinator.com</code>). It does not keep

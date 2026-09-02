@@ -55,9 +55,12 @@ links** and turn it on. Then, and only then:
 - **When you create a short link**, the extension sends the one full share link
   to `s.kaikay.de`, which stores it (the long viewer URL, keyed by the short
   code) so the short link can redirect to it later. That long URL contains every
-  page URL and title in the collection, in its `#` fragment -- so the operator
-  of whichever shortener you pick can see them. The default (no shortener) sends
-  the link to no one.
+  page URL and title in the collection, in its `#` fragment. Any shortener has
+  to store its links' destinations, so the operator *can* read them; the
+  admin panel only shows the target host until a destination is deliberately
+  revealed one link at a time, and making an instance where the operator
+  genuinely cannot read them is [on the shortener's roadmap](https://github.com/kaikayy/tab-share-shortener/blob/main/ROADMAP.md).
+  The default (no shortener) sends the link to no one.
 - **When someone opens a short link**, the server keeps a per-link **hit count**
   and, aggregated by day, the **host that referred the click** (for example
   `news.ycombinator.com`). It does **not** keep the full referring URL or page

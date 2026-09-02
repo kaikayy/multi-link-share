@@ -14,7 +14,10 @@ All notable changes to Tab Share. Format loosely follows
   `docs/CUSTOM-SHORTENER.md` now spell this out, the "no analytics/tracking"
   claim is scoped to the extension + viewer, and the options page notes it
   where you pick the shortener. The shortener repo gains its own `PRIVACY.md`.
-  No behaviour change in the extension.
+  A follow-up notes that the shortener's admin panel shows the target host
+  only (a destination is revealed one link at a time), with an operator that
+  genuinely cannot read the shared collections on its roadmap. No behaviour
+  change in the extension.
 
 ## [1.0.0-beta.7.5] - 2026-09-01
 
