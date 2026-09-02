@@ -14,7 +14,7 @@
     pages: [],
     name: "",
     groupPristine: true, // true = a picker change may replace the list wholesale
-    settings: { showIcons: true, autoPreview: true, shortProvider: "", shortEndpoint: "", shortAuto: false, shortMode: "code" },
+    settings: { showIcons: true, autoPreview: true, shortProvider: "", shortEndpoint: "", shortBase: "", shortAuto: false, shortMode: "code" },
   };
 
   async function loadSettings() {
@@ -58,6 +58,7 @@
         autoPreview: s.autoPreview !== false,
         shortProvider: provider,
         shortEndpoint: endpoint,
+        shortBase: s.shortBase || "",
         shortAuto: !!s.shortAuto,
         shortMode: mode,
       };
@@ -500,17 +501,21 @@
     return "";
   }
 
-  async function shorten(longUrl) {
-    const p = state.settings.shortProvider;
-    const enc = encodeURIComponent(longUrl);
-    let url;
-    if (p === "tinyurl") url = `https://tinyurl.com/api-create.php?url=${enc}`;
-    else if (p === "dagd") url = `https://da.gd/s?url=${enc}`;
-    else if ((p === "custom" || p === "tabshare") && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
-    else throw new Error("no shortener is set up -- see the options page");
+  /** Origin of the configured Tab Share shortener -- the stored base, or parsed
+   *  back out of the `<base>/new?...url=` endpoint string for older installs. */
+  function shortenerBase() {
+    const b = String(state.settings.shortBase || "").replace(/\/+$/, "");
+    if (/^https?:\/\//i.test(b)) return b;
+    try {
+      return new URL(state.settings.shortEndpoint).origin;
+    } catch (e) {
+      return "";
+    }
+  }
 
-    // A provider added, or an address migrated, without the matching host grant:
-    // request it now (this runs from the Shorten-link click, a user gesture).
+  /** A provider added, or an address migrated, without the matching host grant:
+   *  request it now (this runs from a user gesture -- Shorten-link / build). */
+  async function ensureShortenerHost(url) {
     try {
       const pattern = new URL(url).origin + "/*";
       if (api.permissions && !(await api.permissions.contains({ origins: [pattern] }))) {
@@ -522,6 +527,60 @@
       if (e && /needs access/.test(e.message || "")) throw e;
       /* permissions API unavailable -- let the fetch below try anyway */
     }
+  }
+
+  function finishShort(text, longUrl) {
+    const short = pickShortUrl(text);
+    if (!short) throw new Error("the shortener returned no link (it may reject long or '#'-fragment URLs)");
+    if (short.length >= longUrl.length) throw new Error("the shortened link came back no shorter than the original");
+    return short;
+  }
+
+  async function shorten(longUrl) {
+    const p = state.settings.shortProvider;
+
+    // Tab Share shortener: POST the long link in a JSON body to /api/shorten.
+    // The GET /new compat path puts the whole link in the query string, so the
+    // request line runs to 10 KB+ -- a reverse proxy in front of the server
+    // (nginx's default large_client_header_buffers) rejects that with HTTP 414.
+    if (p === "tabshare") {
+      const base = shortenerBase();
+      if (!base) throw new Error("no shortener is set up -- see the options page");
+      const endpoint = base + "/api/shorten";
+      await ensureShortenerHost(endpoint);
+      let res;
+      try {
+        res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json, text/plain" },
+          body: JSON.stringify({ url: longUrl, mode: state.settings.shortMode === "words" ? "words" : "code" }),
+        });
+      } catch (e) {
+        throw new Error("the shortener couldn’t be reached (offline, or the options page never got host access)");
+      }
+      const text = await res.text();
+      if (!res.ok) {
+        let detail = "";
+        try {
+          detail = JSON.parse(text).error || "";
+        } catch (e) {}
+        if (res.status === 414 || res.status === 413) {
+          throw new Error(detail || "the shortener rejected this link as too large -- a self-hosted instance can raise its size limit (SHORTENER_MAX_URL / _MAX_BODY)");
+        }
+        // e.g. a link whose viewer host the shortener does not allowlist.
+        throw new Error(detail || "the shortener returned HTTP " + res.status);
+      }
+      return finishShort(text, longUrl);
+    }
+
+    const enc = encodeURIComponent(longUrl);
+    let url;
+    if (p === "tinyurl") url = `https://tinyurl.com/api-create.php?url=${enc}`;
+    else if (p === "dagd") url = `https://da.gd/s?url=${enc}`;
+    else if (p === "custom" && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
+    else throw new Error("no shortener is set up -- see the options page");
+
+    await ensureShortenerHost(url);
 
     let res;
     try {
@@ -535,15 +594,16 @@
       try {
         detail = JSON.parse(text).error || "";
       } catch (e) {}
-      // The Tab Share shortener rejects a link whose viewer host it does not
-      // allowlist -- surface that instead of a bare status code.
+      // GET shorteners carry the link in the URL, so a big collection can trip
+      // the provider's request-line limit -- the built-in shortener takes these.
+      if (res.status === 414 || res.status === 413) {
+        const label = p === "tinyurl" ? "TinyURL" : p === "dagd" ? "da.gd" : "that shortener";
+        throw new Error(label + " can't take a link this large; the Tab Share shortener (Options page) can");
+      }
       throw new Error(detail || "the shortener returned HTTP " + res.status);
     }
 
-    const short = pickShortUrl(text);
-    if (!short) throw new Error("the shortener returned no link (it may reject long or '#'-fragment URLs)");
-    if (short.length >= longUrl.length) throw new Error("the shortened link came back no shorter than the original");
-    return short;
+    return finishShort(text, longUrl);
   }
 
   async function autoCopy(link) {

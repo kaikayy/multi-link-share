@@ -60,9 +60,12 @@ To run your own instead of `s.kaikay.de`, set it up from its own repo
 ([SELF-HOSTING.md](https://github.com/kaikayy/tab-share-shortener/blob/main/SELF-HOSTING.md))
 -- Node on a box you own, or a Cloudflare Worker -- and put its address in step 2.
 
-Under the hood the extension just calls `<address>/new?url=` (or
-`<address>/new?mode=words&url=`) -- the same GET contract as a custom endpoint
-below, so the rest of this page applies to it too.
+Under the hood the extension `POST`s to `<address>/api/shorten` with a JSON body
+(`{ "url": "...", "mode": "code" | "words" }`) and reads `shortUrl` from the JSON
+reply. The long link rides in the request body, not the URL, so it is never at
+risk of a reverse proxy's request-line limit (HTTP 414) however big the
+collection is. The `GET <address>/new?url=` compat path still exists for other
+callers; see the shortener's CONTRACT.md.
 
 ### Viewer host and the allowlist
 
