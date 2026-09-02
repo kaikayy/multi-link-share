@@ -24,10 +24,10 @@ code paths.
 
 ### Added
 
-- **"A link shortener is recommended" tip in the popup.** A dismissable banner
-  at the top of the build view points at the built-in shortener (free, no
-  account) with a *Set it up* link to the options page. Hidden once a shortener
-  is configured; the dismissal sticks (`shortenerNoticeDismissed`).
+- **Shortener tip in the popup.** A dismissable, compact banner at the top of
+  the build view points at the built-in shortener (free, no account) with a
+  *Set it up* link to the options page. Hidden once a shortener is configured;
+  the dismissal sticks (`shortenerNoticeDismissed`).
 
 ## [1.0.0-beta.7] - 2026-09-01
 
