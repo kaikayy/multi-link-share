@@ -61,15 +61,20 @@ links** and turn it on. Then, and only then:
   revealed one link at a time, and making an instance where the operator
   genuinely cannot read them is [on the shortener's roadmap](https://github.com/kaikayy/tab-share-shortener/blob/main/ROADMAP.md).
   The default (no shortener) sends the link to no one.
-- **When someone opens a short link**, the server keeps a per-link **hit count**
-  and, aggregated by day, the **host that referred the click** (for example
-  `news.ycombinator.com`). It does **not** keep the full referring URL or page
-  path, **no IP address**, and no per-visitor identifier or cookie. It also
-  keeps daily totals and a short rolling list of recent events (short code +
-  referrer host + timestamp). This is retained about 365 days and is visible
-  only to the operator, through a password-gated admin page.
-- It runs **no third-party analytics or ad code**, sets no tracking cookies, and
-  never shares or sells any of this.
+- **When someone opens a short link**, the server keeps aggregate day-level
+  counters only: a per-link **hit count**, a tally of the **host that referred
+  the click** (e.g. `news.ycombinator.com`), and a tally of the visitor's
+  **browser family and major version** (e.g. `Firefox 130`) reduced from the
+  User-Agent. It does **not** keep your **IP address**, geolocation, the full
+  referring URL or page path, the full User-Agent or OS/device, any **cookie**,
+  or any per-visitor identifier or fingerprint. Kept ~365 days, visible only to
+  the operator through a password-gated admin page. The operator can also, on
+  request, see an aggregate histogram of the *domains* people bundle
+  (`reddit.com`, never the specific page) -- computed on the spot, stored
+  nowhere.
+- It runs **no third-party analytics, advertising, or tracking code**, and
+  **none of it is ever sold or shared** for advertising or marketing --
+  see the shortener's [privacy policy](https://github.com/kaikayy/tab-share-shortener/blob/main/PRIVACY.md).
 
 On your own instance the click analytics are off with `SHORTENER_ANALYTICS=0`
 and the hit counter with `SHORTENER_COUNT_HITS=0`.
