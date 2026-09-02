@@ -19,6 +19,23 @@ Tab Share can run every share link through a shortener of your choice. Options:
 
 All of these are **off by default**; nothing is sent anywhere until you turn one on.
 
+### What each one keeps when a link is opened
+
+| Shortener | Logged on each click | Cookies / 3rd-party trackers | Data sold or shared |
+| --- | --- | --- | --- |
+| **Tab Share shortener** (`s.kaikay.de` or self-hosted) | aggregate day counts only: hits, referrer *host*, browser family + major version. No IP, no geolocation, no full User-Agent, no per-visitor row. | none | never |
+| **da.gd** | a hit counter; small open-source service, no ad or analytics scripts | none observed | no |
+| **TinyURL** | IP address, browser type + version, referring URLs, timestamps; forwards your **full referrer** to the destination site | yes | not stated in its policy |
+| **Bitly** (not offered here) | per click: timestamp, IP, user-agent, country, city, device, browser, referring domain | yes | yes -- selling click analytics is a paid feature |
+| **Custom endpoint** | whatever you build it to log | -- | -- |
+
+TinyURL / Bitly rows are summarised from their published policies and
+independent testing as of 2026; they can change them at any time. The full
+detail for the first-party one is in the
+[Tab Share privacy policy](https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md#the-tab-share-shortener-skaikayde)
+and the shortener's
+[own PRIVACY.md](https://github.com/kaikayy/tab-share-shortener/blob/main/PRIVACY.md).
+
 > **On public shorteners.** `s.kaikay.de`, da.gd and TinyURL are all hosted by
 > other people (the first two by the Tab Share author, on a small server). With
 > any shortener that is not your own, performance, uptime, and how long a
