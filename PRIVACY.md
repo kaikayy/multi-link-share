@@ -15,10 +15,12 @@ own section below.
   from. Tab icons are shown in the popup and never uploaded.
 - **Tab groups** -- names and colours, and (on import) the ability to create a
   group. Used for the "Tab group" source and the "open as a tab group" action.
-- **Local extension storage** (`storage.local`) -- your viewer address, your
-  setup choices, and up to 50 recently created links, on this device. Never
-  synced, never transmitted. Clear all or individual entries in the options
-  page.
+- **Local extension storage** (`storage.local`) -- your viewer address, setup
+  choices, and up to 50 recently created links, kept on this device. The
+  extension never syncs it or uploads it anywhere. (If you turn on a shortener,
+  the single link you shorten is sent to that service as you create it -- see
+  below -- but the stored list itself is not.) Clear all or individual entries
+  in the options page.
 - **The viewer page only** -- one content script runs on the slideshow viewer
   page. It reads the collection from that page's URL fragment so it can add an
   "Open with Tab Share" button that opens the pages with the extension instead
