@@ -2,10 +2,10 @@
 
 _Last updated: 2026-09-02 (1.0.0-beta.7.5)_
 
-Tab Share is built so that there is nothing to collect. **The extension and the
-viewer** have no server, no account, no analytics, and no tracking. The one
-part with a server is the **optional URL shortener** -- off by default, and
-covered in its own section below.
+Tab Share is built so that **the extension and the viewer** have nothing to
+collect: no server, no account, no analytics, no tracking. The one part with a
+server is the **optional URL shortener** -- off by default, and covered in its
+own section below.
 
 ## What the extension accesses
 
@@ -36,12 +36,13 @@ covered in its own section below.
 - **A URL shortener**. Off by default. The built-in choices are the first-party
   **Tab Share shortener** (`s.kaikay.de`), **da.gd**, **TinyURL**, or a **custom
   endpoint** you supply. When one is on, creating a share link sends that one
-  generated URL to the service you picked -- and nothing else. What the service
-  then does with it (including whether it counts clicks) is up to its operator;
-  for the first-party one, see *The Tab Share shortener* below.
+  generated URL -- and nothing else -- to the service you picked. What that
+  service then does with it (including whether it counts clicks) is up to its
+  operator; for the first-party one, see *The Tab Share shortener* below.
 
-Everything else -- the extension itself, the viewer with icons off -- makes no
-network requests at all.
+With no shortener set up and site icons off, neither the extension nor the
+viewer makes any network request at all -- there is no other phone-home,
+telemetry, or update check anywhere in either.
 
 ## The Tab Share shortener (`s.kaikay.de`)
 
