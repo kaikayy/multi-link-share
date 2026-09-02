@@ -1,9 +1,11 @@
 # Privacy Policy -- Tab Share
 
-_Last updated: 2026-08-31 (1.0.0-beta.4)_
+_Last updated: 2026-09-02 (1.0.0-beta.7.5)_
 
-Tab Share is built so that there is nothing to collect. It has no server, no
-account, no analytics, and no tracking.
+Tab Share is built so that there is nothing to collect. **The extension and the
+viewer** have no server, no account, no analytics, and no tracking. The one
+part with a server is the **optional URL shortener** -- off by default, and
+covered in its own section below.
 
 ## What the extension accesses
 
@@ -31,12 +33,43 @@ account, no analytics, and no tracking.
   `icons.duckduckgo.com`. Those domain names go to DuckDuckGo's icon service and
   nowhere else. Turn it off at first run or in options, and the viewer makes
   **zero** network requests.
-- **A URL shortener**. Off by default. If you pick one (TinyURL, or your own
-  endpoint), creating a link sends that one generated URL to the service you
-  chose -- and nothing else.
+- **A URL shortener**. Off by default. The built-in choices are the first-party
+  **Tab Share shortener** (`s.kaikay.de`), **da.gd**, **TinyURL**, or a **custom
+  endpoint** you supply. When one is on, creating a share link sends that one
+  generated URL to the service you picked -- and nothing else. What the service
+  then does with it (including whether it counts clicks) is up to its operator;
+  for the first-party one, see *The Tab Share shortener* below.
 
 Everything else -- the extension itself, the viewer with icons off -- makes no
 network requests at all.
+
+## The Tab Share shortener (`s.kaikay.de`)
+
+`s.kaikay.de` is a small service run by the Tab Share author. It is also
+[self-hostable](https://github.com/kaikayy/tab-share-shortener); if you run your
+own instance, everything below is yours to configure or switch off.
+
+Using it is opt-in: you choose *Tab Share shortener* in **Options -> Shorten
+links** and turn it on. Then, and only then:
+
+- **When you create a short link**, the extension sends the one full share link
+  to `s.kaikay.de`, which stores it (the long viewer URL, keyed by the short
+  code) so the short link can redirect to it later. That long URL contains every
+  page URL and title in the collection, in its `#` fragment -- so the operator
+  of whichever shortener you pick can see them. The default (no shortener) sends
+  the link to no one.
+- **When someone opens a short link**, the server keeps a per-link **hit count**
+  and, aggregated by day, the **host that referred the click** (for example
+  `news.ycombinator.com`). It does **not** keep the full referring URL or page
+  path, **no IP address**, and no per-visitor identifier or cookie. It also
+  keeps daily totals and a short rolling list of recent events (short code +
+  referrer host + timestamp). This is retained about 365 days and is visible
+  only to the operator, through a password-gated admin page.
+- It runs **no third-party analytics or ad code**, sets no tracking cookies, and
+  never shares or sells any of this.
+
+On your own instance the click analytics are off with `SHORTENER_ANALYTICS=0`
+and the hit counter with `SHORTENER_COUNT_HITS=0`.
 
 ## The share link
 

@@ -204,3 +204,15 @@ Whatever you run, it now sees the **full share link** -- which contains every
 page URL in the collection (in the `#` fragment). Run it yourself, or trust the
 operator the way you'd trust any shortener. The default (no shortener) sends the
 link to no one.
+
+**The first-party `s.kaikay.de` instance** (run by the Tab Share author) stores
+the long URL you shortened, and on each redirect keeps a per-link hit count plus
+the **referring host** (e.g. `news.ycombinator.com`), aggregated by day -- no
+full referrer, no page path, no IP, no cookies, no per-visitor identifier. Kept
+~365 days, visible only through a password-gated admin panel, no third-party
+analytics. Full details in the
+[Tab Share privacy policy](https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md#the-tab-share-shortener-skaikayde)
+and the shortener's
+[own privacy note](https://github.com/kaikayy/tab-share-shortener/blob/main/PRIVACY.md).
+Self-host it (`SHORTENER_ANALYTICS=0`, `SHORTENER_COUNT_HITS=0`) to keep none of
+this.

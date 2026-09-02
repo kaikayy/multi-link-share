@@ -39,9 +39,12 @@
 <body>
   <main>
     <h1>Privacy Policy — Tab Share</h1>
-    <p class="updated">Last updated: 2026-08-31</p>
+    <p class="updated">Last updated: 2026-09-02</p>
 
-    <p>Tab Share is built so that there is nothing to collect.</p>
+    <p>Tab Share is built so that there is nothing to collect. The extension and
+      the viewer have no server, no account, no analytics, and no tracking. The
+      one part with a server is the optional URL shortener, off by default and
+      described below.</p>
 
     <h2>What the extension accesses</h2>
     <ul>
@@ -70,8 +73,28 @@
       requests one icon per domain in the link from <code>icons.duckduckgo.com</code> when
       the link is opened — those domain names go to DuckDuckGo's icon service and nowhere
       else. If you turn on a <strong>URL shortener</strong> in the extension, creating a
-      link sends that one generated URL to the service you chose. With icons off and no
-      shortener, nothing on this page or in the extension makes any network request.</p>
+      link sends that one generated URL to the service you chose (the first-party
+      <code>s.kaikay.de</code>, da.gd, TinyURL, or a custom endpoint). With icons off and
+      no shortener, nothing on this page or in the extension makes any network request.</p>
+
+    <h2>The Tab Share shortener (s.kaikay.de)</h2>
+    <p><code>s.kaikay.de</code> is a small service run by the Tab Share author, and is
+      also <a href="https://github.com/kaikayy/tab-share-shortener">self-hostable</a>.
+      It only does anything if you opt in by choosing <em>Tab Share shortener</em> in the
+      extension's options and turning it on.</p>
+    <p>When you create a short link, the one full share link is sent to
+      <code>s.kaikay.de</code> and stored so the short link can redirect to it. That
+      long URL holds every page URL and title in the collection (in its <code>#</code>
+      fragment), so the operator of whichever shortener you pick can see them.</p>
+    <p>When someone opens a short link, the server keeps a per-link <strong>hit
+      count</strong> and, aggregated by day, the <strong>host that referred the
+      click</strong> (for example <code>news.ycombinator.com</code>). It does not keep
+      the full referring URL or page path, <strong>no IP address</strong>, and no
+      per-visitor identifier or cookie. It also keeps daily totals and a short rolling
+      list of recent events. This is retained about 365 days and is visible only to the
+      operator through a password-gated admin page. There is no third-party analytics or
+      ad code, and nothing is shared or sold. On a self-hosted instance all of this can
+      be switched off.</p>
 
     <h2>Password-protected links</h2>
     <p>When the sender sets a password, the collection is encrypted in the sender's

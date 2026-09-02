@@ -5,6 +5,17 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
+### Changed
+
+- **Privacy policy: disclose what the first-party shortener records.** The
+  `s.kaikay.de` instance keeps aggregate redirect stats (per-link hit counts
+  and, by day, the referring host -- no full referrer, no path, no IP, no
+  cookies, ~365-day retention). `PRIVACY.md`, `viewer/privacy.html` and
+  `docs/CUSTOM-SHORTENER.md` now spell this out, the "no analytics/tracking"
+  claim is scoped to the extension + viewer, and the options page notes it
+  where you pick the shortener. The shortener repo gains its own `PRIVACY.md`.
+  No behaviour change in the extension.
+
 ## [1.0.0-beta.7.5] - 2026-09-01
 
 Manifests: chrome `version_name` -> `1.0.0-beta.7.5`, firefox `version` ->
