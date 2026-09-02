@@ -33,8 +33,10 @@ own section below.
 - **Site icons** in the shared viewer. If left on, when a recipient opens a link
   the viewer requests one icon per domain in the collection from
   `icons.duckduckgo.com`. Those domain names go to DuckDuckGo's icon service and
-  nowhere else. Turn it off at first run or in options, and the viewer makes
-  **zero** network requests.
+  nowhere else. Turn it off at first run or in options. With **site icons** off
+  and **Auto-load live previews** off (both in the viewer's settings menu), the
+  viewer makes no network request of its own -- it loads a page only when you
+  open or preview one yourself.
 - **A URL shortener**. Off by default. The built-in choices are the first-party
   **Tab Share shortener** (`s.kaikay.de`), **da.gd**, **TinyURL**, or a **custom
   endpoint** you supply. When one is on, creating a share link sends that one
@@ -42,9 +44,9 @@ own section below.
   service then does with it (including whether it counts clicks) is up to its
   operator; for the first-party one, see *The Tab Share shortener* below.
 
-With no shortener set up and site icons off, neither the extension nor the
-viewer makes any network request at all -- there is no other phone-home,
-telemetry, or update check anywhere in either.
+Those are the only things that ever reach the network -- the two opt-in
+features above, plus the pages you choose to open or preview. There is no
+telemetry, phone-home, or update check anywhere in the extension or the viewer.
 
 ## The Tab Share shortener (`s.kaikay.de`)
 
