@@ -19,7 +19,7 @@ see the [support matrix](#browser-support).
 
 | Store | Link |
 | --- | --- |
-| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** |
+| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.7`) |
 | **Firefox Add-ons** (Firefox and forks) | [_in review_][amo] |
 
 Or **[install it yourself](docs/SELF-HOSTING.md)** (about two minutes) on any
