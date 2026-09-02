@@ -1,9 +1,11 @@
 # Privacy Policy -- Tab Share
 
-_Last updated: 2026-08-31 (1.0.0-beta.4)_
+_Last updated: 2026-09-02 (1.0.0-beta.7.5)_
 
-Tab Share is built so that there is nothing to collect. It has no server, no
-account, no analytics, and no tracking.
+Tab Share is built so that **the extension and the viewer** have nothing to
+collect: no server, no account, no analytics, no tracking. The one part with a
+server is the **optional URL shortener** -- off by default, and covered in its
+own section below.
 
 ## What the extension accesses
 
@@ -13,10 +15,12 @@ account, no analytics, and no tracking.
   from. Tab icons are shown in the popup and never uploaded.
 - **Tab groups** -- names and colours, and (on import) the ability to create a
   group. Used for the "Tab group" source and the "open as a tab group" action.
-- **Local extension storage** (`storage.local`) -- your viewer address, your
-  setup choices, and up to 50 recently created links, on this device. Never
-  synced, never transmitted. Clear all or individual entries in the options
-  page.
+- **Local extension storage** (`storage.local`) -- your viewer address, setup
+  choices, and up to 50 recently created links, kept on this device. The
+  extension never syncs it or uploads it anywhere. (If you turn on a shortener,
+  the single link you shorten is sent to that service as you create it -- see
+  below -- but the stored list itself is not.) Clear all or individual entries
+  in the options page.
 - **The viewer page only** -- one content script runs on the slideshow viewer
   page. It reads the collection from that page's URL fragment so it can add an
   "Open with Tab Share" button that opens the pages with the extension instead
@@ -29,14 +33,56 @@ account, no analytics, and no tracking.
 - **Site icons** in the shared viewer. If left on, when a recipient opens a link
   the viewer requests one icon per domain in the collection from
   `icons.duckduckgo.com`. Those domain names go to DuckDuckGo's icon service and
-  nowhere else. Turn it off at first run or in options, and the viewer makes
-  **zero** network requests.
-- **A URL shortener**. Off by default. If you pick one (TinyURL, or your own
-  endpoint), creating a link sends that one generated URL to the service you
-  chose -- and nothing else.
+  nowhere else. Turn it off at first run or in options. With **site icons** off
+  and **Auto-load live previews** off (both in the viewer's settings menu), the
+  viewer makes no network request of its own -- it loads a page only when you
+  open or preview one yourself.
+- **A URL shortener**. Off by default. The built-in choices are the first-party
+  **Tab Share shortener** (`s.kaikay.de`), **da.gd**, **TinyURL**, or a **custom
+  endpoint** you supply. When one is on, creating a share link sends that one
+  generated URL -- and nothing else -- to the service you picked. What that
+  service then does with it (including whether it counts clicks) is up to its
+  operator; for the first-party one, see *The Tab Share shortener* below.
 
-Everything else -- the extension itself, the viewer with icons off -- makes no
-network requests at all.
+Those are the only things that ever reach the network -- the two opt-in
+features above, plus the pages you choose to open or preview. There is no
+telemetry, phone-home, or update check anywhere in the extension or the viewer.
+
+## The Tab Share shortener (`s.kaikay.de`)
+
+`s.kaikay.de` is a small service run by the Tab Share author. It is also
+[self-hostable](https://github.com/kaikayy/tab-share-shortener); if you run your
+own instance, everything below is yours to configure or switch off.
+
+Using it is opt-in: you choose *Tab Share shortener* in **Options -> Shorten
+links** and turn it on. Then, and only then:
+
+- **When you create a short link**, the extension sends the one full share link
+  to `s.kaikay.de`, which stores it (the long viewer URL, keyed by the short
+  code) so the short link can redirect to it later. That long URL contains every
+  page URL and title in the collection, in its `#` fragment. Any shortener has
+  to store its links' destinations, so the operator *can* read them; the
+  admin panel only shows the target host until a destination is deliberately
+  revealed one link at a time, and making an instance where the operator
+  genuinely cannot read them is [on the shortener's roadmap](https://github.com/kaikayy/tab-share-shortener/blob/main/ROADMAP.md).
+  The default (no shortener) sends the link to no one.
+- **When someone opens a short link**, the server keeps aggregate day-level
+  counters only: a per-link **hit count**, a tally of the **host that referred
+  the click** (e.g. `news.ycombinator.com`), and a tally of the visitor's
+  **browser family and major version** (e.g. `Firefox 130`) reduced from the
+  User-Agent. It does **not** keep your **IP address**, geolocation, the full
+  referring URL or page path, the full User-Agent or OS/device, any **cookie**,
+  or any per-visitor identifier or fingerprint. Kept ~365 days, visible only to
+  the operator through a password-gated admin page. The operator can also, on
+  request, see an aggregate histogram of the *domains* people bundle
+  (`reddit.com`, never the specific page) -- computed on the spot, stored
+  nowhere.
+- It runs **no third-party analytics, advertising, or tracking code**, and
+  **none of it is ever sold or shared** for advertising or marketing --
+  see the shortener's [privacy policy](https://github.com/kaikayy/tab-share-shortener/blob/main/PRIVACY.md).
+
+On your own instance the click analytics are off with `SHORTENER_ANALYTICS=0`
+and the hit counter with `SHORTENER_COUNT_HITS=0`.
 
 ## The share link
 
