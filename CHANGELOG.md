@@ -24,9 +24,10 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [1.0.0-beta.7.5] - 2026-09-01
 
-Manifests: chrome `version_name` -> `1.0.0-beta.7.5`, firefox `version` ->
-`1.0.0.8`. Same permission set as beta.7 -- a popup-copy change only, no new
-code paths.
+Manifests: chrome `version` -> `1.0.0.1` (Chrome needs a higher numeric
+`version` than beta.7's `1.0.0` to accept the update; `version_name` stays
+`1.0.0-beta.7.5`), firefox `version` -> `1.0.0.8`. Same permission set as
+beta.7 -- a popup-copy change only, no new code paths.
 
 ### Added
 
