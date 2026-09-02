@@ -138,6 +138,30 @@ the packaged viewer host); point the extension at your own viewer and the
 options page asks you to approve that one host first. Hide the button from its
 own menu or the options page; bring it back from the viewer's settings menu.
 
+## The Tab Share suite
+
+![Tab Share and the Tab Share shortener](assets/promo-banner-suite.png)
+
+A 40-page collection is ~4 KB of link -- fine to send, unwieldy to paste. The
+**[Tab Share shortener](https://github.com/kaikayy/tab-share-shortener)** turns
+one into `s.kaikay.de/swift-amber-otter`. It's a small zero-dependency Node
+service (also a Cloudflare Worker) that:
+
+- takes multi-kilobyte links, fragment intact, where TinyURL / is.gd choke;
+- only ever redirects to an **allow-listed viewer host**, so it can't become an
+  open redirector;
+- keeps **no IP, no geolocation, no cookies** -- aggregate day counts only, and
+  [never sold](https://github.com/kaikayy/tab-share-shortener/blob/main/PRIVACY.md);
+- is [self-hostable](https://github.com/kaikayy/tab-share-shortener/blob/main/SELF-HOSTING.md)
+  in a couple of minutes.
+
+**Recommended.** In **Options -> Shorten links**, pick *Tab Share shortener* --
+it's pre-filled with the public instance at `s.kaikay.de`, which allow-lists the
+built-in viewer, so it works with no setup. Off until you turn it on, still
+opt-in per link. [`docs/CUSTOM-SHORTENER.md`](docs/CUSTOM-SHORTENER.md) covers
+the other options (da.gd, TinyURL, a custom endpoint) and how they compare on
+what they log.
+
 ## Permissions (deliberately tiny)
 
 | Permission | Required? | Why |
