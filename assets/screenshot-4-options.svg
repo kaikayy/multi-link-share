@@ -112,7 +112,7 @@
             <rect width="200" height="32" rx="9" fill="#24242e" stroke="#3a3a47"/>
             <text x="14" y="21" fill="#ececf1">Tab Share shortener</text>
             <rect x="214" width="230" height="32" rx="9" fill="#24242e" stroke="#3a3a47"/>
-            <text x="228" y="21" fill="#ececf1" font-family="ui-monospace, Menlo, monospace">https://tabsha.re</text>
+            <text x="228" y="21" fill="#ececf1" font-family="ui-monospace, Menlo, monospace">https://s.kaikay.de</text>
             <rect x="458" width="154" height="32" rx="9" fill="#24242e" stroke="#3a3a47"/>
             <text x="472" y="21" fill="#ececf1">Readable words</text>
           </g>
