@@ -45,7 +45,7 @@
 
   <!-- headline -->
   <text x="96" y="196" fill="#f5f3ff" font-size="48" font-weight="800">One link for a whole group of tabs.</text>
-  <text x="96" y="242" fill="#cfc9e8" font-size="23" font-weight="500">The <tspan fill="#c9b8ff" font-weight="700">extension</tspan> packs the pages into the link and opens the slideshow.</text>
+  <text x="96" y="242" fill="#cfc9e8" font-size="23" font-weight="500">The <tspan fill="#c9b8ff" font-weight="700">extension</tspan> packs the pages into the link; any browser opens it, no extension needed.</text>
   <text x="96" y="274" fill="#cfc9e8" font-size="23" font-weight="500">The <tspan fill="#ffb98f" font-weight="700">shortener</tspan> (optional, self-hosted) squeezes that link down to a stub.</text>
 
   <!-- pipeline -->
@@ -86,7 +86,7 @@
     <g transform="translate(638,27)">
       <rect width="230" height="50" rx="25" fill="#20202c" stroke="#a06a4f"/>
       <circle cx="27" cy="25" r="10" fill="url(#gShort)"/>
-      <text x="48" y="30" fill="#f4e6ea" font-size="13.5" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">s.example.com/k7Rm2pq</text>
+      <text x="48" y="30" fill="#f4e6ea" font-size="13.5" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">s.kaikay.de/k7Rm2pq</text>
     </g>
     <text x="753" y="128" text-anchor="middle" fill="#9c9cad" font-size="13" font-weight="600">short link &#183; 21 chars</text>
 
@@ -115,7 +115,7 @@
       <rect width="196" height="34" rx="17" fill="#221d3a" stroke="#5a4fa0"/>
       <text x="98" y="22" text-anchor="middle" fill="#c9b8ff" font-weight="700">Tab Share extension</text>
     </g>
-    <text x="212" y="22" fill="#9c9cad">Chrome, Firefox &amp; every major browser &#183; no account, no server, nothing tracked</text>
+    <text x="212" y="22" fill="#9c9cad">opens in any browser, no extension &#183; no account, no server, nothing tracked</text>
   </g>
   <g transform="translate(96,544)" font-size="15">
     <g>

@@ -1,15 +1,19 @@
 # Tab Share
 
-**A browser extension that turns a group of open tabs into one shareable link.**
+**A browser extension that turns a group of open tabs into one shareable link --
+and whoever you send it to opens it in any browser with no extension, no account,
+and no sign-up.**
 
-- Pick a **window**, a **tab group**, or a **pasted list** -> get a single link,
-  copied to your clipboard.
-- The whole page list is packed into the link itself (everything after the `#`)
-  -- **no account, no server, no database**, and the extension makes no network
-  requests.
-- Whoever you send it to opens it as a **slideshow / grid / list** in any
-  browser -- they need no extension.
-- Optional: **password-protect** the link, or run it through a **URL shortener**.
+- Pick a **window**, a **tab group**, or a **pasted list** -> one link, copied
+  to your clipboard.
+- **The recipient needs no extension.** The whole page list rides inside the
+  link (everything after the `#`); their browser opens it as a
+  **slideshow / grid / list** and sends the list to no one.
+- **No account, no server, no database.** The extension makes no network
+  requests; nothing is tracked, on either side.
+- Optional: **password-protect** the link, or shorten it with the
+  [Tab Share shortener](#the-tab-share-suite) -- the short link opens the same
+  way, still no extension.
 
 **Browsers:** Chrome, Chromium, Edge, Brave, Opera, Vivaldi, Arc, and Firefox
 (plus forks like Zen / LibreWolf). Desktop today; mobile is on the roadmap --
@@ -148,6 +152,8 @@ one into `s.kaikay.de/swift-amber-otter`. It's a small zero-dependency Node
 service (also a Cloudflare Worker) that:
 
 - takes multi-kilobyte links, fragment intact, where TinyURL / is.gd choke;
+- redirects straight to the viewer, so **the short link still opens in any
+  browser with no extension** -- same as the full link;
 - only ever redirects to an **allow-listed viewer host**, so it can't become an
   open redirector;
 - keeps **no IP, no geolocation, no cookies** -- aggregate day counts only, and
