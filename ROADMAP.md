@@ -29,24 +29,28 @@ Done:
   zero requests. Free, no account, opt-in per link.
 - Node zero-dep + a Cloudflare Worker port. Storage: JSON file or `node:sqlite`.
   Linux + Windows installers.
-- Host-allowlisted (only shortens links to your own viewer). Optional expiry,
-  identical-link dedup, clean size limits (256 KB).
-- Built-in **"Tab Share shortener"** provider in the extension options, with a
-  *Normal / Readable words* style toggle. Off by default, alongside the
-  custom-endpoint option ([docs/CUSTOM-SHORTENER.md](docs/CUSTOM-SHORTENER.md)).
+- Host-allowlisted (only shortens links to your own viewer). Optional expiry
+  (30-day default TTL + a `keepToken` to pin), identical-link dedup, 1 MB size
+  limit. The extension `POST`s the link so a proxy request-line limit never
+  bites.
+- Built-in **"Tab Share shortener (recommended)"** provider in the extension
+  options, with a *Normal / Readable words* style toggle. Off by default,
+  alongside the custom-endpoint option
+  ([docs/CUSTOM-SHORTENER.md](docs/CUSTOM-SHORTENER.md)). The address is
+  pre-filled with `s.kaikay.de` and the option is labelled *recommended*.
 - **Public deployment live at `s.kaikay.de`.** Runs as a `systemctl --user`
   service (JSON store) behind Apache reverse proxy + Let's Encrypt on a KeyHelp
-  box; allow-lists `kaikayy.github.io` only. The built-in provider's address
-  field is pre-filled with it, so the default viewer + this shortener work with
-  no configuration (still Off until the user turns it on).
+  box; allow-lists `kaikayy.github.io` only. The default viewer + this shortener
+  work with no configuration (still Off until the user turns it on).
+- **Admin panel** at `s.kaikay.de/admin` (token-gated): link table, revoke /
+  bulk revoke-delete, allowlist editor, redirect analytics, `/admin/metrics`.
 
 Still open:
 
-- Make it *the recommended* option in the popup UI (not just pre-filled) now
-  that there's a public deployment.
-- Move the `s.kaikay.de` instance to the sqlite backend + backups (needs Node
-  22.5+ on the box, currently 20). Small `HEAD`-request fix in the shortener
-  (returns 405 today).
+- Move the `s.kaikay.de` instance to a durable backend + backups. `node:sqlite`
+  needs Node 22.5+ (box is on 20); a MySQL/MariaDB backend is on the shortener
+  repo's roadmap and is the more likely path for a KeyHelp box. Small
+  `HEAD`-request fix in the shortener (returns 405 today).
 - Letting other people route their own self-hosted viewers through `s.kaikay.de`
   -- via the allowlist-request issue form the shortener repo already ships -- is
   a later step, once the verification workflow is settled. Self-hosters can
@@ -70,14 +74,23 @@ property, which stays. Shortener keeps only the long URL + code.)
 - Categories toggleable in the viewer's settings menu. **Warn only, never
   block** -- the link only ever contains URLs the user could type themselves.
 
-## Link expiry
+## Link expiry (client-side) -- deprioritised
 
-- Optional "expires in N days" stamped into the token (proposed default 14).
-  The viewer refuses to render an expired collection.
-- Purely client-side -- `created` is already in the schema; this adds an
-  `expires` field and a check.
-- "Permanent" and password-only variants stay behind an experimental/dev flag
-  until the behaviour is settled.
+The **shortener** now does expiry server-side (30-day default TTL, a `keepToken`
+to pin, keep/expire controls in the admin panel -- shortener 0.3.0). For anyone
+using the shortener that already covers "my links shouldn't pile up forever".
+
+A client-side `expires` field stamped into the token would still be different:
+it makes a **plain fragment link** (no shortener) refuse to render past a date,
+so a sender can share something time-limited without running anything. But it is
+**soft only** -- the URLs are right there in the link, a recipient can edit the
+token or just read them off. So it is a visible signal, not enforcement, and low
+value next to the server-side path. Kept here as a maybe:
+
+- Optional "expires in N days" stamped into the token; the viewer shows an
+  "expired" state instead of rendering. Pairs naturally with schema v4's `ext`
+  blob rather than the required core.
+- "Permanent" / password-only variants behind a dev flag until settled.
 
 ## Viewer & popup
 
