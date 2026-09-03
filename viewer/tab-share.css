@@ -390,6 +390,24 @@ body { min-height: 100vh; display: flex; flex-direction: column; }
 }
 .v-source { text-align: center; padding: 20px 12px 28px; color: var(--text-dim); font-size: 11.5px; }
 .v-source a { color: var(--text-dim); text-decoration: underline; }
+/* leave a clear strip at the bottom on narrow screens so the fixed Ko-fi button
+   never sits on top of the (centred) footer text */
+@media (max-width: 640px) { .v-source { margin-bottom: 40px; } }
+
+/* Ko-fi button — pinned to the bottom-right of the viewport, out of the way of
+   the centred slideshow nav / pagers / toast (which sits centre-bottom at z 40). */
+.v-kofi {
+  position: fixed; right: 12px; bottom: 12px; z-index: 20;
+  line-height: 0; border-radius: 12px;
+  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.45);
+  opacity: 0.8; transition: opacity .15s, transform .15s;
+}
+.v-kofi:hover, .v-kofi:focus-visible { opacity: 1; transform: translateY(-1px); }
+.v-kofi img { display: block; width: 116px; height: auto; }
+@media (max-width: 640px) {
+  .v-kofi { right: 8px; bottom: 8px; opacity: 0.72; }
+  .v-kofi img { width: 96px; }
+}
 
 /* ---------- responsive ---------- */
 @media (max-width: 640px) {

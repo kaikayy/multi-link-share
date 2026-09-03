@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="42" viewBox="0 0 192 42"
+     role="img" aria-label="Buy me a Beer on Ko-fi">
+  <rect width="192" height="42" rx="11" fill="#8b7dff"/>
+  <g transform="translate(12,7)">
+    <g fill="#ffffff">
+      <circle cx="6" cy="6.5" r="4.4"/><circle cx="12.5" cy="4.2" r="5.1"/><circle cx="19" cy="6.5" r="4.4"/>
+    </g>
+    <rect x="2.5" y="7.5" width="17.5" height="20" rx="3" fill="#ffffff"/>
+    <path d="M20 10.5 h4 a4.8 4.8 0 0 1 0 10.5 h-4" fill="none" stroke="#ffffff" stroke-width="2.8"/>
+    <circle cx="7.5" cy="15" r="1.6" fill="#8b7dff"/><circle cx="13" cy="20" r="1.6" fill="#8b7dff"/><circle cx="9" cy="24" r="1.3" fill="#8b7dff"/>
+  </g>
+  <text x="45" y="27" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="13.5" font-weight="700" fill="#ffffff">Buy me a Beer</text>
+  <circle cx="150" cy="21" r="1.4" fill="#ffffff" opacity="0.7"/>
+  <text x="184" y="27" text-anchor="end"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="15" font-weight="800" fill="#ffffff">ko-fi</text>
+</svg>
