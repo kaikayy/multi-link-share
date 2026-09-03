@@ -3,6 +3,10 @@
 All notable changes to Tab Share. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); dates are `YYYY-MM-DD`.
 
+## [Unreleased]
+
+_No entries yet._
+
 ## [1.0.0-beta.8] - 2026-09-02
 
 Manifests: chrome `version` -> `1.0.0.2` (`version_name` -> `1.0.0-beta.8`),
