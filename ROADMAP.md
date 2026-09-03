@@ -74,23 +74,26 @@ property, which stays. Shortener keeps only the long URL + code.)
 - Categories toggleable in the viewer's settings menu. **Warn only, never
   block** -- the link only ever contains URLs the user could type themselves.
 
-## Link expiry (client-side) -- deprioritised
+## Link expiry (client-side) -- opt-in, lower priority
 
-The **shortener** now does expiry server-side (30-day default TTL, a `keepToken`
-to pin, keep/expire controls in the admin panel -- shortener 0.3.0). For anyone
-using the shortener that already covers "my links shouldn't pile up forever".
+The **shortener** already does expiry server-side (30-day default TTL, a
+`keepToken` to pin, keep/expire controls in the admin panel -- shortener 0.3.0).
+For anyone using the shortener that covers "my links shouldn't pile up forever".
 
-A client-side `expires` field stamped into the token would still be different:
-it makes a **plain fragment link** (no shortener) refuse to render past a date,
-so a sender can share something time-limited without running anything. But it is
-**soft only** -- the URLs are right there in the link, a recipient can edit the
-token or just read them off. So it is a visible signal, not enforcement, and low
-value next to the server-side path. Kept here as a maybe:
+A client-side `expires` field stamped into the token is a different thing, and
+one the **sharer** opts into per link: it makes a **plain fragment link** (no
+shortener) show an "expired" state past a chosen date, so you can share something
+time-limited without running anything. It is **soft** -- the URLs are in the link,
+a determined recipient can read them off or edit the token -- so it is a courtesy
+signal ("I meant this to lapse"), not access control. That is a reasonable thing
+to offer at the sharer's discretion; it just ranks below payload size and the
+safer-links filter.
 
-- Optional "expires in N days" stamped into the token; the viewer shows an
-  "expired" state instead of rendering. Pairs naturally with schema v4's `ext`
-  blob rather than the required core.
-- "Permanent" / password-only variants behind a dev flag until settled.
+- Optional "expires in N days" chosen at creation; the viewer shows an "expired"
+  state instead of rendering. Rides in schema v4's `ext` blob, so a minimal link
+  never carries it.
+- "Permanent" / password-only variants behind a dev flag until the behaviour is
+  settled.
 
 ## Viewer & popup
 
