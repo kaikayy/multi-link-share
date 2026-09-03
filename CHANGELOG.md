@@ -9,9 +9,10 @@ _No entries yet._
 
 ## [1.0.0-beta.8] - 2026-09-02
 
-Manifests: chrome `version` -> `1.0.0.2` (`version_name` -> `1.0.0-beta.8`),
-firefox `version` -> `1.0.0.9`. Same permission set as beta.7 -- the shortener
-still only reaches the endpoint you configure.
+Live on the Chrome Web Store. Manifests: chrome `version` -> `1.0.0.2`
+(`version_name` -> `1.0.0-beta.8`), firefox `version` -> `1.0.0.9`. Same
+permission set as beta.7 -- the shortener still only reaches the endpoint you
+configure.
 
 ### Fixed
 

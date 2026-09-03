@@ -23,7 +23,7 @@ see the [support matrix](#browser-support).
 
 | Store | Link |
 | --- | --- |
-| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.7`) |
+| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.8`) |
 | **Firefox Add-ons** (Firefox and forks) | [_in review_][amo] |
 
 Or **[install it yourself](docs/SELF-HOSTING.md)** (about two minutes) on any
@@ -34,9 +34,9 @@ supported browser.
 
 ![Tab Share -- one link for a whole group of tabs](assets/promo-master-3000x2000.png)
 
-> **Status: `1.0.0-beta.7` on the Chrome Web Store** ([listing][cws]); `beta.8`
-> is the current build here. Firefox is in AMO review. Or run your own copy with
-> **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
+> **Status: `1.0.0-beta.8` on the Chrome Web Store** ([listing][cws]), and the
+> current build here. Firefox is still in AMO review at `beta.5.5`. Or run your
+> own copy with **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
 
 |  |  |
 | --- | --- |
