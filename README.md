@@ -24,19 +24,20 @@ see the [support matrix](#browser-support).
 | Store | Link |
 | --- | --- |
 | **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.8`) |
-| **Firefox Add-ons** (Firefox and forks) | [_in review_][amo] |
+| **Firefox Add-ons** (Firefox and forks) | **[Get the Add-on][amo]** (`1.0.0-beta.5.5`) |
 
 Or **[install it yourself](docs/SELF-HOSTING.md)** (about two minutes) on any
 supported browser.
 
 [cws]: https://chromewebstore.google.com/detail/meieckangeakbekjbijbgfkkelneplfe "Tab Share on the Chrome Web Store"
-[amo]: https://addons.mozilla.org/firefox/ "Tab Share on Firefox Add-ons -- in review"
+[amo]: https://addons.mozilla.org/en-US/firefox/addon/tab-share/ "Tab Share on Firefox Add-ons"
 
 ![Tab Share -- one link for a whole group of tabs](assets/promo-master-3000x2000.png)
 
-> **Status: `1.0.0-beta.8` on the Chrome Web Store** ([listing][cws]), and the
-> current build here. Firefox is still in AMO review at `beta.5.5`. Or run your
-> own copy with **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
+> **Status: `1.0.0-beta.8` on the Chrome Web Store** ([listing][cws]) and
+> `1.0.0-beta.5.5` on **[Firefox Add-ons][amo]** (both approved and listed);
+> `beta.9` is the current build here, going out to both stores next. Or run
+> your own copy with **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
 
 |  |  |
 | --- | --- |

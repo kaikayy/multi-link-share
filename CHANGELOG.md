@@ -5,18 +5,30 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
+_No entries yet._
+
+## [1.0.0-beta.9] - 2026-09-04
+
+Manifests: chrome `version` -> `1.0.0.3` (`version_name` -> `1.0.0-beta.9`),
+firefox `version` -> `1.0.0.10`. Same permission set as beta.8. Firefox's
+`1.0.0.5` (beta.5.5) is approved and listed on AMO -- this ships as an update,
+not a first submission, so it should review faster.
+
 ### Added
 
 - **Schema v4: a layered link + a "Minimal link" option.** The share token is
   now `[4, name, flags, urls[], ext?]` -- a required core plus an optional `ext`
   blob (`{ c: created, t: [titles] }`). A full link keeps everything v3 kept,
-  URLs included exactly as given. A new **Minimal link** checkbox in the build
-  view drops `ext` entirely -- URLs only, roughly half the characters, at the
-  cost of page titles and the "shared on <date>" line (the viewer already falls
-  back to the site name) -- and also strips ad/analytics query params (`utm_*`,
-  `fbclid`, `gclid`, ~35 in all); they never change which page loads.
-  **Every existing link still opens** -- the decoder reads v1, v2, v3 and v4. A
-  v4 link needs a viewer that also has the v4 decoder.
+  URLs included exactly as given, byte-for-byte. A new **Minimal link**
+  checkbox in the build view drops `ext` entirely -- URLs only, roughly half
+  the characters, at the cost of page titles and the "shared on <date>" line
+  (the viewer already falls back to the site name) -- and only a minimal link
+  also strips ad/analytics query params (`utm_*`, `fbclid`, `gclid`, ~35 in
+  all); they never change which page loads. **Every existing link still
+  opens** -- the decoder reads v1, v2, v3 and v4. The live viewer at
+  `kaikayy.github.io/multi-link-share/` already has the v4 decoder, so v4 links
+  work today regardless of which build sent them. See
+  [`docs/MINIMAL-LINKS.md`](docs/MINIMAL-LINKS.md).
 
 ## [1.0.0-beta.8] - 2026-09-02
 
