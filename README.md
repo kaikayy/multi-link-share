@@ -114,6 +114,14 @@ goes in the link. The recipient types the password into the viewer to decrypt
 locally -- the password is never stored or sent. Lose it and the link can't be
 opened.
 
+### Minimal links
+
+Tick **Minimal link** to drop page titles and the timestamp from the link --
+URLs only, roughly half the characters. The viewer falls back to the site name,
+so the link still opens and navigates. Known ad / analytics query params
+(`utm_*`, `fbclid`, ...) are stripped from every link regardless. Details and the
+backward-compatibility notes: **[`docs/MINIMAL-LINKS.md`](docs/MINIMAL-LINKS.md)**.
+
 ### The one honest limitation
 
 Most big sites (Google, banks, X, YouTube, ...) send `X-Frame-Options` / CSP
@@ -196,7 +204,7 @@ extension/
 viewer/            self-contained static site (slideshow / preview grid / grid / list)
   frame-hosts.js   header-probed allow/deny list for auto-previewing sites
 tools/frame-probe/ regenerates that list from live response headers
-docs/              SELF-HOSTING, BUILD, SECURITY, THIRD-PARTY, CUSTOM-SHORTENER
+docs/              SELF-HOSTING, BUILD, SECURITY, THIRD-PARTY, CUSTOM-SHORTENER, MINIMAL-LINKS
 assets/            artwork -- icon, promo tiles, simulated screenshots, og-card (svg sources; PNGs via `npm run icons`)
 dev/               mocked-chrome harness for eyeballing the UI (not shipped)
 scripts/           build / sync / icons / selftest / dev-server
