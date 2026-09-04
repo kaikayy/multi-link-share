@@ -14,7 +14,7 @@
     pages: [],
     name: "",
     groupPristine: true, // true = a picker change may replace the list wholesale
-    settings: { showIcons: true, autoPreview: true, shortProvider: "", shortEndpoint: "", shortAuto: false, shortMode: "code" },
+    settings: { showIcons: true, autoPreview: true, shortProvider: "", shortEndpoint: "", shortBase: "", shortAuto: false, shortMode: "code" },
   };
 
   async function loadSettings() {
@@ -24,19 +24,43 @@
         "autoPreview",
         "shortProvider",
         "shortEndpoint",
-        "shortAuto",
+        "shortBase",
         "shortMode",
+        "shortAuto",
       ]);
       // is.gd / v.gd reject '#'-fragment and github.io URLs, so they never worked
       // for share links -- retired in favour of TinyURL / a custom endpoint.
       const provider = s.shortProvider === "isgd" || s.shortProvider === "vgd" ? "" : s.shortProvider || "";
+      let endpoint = s.shortEndpoint || "";
+      const mode = s.shortMode === "words" ? "words" : "code";
+
+      // A "Tab Share shortener" left pointing at localhost (an old DEV_LOCALHOST
+      // build) can't be granted in a shipped build -- move it to the packaged
+      // default. Skipped where localhost IS a grantable host (a DEV build).
+      const dflt = ((CFG && CFG.DEFAULT_SHORTENER_BASE) || "").replace(/\/+$/, "");
+      const local = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
+      let localhostGrantable = false;
+      try {
+        localhostGrantable = (api.runtime.getManifest().optional_host_permissions || []).some((p) =>
+          /^https?:\/\/(localhost|127\.0\.0\.1)\//.test(p),
+        );
+      } catch (e) {}
+      if (provider === "tabshare" && /^https:\/\//i.test(dflt) && !localhostGrantable &&
+          (local.test((s.shortBase || "").trim()) || local.test(endpoint))) {
+        endpoint = dflt + "/new?" + (mode === "words" ? "mode=words&" : "") + "url=";
+        try {
+          await api.storage.local.set({ shortBase: dflt, shortEndpoint: endpoint });
+        } catch (e) {}
+      }
+
       state.settings = {
         showIcons: s.showIcons === true, // default OFF
         autoPreview: s.autoPreview !== false,
         shortProvider: provider,
-        shortEndpoint: s.shortEndpoint || "",
+        shortEndpoint: endpoint,
+        shortBase: s.shortBase || "",
         shortAuto: !!s.shortAuto,
-        shortMode: s.shortMode === "words" ? "words" : "code",
+        shortMode: mode,
       };
     } catch (e) {}
   }
@@ -431,7 +455,7 @@
 
     let token;
     try {
-      token = ShareCodec.encode({ title: name, pages, flags });
+      token = ShareCodec.encode({ title: name, pages, flags }, { minimal: $("#minimal").checked });
       if (password) token = await ShareCodec.encrypt(token, password);
     } catch (e) {
       showError(e.message || "Could not build the link.");
@@ -477,13 +501,86 @@
     return "";
   }
 
+  /** Origin of the configured Tab Share shortener -- the stored base, or parsed
+   *  back out of the `<base>/new?...url=` endpoint string for older installs. */
+  function shortenerBase() {
+    const b = String(state.settings.shortBase || "").replace(/\/+$/, "");
+    if (/^https?:\/\//i.test(b)) return b;
+    try {
+      return new URL(state.settings.shortEndpoint).origin;
+    } catch (e) {
+      return "";
+    }
+  }
+
+  /** A provider added, or an address migrated, without the matching host grant:
+   *  request it now (this runs from a user gesture -- Shorten-link / build). */
+  async function ensureShortenerHost(url) {
+    try {
+      const pattern = new URL(url).origin + "/*";
+      if (api.permissions && !(await api.permissions.contains({ origins: [pattern] }))) {
+        if (!(await api.permissions.request({ origins: [pattern] }))) {
+          throw new Error("the shortener needs access to that host -- allow it, or set it in the options page");
+        }
+      }
+    } catch (e) {
+      if (e && /needs access/.test(e.message || "")) throw e;
+      /* permissions API unavailable -- let the fetch below try anyway */
+    }
+  }
+
+  function finishShort(text, longUrl) {
+    const short = pickShortUrl(text);
+    if (!short) throw new Error("the shortener returned no link (it may reject long or '#'-fragment URLs)");
+    if (short.length >= longUrl.length) throw new Error("the shortened link came back no shorter than the original");
+    return short;
+  }
+
   async function shorten(longUrl) {
     const p = state.settings.shortProvider;
+
+    // Tab Share shortener: POST the long link in a JSON body to /api/shorten.
+    // The GET /new compat path puts the whole link in the query string, so the
+    // request line runs to 10 KB+ -- a reverse proxy in front of the server
+    // (nginx's default large_client_header_buffers) rejects that with HTTP 414.
+    if (p === "tabshare") {
+      const base = shortenerBase();
+      if (!base) throw new Error("no shortener is set up -- see the options page");
+      const endpoint = base + "/api/shorten";
+      await ensureShortenerHost(endpoint);
+      let res;
+      try {
+        res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json, text/plain" },
+          body: JSON.stringify({ url: longUrl, mode: state.settings.shortMode === "words" ? "words" : "code" }),
+        });
+      } catch (e) {
+        throw new Error("the shortener couldn’t be reached (offline, or the options page never got host access)");
+      }
+      const text = await res.text();
+      if (!res.ok) {
+        let detail = "";
+        try {
+          detail = JSON.parse(text).error || "";
+        } catch (e) {}
+        if (res.status === 414 || res.status === 413) {
+          throw new Error(detail || "the shortener rejected this link as too large -- a self-hosted instance can raise its size limit (SHORTENER_MAX_URL / _MAX_BODY)");
+        }
+        // e.g. a link whose viewer host the shortener does not allowlist.
+        throw new Error(detail || "the shortener returned HTTP " + res.status);
+      }
+      return finishShort(text, longUrl);
+    }
+
     const enc = encodeURIComponent(longUrl);
     let url;
     if (p === "tinyurl") url = `https://tinyurl.com/api-create.php?url=${enc}`;
-    else if ((p === "custom" || p === "tabshare") && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
+    else if (p === "dagd") url = `https://da.gd/s?url=${enc}`;
+    else if (p === "custom" && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
     else throw new Error("no shortener is set up -- see the options page");
+
+    await ensureShortenerHost(url);
 
     let res;
     try {
@@ -497,15 +594,16 @@
       try {
         detail = JSON.parse(text).error || "";
       } catch (e) {}
-      // The Tab Share shortener rejects a link whose viewer host it does not
-      // allowlist -- surface that instead of a bare status code.
+      // GET shorteners carry the link in the URL, so a big collection can trip
+      // the provider's request-line limit -- the built-in shortener takes these.
+      if (res.status === 414 || res.status === 413) {
+        const label = p === "tinyurl" ? "TinyURL" : p === "dagd" ? "da.gd" : "that shortener";
+        throw new Error(label + " can't take a link this large; the Tab Share shortener (Options page) can");
+      }
       throw new Error(detail || "the shortener returned HTTP " + res.status);
     }
 
-    const short = pickShortUrl(text);
-    if (!short) throw new Error("the shortener returned no link (it may reject long or '#'-fragment URLs)");
-    if (short.length >= longUrl.length) throw new Error("the shortened link came back no shorter than the original");
-    return short;
+    return finishShort(text, longUrl);
   }
 
   async function autoCopy(link) {
@@ -527,21 +625,27 @@
     $("#result-link").value = link;
     $("#pw-note").hidden = !encrypted;
 
+    const longLink = link.length > (CFG.SOFT_URL_LIMIT || 12000);
     // A shortener is configured and we're still on the long link — offer the
     // button (whether auto-shorten is off, or it's on but just failed).
     const showShorten = !!state.settings.shortProvider && link === lastLongLink;
-    $("#shorten-row").hidden = !showShorten;
-    $("#shorten-link").hidden = false;
+    // No shortener, but the link is long — nudge toward setting one up.
+    const showEnable = !state.settings.shortProvider && longLink && link === lastLongLink;
+    $("#shorten-row").hidden = !(showShorten || showEnable);
+    $("#shorten-link").hidden = !showShorten;
     $("#shorten-link").textContent = shortenNote ? "Try shortening again" : "Shorten link";
+    $("#enable-shortener").hidden = !showEnable;
     $("#show-original").hidden = true;
 
     const warn = $("#len-warn");
     if (shortenNote) {
       warn.hidden = false;
       warn.textContent = shortenNote;
-    } else if (link.length > (CFG.SOFT_URL_LIMIT || 12000)) {
+    } else if (longLink) {
       warn.hidden = false;
-      warn.textContent = `Heads up: this link is ${link.length.toLocaleString()} characters. It works in browsers, but some chat apps may shorten or break very long links. Consider sharing fewer pages.`;
+      warn.textContent =
+        `Heads up: this link is ${link.length.toLocaleString()} characters. It works in browsers, but some chat apps may shorten or break very long links. ` +
+        (showEnable ? "Turn on the Tab Share shortener for a short link, or share fewer pages." : "Consider sharing fewer pages.");
     } else {
       warn.hidden = true;
     }
@@ -606,6 +710,25 @@
     } catch (e) {}
   }
 
+  /* ---------- "use a shortener" tip ---------- */
+
+  // Shown at the top of the build view until the user sets up a shortener or
+  // x-es it away (the dismissal sticks).
+  async function refreshShortenerNotice() {
+    const el = $("#shortener-notice");
+    if (!el) return;
+    if (state.settings.shortProvider) {
+      el.hidden = true; // already using one — nothing to recommend
+      return;
+    }
+    let dismissed = false;
+    try {
+      const s = await api.storage.local.get("shortenerNoticeDismissed");
+      dismissed = !!s.shortenerNoticeDismissed;
+    } catch (e) {}
+    el.hidden = dismissed;
+  }
+
   /* ---------- source switching ---------- */
 
   async function setSource(source, keepList) {
@@ -632,6 +755,15 @@
 
   function init() {
     $("#open-options").addEventListener("click", () => api.runtime.openOptionsPage());
+    $("#enable-shortener").addEventListener("click", () => api.runtime.openOptionsPage());
+
+    $("#notice-setup").addEventListener("click", () => api.runtime.openOptionsPage());
+    $("#notice-dismiss").addEventListener("click", () => {
+      $("#shortener-notice").hidden = true;
+      try {
+        api.storage.local.set({ shortenerNoticeDismissed: true });
+      } catch (e) {}
+    });
 
     $$(".seg").forEach((btn) => btn.addEventListener("click", () => setSource(btn.dataset.source)));
 
@@ -719,6 +851,7 @@
 
     Promise.all([loadDrafts(), loadSettings()])
       .then(() => {
+        refreshShortenerNotice();
         const src = ["window", "group", "paste"].includes(state.source) ? state.source : "window";
         const keepList = state.pages.length > 0; // a restored draft list takes precedence
         if (keepList) state.groupPristine = false;

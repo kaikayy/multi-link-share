@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800"
+     font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#191527"/>
+      <stop offset="1" stop-color="#241a33"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7dff"/><stop offset="0.55" stop-color="#d76ad4"/><stop offset="1" stop-color="#ff9d6c"/>
+    </linearGradient>
+    <filter id="win" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="24" stdDeviation="44" flood-color="#000" flood-opacity="0.48"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="800" fill="url(#bg)"/>
+  <circle cx="1120" cy="90" r="360" fill="#8b7dff" opacity="0.10"/>
+  <circle cx="120" cy="760" r="280" fill="#ff9d6c" opacity="0.05"/>
+
+  <text x="640" y="86" text-anchor="middle" fill="#f2f0ff" font-size="34" font-weight="800">Pick your tabs. Get one link.</text>
+  <text x="640" y="122" text-anchor="middle" fill="#b7b0d8" font-size="18">A window, a tab group, or a pasted list &#8212; reorder, rename, optionally lock.</text>
+
+  <!-- popup window -->
+  <g transform="translate(430,150)" filter="url(#win)">
+    <rect width="420" height="602" rx="16" fill="#1a1a20" stroke="#35353f"/>
+    <clipPath id="clipPopup"><rect width="420" height="602" rx="16"/></clipPath>
+    <g clip-path="url(#clipPopup)">
+      <rect width="420" height="50" fill="#1e1e26"/>
+      <rect x="18" y="16" width="18" height="18" rx="4" fill="url(#mark)"/>
+      <text x="44" y="31" fill="#ececf1" font-size="15" font-weight="700">Tab Share</text>
+      <g transform="translate(388,17)" stroke="#9a9aa8" stroke-width="1.8" fill="none">
+        <circle cx="8" cy="8" r="3.4"/>
+        <path d="M8 0.5v3M8 12.5v3M0.5 8h3M12.5 8h3M2.7 2.7l2.1 2.1M11.2 11.2l2.1 2.1M13.3 2.7l-2.1 2.1M4.8 11.2l-2.1 2.1"/>
+      </g>
+
+      <g transform="translate(16,64)">
+        <rect width="388" height="34" rx="9" fill="#23232c"/>
+        <rect width="129" height="34" rx="9" fill="#2c2748" stroke="#4a4276"/>
+        <text x="64" y="22" text-anchor="middle" fill="#ececf1" font-size="12.5" font-weight="700">Windows</text>
+        <text x="193" y="22" text-anchor="middle" fill="#9a9aa8" font-size="12.5" font-weight="600">Tab Groups</text>
+        <text x="320" y="22" text-anchor="middle" fill="#9a9aa8" font-size="12.5" font-weight="600">Paste Links</text>
+      </g>
+
+      <text x="16" y="128" fill="#9a9aa8" font-size="11" font-weight="700" letter-spacing="0.5">COLLECTION NAME &#183; OPTIONAL</text>
+      <rect x="16" y="138" width="388" height="38" rx="9" fill="#24242e" stroke="#3a3a47"/>
+      <text x="30" y="162" fill="#ececf1" font-size="13.5">Research on hummingbirds</text>
+
+      <rect x="16" y="192" width="16" height="16" rx="4" fill="#2c2748" stroke="#4a4276"/>
+      <path d="M20 200l3 3 5-6" stroke="#9a8dff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="42" y="205" fill="#ececf1" font-size="13" font-weight="600">Protect with a password</text>
+
+      <text x="16" y="242" fill="#ececf1" font-size="12.5" font-weight="700">5 pages</text>
+      <text x="308" y="242" fill="#9a8dff" font-size="12.5">select all</text>
+      <text x="392" y="242" text-anchor="end" fill="#9a8dff" font-size="12.5">none</text>
+
+      <g transform="translate(16,256)" font-size="12.5">
+        <g>
+          <rect width="388" height="50" rx="10" fill="#20202a" stroke="#33333d"/>
+          <rect x="10" y="11" width="28" height="28" rx="8" fill="#8b7dff"/><text x="24" y="30" text-anchor="middle" fill="#fff" font-size="12" font-weight="800">A</text>
+          <text x="50" y="21" fill="#ececf1" font-weight="600">Anna's Hummingbird &#8212; Cornell Lab</text>
+          <text x="50" y="38" fill="#8a8a98" font-size="11">allaboutbirds.org</text>
+          <path d="M356 19v12M350 25l6 6 6-6" stroke="#5b5b6b" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(0,58)">
+          <rect width="388" height="50" rx="10" fill="#20202a" stroke="#33333d"/>
+          <rect x="10" y="11" width="28" height="28" rx="8" fill="#d76ad4"/><text x="24" y="30" text-anchor="middle" fill="#fff" font-size="12" font-weight="800">W</text>
+          <text x="50" y="21" fill="#ececf1" font-weight="600">Hummingbird &#8212; Wikipedia</text>
+          <text x="50" y="38" fill="#8a8a98" font-size="11">en.wikipedia.org</text>
+        </g>
+        <g transform="translate(0,116)">
+          <rect width="388" height="50" rx="10" fill="#20202a" stroke="#33333d"/>
+          <rect x="10" y="11" width="28" height="28" rx="8" fill="#ff9d6c"/><text x="24" y="30" text-anchor="middle" fill="#fff" font-size="12" font-weight="800">Y</text>
+          <text x="50" y="21" fill="#ececf1" font-weight="600">Slow-motion hummingbird flight</text>
+          <text x="50" y="38" fill="#8a8a98" font-size="11">youtube.com</text>
+        </g>
+        <g transform="translate(0,174)">
+          <rect width="388" height="50" rx="10" fill="#20202a" stroke="#33333d"/>
+          <rect x="10" y="11" width="28" height="28" rx="8" fill="#5bc0a8"/><text x="24" y="30" text-anchor="middle" fill="#fff" font-size="12" font-weight="800">N</text>
+          <text x="50" y="21" fill="#ececf1" font-weight="600">Feeder placement guide (PDF)</text>
+          <text x="50" y="38" fill="#8a8a98" font-size="11">nationalgeographic.com</text>
+        </g>
+        <g transform="translate(0,232)">
+          <rect width="388" height="50" rx="10" fill="#20202a" stroke="#33333d"/>
+          <rect x="10" y="11" width="28" height="28" rx="8" fill="#7d8cff"/><text x="24" y="30" text-anchor="middle" fill="#fff" font-size="12" font-weight="800">R</text>
+          <text x="50" y="21" fill="#ececf1" font-weight="600">Migration map 2026</text>
+          <text x="50" y="38" fill="#8a8a98" font-size="11">journeynorth.org</text>
+        </g>
+      </g>
+
+      <rect y="542" width="420" height="60" fill="#1c1c24"/>
+      <rect x="16" y="554" width="388" height="40" rx="10" fill="#9a8dff"/>
+      <text x="210" y="579" text-anchor="middle" fill="#16121f" font-size="14" font-weight="700">Create share link</text>
+    </g>
+  </g>
+
+  <text x="640" y="782" text-anchor="middle" fill="#6b6b78" font-size="13">Tab Share &#183; toolbar popup</text>
+</svg>

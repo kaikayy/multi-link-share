@@ -3,3 +3,12 @@ dist/
 *.log
 .DS_Store
 STORE-LISTING.md
+
+# promo banners -- generated/iterated locally, not tracked
+assets/promo-banner-*
+# ...except the suite banner, which the README uses
+!assets/promo-banner-suite.png
+!assets/promo-banner-suite.svg
+
+# Ko-fi sticker colour palette -- pick one and copy it where it's used
+assets/kofi-sticker-*

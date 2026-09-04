@@ -73,6 +73,7 @@
 
   const PROVIDER_ORIGIN = {
     tinyurl: "https://tinyurl.com/*",
+    dagd: "https://da.gd/*",
   };
 
   const DEFAULT_SHORT_BASE = (CFG && CFG.DEFAULT_SHORTENER_BASE) || "";
@@ -97,6 +98,19 @@
     return parsed.protocol + "//" + parsed.hostname + "/*";
   }
 
+  const LOCAL_ADDR = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
+
+  /** True in a DEV_LOCALHOST build (localhost is a grantable host there). */
+  function localhostAllowed() {
+    try {
+      return (api.runtime.getManifest().optional_host_permissions || []).some((p) =>
+        /^https?:\/\/(localhost|127\.0\.0\.1)\//.test(p),
+      );
+    } catch (e) {
+      return false;
+    }
+  }
+
   async function loadShortener() {
     const s = await api.storage.local.get([
       "shortProvider",
@@ -115,11 +129,26 @@
       } catch (e) {}
     }
 
+    // A stored "Tab Share shortener" address left on localhost (from an old
+    // DEV_LOCALHOST build) can't be granted in a shipped build -- move it to the
+    // packaged default and persist, so the popup uses the live endpoint too.
+    let base = s.shortBase || "";
+    if (LOCAL_ADDR.test(base) && !localhostAllowed() && /^https:\/\//i.test(DEFAULT_SHORT_BASE)) {
+      base = DEFAULT_SHORT_BASE.replace(/\/+$/, "");
+      const patch = { shortBase: base };
+      if (prov === "tabshare") {
+        patch.shortEndpoint = tabshareEndpoint(base, s.shortMode === "words" ? "words" : "code");
+      }
+      try {
+        await api.storage.local.set(patch);
+      } catch (e) {}
+      if (patch.shortEndpoint) s.shortEndpoint = patch.shortEndpoint;
+    }
+
     $("#short-provider").value = prov;
     $("#short-endpoint").value = s.shortEndpoint || "";
-    // Only pre-fills the address field (if a build baked one) as a convenience --
-    // the shortener stays Off until the user picks it and presses Save.
-    $("#short-base").value = s.shortBase || DEFAULT_SHORT_BASE || "";
+    // Pre-fill the address field from the stored value, else the baked default.
+    $("#short-base").value = base || DEFAULT_SHORT_BASE || "";
     $("#short-mode").value = s.shortMode === "words" ? "words" : "code";
     $("#short-auto").checked = !!s.shortAuto;
     toggleShortFields();
@@ -135,12 +164,25 @@
 
     let pattern = PROVIDER_ORIGIN[provider] || null;
 
+    // Provider picked but not configured yet (e.g. just chosen from the dropdown):
+    // persist the choice quietly and wait for an address -- no error, no prompt.
+    if ((provider === "tabshare" && !base) || (provider === "custom" && !endpoint)) {
+      await api.storage.local.set({
+        shortProvider: provider,
+        shortEndpoint: endpoint,
+        shortAuto: $("#short-auto").checked,
+        shortBase: base,
+        shortMode: mode,
+      });
+      return;
+    }
+
     if (provider === "tabshare") {
       let parsed;
       try {
         parsed = new URL(base);
       } catch (e) {
-        $("#short-err").textContent = "Enter the shortener's address, e.g. http://localhost:8779";
+        $("#short-err").textContent = "Enter the shortener's address, e.g. https://s.kaikay.de";
         $("#short-err").hidden = false;
         return;
       }
@@ -305,7 +347,23 @@
 
   /* ---------------- wire up ---------------- */
 
+  /** The welcome header is highlighted on the first visit only; after that it
+   *  stays at the top but drops the accent. */
+  async function markWelcomeSeen() {
+    try {
+      const { optionsSeen } = await api.storage.local.get("optionsSeen");
+      if (optionsSeen) {
+        $("#welcome").classList.add("seen");
+      } else {
+        await api.storage.local.set({ optionsSeen: true });
+      }
+    } catch (e) {
+      /* storage unavailable -- leave the highlight on */
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
+    markWelcomeSeen();
     loadPrefs();
     loadShortener();
     loadViewer();

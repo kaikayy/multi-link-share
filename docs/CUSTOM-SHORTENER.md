@@ -5,31 +5,67 @@ Tab Share can run every share link through a shortener of your choice. Options:
 - **Tab Share shortener** -- a purpose-built, self-hostable service
   ([tab-share-shortener](https://github.com/kaikayy/tab-share-shortener)). Handles
   the multi-kilobyte links the public shorteners choke on, offers *Normal* (random)
-  or *Readable words* short codes, and only shortens links that point at your own
-  viewer host. Pick it in **Options -> Shorten links**, enter its address, choose a
-  style. This is the easiest option if you want to run your own.
+  or *Readable words* short codes, and only shortens links that point at an
+  allow-listed viewer host. Picking it in **Options -> Shorten links** pre-fills
+  the address with the first-party instance at `https://s.kaikay.de`, which
+  allow-lists the built-in viewer (`kaikayy.github.io`) -- so the default setup
+  works with no configuration. Point it at your own instance instead if you want
+  to run it yourself.
+- **da.gd** -- built in, no setup, no account. A small open-source shortener
+  (running since 2011) that -- unlike is.gd / TinyURL's older API -- keeps the
+  `#…` fragment intact and swallows multi-kilobyte links. `GET https://da.gd/s?url=`.
 - **TinyURL** -- built in, no setup, but a public third party sees every link.
 - **Custom endpoint** -- any other tiny web service, described below.
 
-All three are **off by default**; nothing is sent anywhere until you turn one on.
+All of these are **off by default**; nothing is sent anywhere until you turn one on.
+
+### What each one keeps when a link is opened
+
+| Shortener | Logged on each click | Cookies / 3rd-party trackers | Data sold or shared |
+| --- | --- | --- | --- |
+| **Tab Share shortener** (`s.kaikay.de` or self-hosted) | aggregate day counts only: hits, referrer *host*, browser family + major version. No IP, no geolocation, no full User-Agent, no per-visitor row. | none | never |
+| **da.gd** | a hit counter; small open-source service, no ad or analytics scripts | none observed | no |
+| **TinyURL** | IP address, browser type + version, referring URLs, timestamps; forwards your **full referrer** to the destination site | yes | not stated in its policy |
+| **Bitly** (not offered here) | per click: timestamp, IP, user-agent, country, city, device, browser, referring domain | yes | yes -- selling click analytics is a paid feature |
+| **Custom endpoint** | whatever you build it to log | -- | -- |
+
+TinyURL / Bitly rows are summarised from their published policies and
+independent testing as of 2026; they can change them at any time. The full
+detail for the first-party one is in the
+[Tab Share privacy policy](https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md#the-tab-share-shortener-skaikayde)
+and the shortener's
+[own PRIVACY.md](https://github.com/kaikayy/tab-share-shortener/blob/main/PRIVACY.md).
+
+> **On public shorteners.** `s.kaikay.de`, da.gd and TinyURL are all hosted by
+> other people (the first two by the Tab Share author, on a small server). With
+> any shortener that is not your own, performance, uptime, and how long a
+> shortened link keeps resolving cannot be guaranteed -- if the service goes away
+> or drops old links, the short URL breaks (the full link you also copied still
+> works). For links you need to keep working, run your own **Tab Share
+> shortener**.
 
 ## The Tab Share shortener
 
-Set it up from its own repo
-([SELF-HOSTING.md](https://github.com/kaikayy/tab-share-shortener/blob/main/SELF-HOSTING.md))
--- Node on a box you own, or a Cloudflare Worker. Then in **Options -> Shorten
-links**:
+**Options -> Shorten links**:
 
 1. **Shortener** -> *Tab Share shortener*
-2. **Shortener address** -> e.g. `https://s.example.com` (must be `https://`;
-   a `DEV_LOCALHOST=1` build also accepts `http://localhost:8779` for testing)
+2. **Shortener address** -> pre-filled with `https://s.kaikay.de`. Leave it, or
+   swap in your own instance (must be `https://`; a `DEV_LOCALHOST=1` build also
+   accepts `http://localhost:8779` for testing).
 3. **Short link style** -> *Normal* or *Readable words*
 4. Save, approve the one host-permission prompt, optionally tick *Shorten
    automatically*.
 
-Under the hood the extension just calls `<address>/new?url=` (or
-`<address>/new?mode=words&url=`) -- the same GET contract as a custom endpoint
-below, so the rest of this page applies to it too.
+To run your own instead of `s.kaikay.de`, set it up from its own repo
+([SELF-HOSTING.md](https://github.com/kaikayy/tab-share-shortener/blob/main/SELF-HOSTING.md))
+-- Node on a box you own, or a Cloudflare Worker -- and put its address in step 2.
+
+Under the hood the extension `POST`s to `<address>/api/shorten` with a JSON body
+(`{ "url": "...", "mode": "code" | "words" }`) and reads `shortUrl` from the JSON
+reply. The long link rides in the request body, not the URL, so it is never at
+risk of a reverse proxy's request-line limit (HTTP 414) however big the
+collection is. The `GET <address>/new?url=` compat path still exists for other
+callers; see the shortener's CONTRACT.md.
 
 ### Viewer host and the allowlist
 
@@ -188,3 +224,15 @@ Whatever you run, it now sees the **full share link** -- which contains every
 page URL in the collection (in the `#` fragment). Run it yourself, or trust the
 operator the way you'd trust any shortener. The default (no shortener) sends the
 link to no one.
+
+**The first-party `s.kaikay.de` instance** (run by the Tab Share author) stores
+the long URL you shortened, and on each redirect keeps a per-link hit count plus
+the **referring host** (e.g. `news.ycombinator.com`), aggregated by day -- no
+full referrer, no page path, no IP, no cookies, no per-visitor identifier. Kept
+~365 days, visible only through a password-gated admin panel, no third-party
+analytics. Full details in the
+[Tab Share privacy policy](https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md#the-tab-share-shortener-skaikayde)
+and the shortener's
+[own privacy note](https://github.com/kaikayy/tab-share-shortener/blob/main/PRIVACY.md).
+Self-host it (`SHORTENER_ANALYTICS=0`, `SHORTENER_COUNT_HITS=0`) to keep none of
+this.

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1000" viewBox="0 0 1500 1000"
+     font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#171622"/>
+      <stop offset="1" stop-color="#241a33"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7dff"/>
+      <stop offset="0.55" stop-color="#d76ad4"/>
+      <stop offset="1" stop-color="#ff9d6c"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="28" flood-color="#000" flood-opacity="0.40"/>
+    </filter>
+  </defs>
+
+  <rect width="1500" height="1000" fill="url(#bg)"/>
+  <circle cx="1360" cy="90" r="440" fill="#8b7dff" opacity="0.10"/>
+  <circle cx="120" cy="980" r="360" fill="#ff9d6c" opacity="0.07"/>
+
+  <!-- brand -->
+  <g transform="translate(90,84)">
+    <rect width="78" height="78" rx="20" fill="url(#mark)"/>
+    <rect x="15" y="25" width="32" height="39" rx="7" fill="#ffffff" fill-opacity="0.55"/>
+    <rect x="26" y="14" width="32" height="39" rx="7" fill="#ffffff"/>
+    <circle cx="60" cy="60" r="15" fill="#14101f"/>
+    <path d="M60 52 v16 M60 52 l-6 6 M60 52 l6 6" fill="none" stroke="#fff" stroke-width="4"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="102" y="36" fill="#f0f0f5" font-size="40" font-weight="700">Tab Share</text>
+    <text x="103" y="68" fill="#9c9cad" font-size="19">browser extension &#183; works in every major browser</text>
+  </g>
+
+  <!-- headline -->
+  <text x="90" y="336" fill="#f5f3ff" font-size="88" font-weight="800">One link for a whole</text>
+  <text x="90" y="432" fill="#f5f3ff" font-size="88" font-weight="800">group of tabs.</text>
+  <text x="90" y="502" fill="#cfc9e8" font-size="29" font-weight="500">A window, a tab group, or a pasted list becomes a single link that opens</text>
+  <text x="90" y="542" fill="#cfc9e8" font-size="29" font-weight="500">as a slideshow &#8212; the pages live inside the link. No account, no server.</text>
+
+  <!-- big slideshow mock -->
+  <g transform="translate(250,600)" filter="url(#soft)">
+    <rect width="1000" height="336" rx="24" fill="#1e1e29" stroke="#34343f"/>
+    <rect width="1000" height="52" rx="24" fill="#262633"/>
+    <rect y="26" width="1000" height="26" fill="#262633"/>
+    <circle cx="34" cy="26" r="7" fill="#3a3a47"/><circle cx="58" cy="26" r="7" fill="#3a3a47"/><circle cx="82" cy="26" r="7" fill="#3a3a47"/>
+    <rect x="340" y="13" width="320" height="26" rx="13" fill="#1b1b25"/>
+    <text x="500" y="31" text-anchor="middle" fill="#9c9cad" font-size="14" font-family="ui-monospace, Menlo, monospace">kaikayy.github.io/&#8230;#NoZg&#8230;</text>
+
+    <text x="500" y="96" text-anchor="middle" fill="#c9c4de" font-size="18" font-weight="600">3 / 7 &#183; Design references</text>
+
+    <g transform="translate(250,120)">
+      <rect width="500" height="176" rx="16" fill="#12121a" stroke="#34343f"/>
+      <rect width="500" height="176" rx="16" fill="url(#mark)" opacity="0.09"/>
+      <circle cx="250" cy="70" r="40" fill="url(#mark)"/>
+      <text x="250" y="81" text-anchor="middle" fill="#fff" font-size="30" font-weight="800">DR</text>
+      <rect x="170" y="126" width="160" height="12" rx="6" fill="#2e2e3c"/>
+    </g>
+
+    <path d="M180 190 l-24 24 24 24" fill="none" stroke="#f0f0f5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M820 190 l24 24 -24 24" fill="none" stroke="#f0f0f5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <g transform="translate(430,318)" fill="#3a3a47">
+      <rect x="-10" y="-6" width="30" height="12" rx="6" fill="#d76ad4"/>
+      <circle cx="46" cy="0" r="5"/><circle cx="70" cy="0" r="5"/><circle cx="94" cy="0" r="5"/><circle cx="118" cy="0" r="5"/>
+    </g>
+  </g>
+
+  <text x="1410" y="960" text-anchor="end" fill="#6b6b78" font-size="19">github.com/kaikayy/multi-link-share</text>
+</svg>

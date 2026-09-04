@@ -32,6 +32,16 @@
 
   <!-- ============ BUILD VIEW ============ -->
   <main id="view-build" class="view">
+    <aside id="shortener-notice" class="notice" hidden>
+      <p class="notice-body">
+        <strong>Tip:</strong> share links can get long. The built-in shortener is free, no account.
+        <button id="notice-setup" class="linklike" type="button">Set it up</button>
+      </p>
+      <button id="notice-dismiss" class="icon-btn xs" type="button" title="Dismiss" aria-label="Dismiss this tip">
+        <svg class="ic"><use href="#i-x" /></svg>
+      </button>
+    </aside>
+
     <div class="segmented" role="tablist" aria-label="Where to take links from">
       <button class="seg" data-source="window" role="tab" aria-selected="true">Windows</button>
       <button class="seg" data-source="group" role="tab" aria-selected="false">Tab Groups</button>
@@ -88,6 +98,11 @@
       <input id="link-pass" type="password" autocomplete="new-password" placeholder="a phrase you'll share separately" />
     </label>
 
+    <label class="chk">
+      <input id="minimal" type="checkbox" />
+      <span class="label" style="font-weight:600">Minimal link <span class="opt">(URLs only, no page titles; a shorter link)</span></span>
+    </label>
+
     <div class="row-actions">
       <button id="paste-add-window" class="btn btn-ghost btn-sm" type="button">Add current tabs to list</button>
     </div>
@@ -129,6 +144,7 @@
 
     <div class="row-actions" id="shorten-row" hidden>
       <button id="shorten-link" class="btn btn-ghost btn-sm" type="button">Shorten link</button>
+      <button id="enable-shortener" class="btn btn-ghost btn-sm" type="button" hidden>Set up the shortener</button>
       <button id="show-original" class="linklike" type="button" hidden>show original</button>
     </div>
 

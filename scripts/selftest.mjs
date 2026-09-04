@@ -22,13 +22,23 @@ function encodeV1(collection) {
   return LZString.compressToEncodedURIComponent(JSON.stringify(payload));
 }
 
-/** Recreate a v2 token (encode() now emits v3). */
+/** Recreate a v2 token (encode() now emits v4). */
 function encodeV2(collection) {
   const pages = collection.pages.map((p) => {
     const u = p.u || p.url;
     return [u.startsWith("https://") ? u.slice(8) : u, p.t || p.title || ""];
   });
   return LZString.compressToEncodedURIComponent(JSON.stringify([2, collection.title || "", Date.now(), pages]));
+}
+
+/** Recreate a v3 token: [3, name, created, [[url,title]...], flags]. */
+function encodeV3(collection) {
+  const pages = collection.pages.map((p) => {
+    const u = p.u || p.url;
+    return [u.startsWith("https://") ? u.slice(8) : u, p.t || p.title || ""];
+  });
+  const payload = [3, collection.title || "", collection.created || Date.now(), pages, collection.flags | 0];
+  return LZString.compressToEncodedURIComponent(JSON.stringify(payload)).replace(/\+/g, "_");
 }
 
 let pass = 0;
@@ -143,6 +153,72 @@ ok("still decodes v2 links", () => {
   const out = ShareCodec.decode(token);
   assert.equal(out.title, "v2 link");
   assert.deepEqual(out.pages.map((p) => p.url), ["https://a.example/x"]);
+});
+
+ok("still decodes v3 links (the shipped format before v4)", () => {
+  const token = encodeV3({
+    title: "v3 link",
+    created: 1700000000000,
+    flags: 0b11,
+    pages: [
+      { u: "https://en.wikipedia.org/wiki/Aurora", t: "Aurora" },
+      { u: "http://example.org/plain", t: "" },
+    ],
+  });
+  const out = ShareCodec.decode(token);
+  assert.equal(out.title, "v3 link");
+  assert.equal(out.created, 1700000000000);
+  assert.equal(out.flags, 3);
+  assert.deepEqual(out.pages.map((p) => p.url), [
+    "https://en.wikipedia.org/wiki/Aurora",
+    "http://example.org/plain",
+  ]);
+  assert.equal(out.pages[0].title, "Aurora");
+});
+
+ok("v4 minimal link: URLs only, no titles, no timestamp -- still opens", () => {
+  const pages = [
+    { u: "https://a.example/one", t: "First page" },
+    { u: "https://a.example/two", t: "Second page" },
+  ];
+  const full = ShareCodec.encode({ title: "Trip", flags: 1, pages });
+  const min = ShareCodec.encode({ title: "Trip", flags: 1, pages }, { minimal: true });
+
+  const rawMin = LZString.decompressFromEncodedURIComponent(min.replace(/_/g, "+"));
+  assert.equal(rawMin, '[4,"Trip",1,["a.example/one","a.example/two"]]', "minimal payload should be [4,name,flags,urls]");
+
+  const out = ShareCodec.decode(min);
+  assert.equal(out.title, "Trip");
+  assert.equal(out.flags, 1);
+  assert.equal(out.created, null);
+  assert.deepEqual(out.pages.map((p) => p.url), ["https://a.example/one", "https://a.example/two"]);
+  assert.deepEqual(out.pages.map((p) => p.title), ["", ""]);
+  assert.ok(min.length < full.length, `minimal (${min.length}) should be shorter than full (${full.length})`);
+});
+
+ok("a full (non-minimal) link leaves every URL exactly as given", () => {
+  const dirty = "https://shop.example/item?id=42&utm_source=newsletter&utm_medium=email&fbclid=AbC123";
+  const token = ShareCodec.encode({ pages: [{ u: dirty }] });
+  assert.equal(ShareCodec.decode(token).pages[0].url, dirty, "full link: no tracking strip, URL untouched");
+});
+
+ok("a minimal link strips tracking params, keeps real params and the #fragment", () => {
+  const token = ShareCodec.encode(
+    {
+      pages: [
+        { u: "https://shop.example/item?id=42&utm_source=newsletter&utm_medium=email&color=blue" },
+        { u: "https://news.example/story?fbclid=AbC123&gclid=xyz" },
+        { u: "https://docs.example/guide?utm_campaign=q3#installation" },
+        { u: "https://site.example/page?si=session-abc&ext=pdf" },
+      ],
+    },
+    { minimal: true },
+  );
+  const out = ShareCodec.decode(token);
+  assert.equal(out.pages[0].url, "https://shop.example/item?id=42&color=blue", "real params kept, utm_* dropped");
+  assert.equal(out.pages[1].url, "https://news.example/story", "every param was a tracker -> bare path");
+  assert.equal(out.pages[2].url, "https://docs.example/guide#installation", "the page's own #fragment survives");
+  assert.equal(out.pages[3].url, "https://site.example/page?si=session-abc&ext=pdf", "generic names (si, ext) are NOT stripped");
 });
 
 ok("keeps http:// but drops https:// prefix internally", () => {

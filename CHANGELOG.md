@@ -5,6 +5,149 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
+_No entries yet._
+
+## [1.0.0-beta.9] - 2026-09-04
+
+Manifests: chrome `version` -> `1.0.0.3` (`version_name` -> `1.0.0-beta.9`),
+firefox `version` -> `1.0.0.10`. Same permission set as beta.8. Firefox's
+`1.0.0.5` (beta.5.5) is approved and listed on AMO -- this ships as an update,
+not a first submission, so it should review faster.
+
+### Added
+
+- **Schema v4: a layered link + a "Minimal link" option.** The share token is
+  now `[4, name, flags, urls[], ext?]` -- a required core plus an optional `ext`
+  blob (`{ c: created, t: [titles] }`). A full link keeps everything v3 kept,
+  URLs included exactly as given, byte-for-byte. A new **Minimal link**
+  checkbox in the build view drops `ext` entirely -- URLs only, roughly half
+  the characters, at the cost of page titles and the "shared on <date>" line
+  (the viewer already falls back to the site name) -- and only a minimal link
+  also strips ad/analytics query params (`utm_*`, `fbclid`, `gclid`, ~35 in
+  all); they never change which page loads. **Every existing link still
+  opens** -- the decoder reads v1, v2, v3 and v4. The live viewer at
+  `kaikayy.github.io/multi-link-share/` already has the v4 decoder, so v4 links
+  work today regardless of which build sent them. See
+  [`docs/MINIMAL-LINKS.md`](docs/MINIMAL-LINKS.md).
+
+## [1.0.0-beta.8] - 2026-09-02
+
+Live on the Chrome Web Store. Manifests: chrome `version` -> `1.0.0.2`
+(`version_name` -> `1.0.0-beta.8`), firefox `version` -> `1.0.0.9`. Same
+permission set as beta.7 -- the shortener still only reaches the endpoint you
+configure.
+
+### Fixed
+
+- **Tab Share shortener: large tab groups no longer fail with "HTTP 414".**
+  A share link for a big group (many tabs, or long page URLs) could be 10 KB+.
+  The extension used to hand that whole link to the shortener in the request
+  URL, and a proxy in front of the server refused it as too long. It now sends
+  the link in the request body instead, so the shortener takes links far larger
+  than any real tab group. da.gd, TinyURL and custom endpoints are unchanged; if
+  one of them rejects a link for being too long, the popup now says so and
+  points you at the Tab Share shortener rather than showing a raw error number.
+
+### Changed
+
+- **Privacy policy: disclose what the first-party shortener records.** The
+  `s.kaikay.de` instance keeps aggregate redirect stats (per-link hit counts
+  and, by day, the referring host -- no full referrer, no path, no IP, no
+  cookies, ~365-day retention). `PRIVACY.md`, `viewer/privacy.html` and
+  `docs/CUSTOM-SHORTENER.md` now spell this out, the "no analytics/tracking"
+  claim is scoped to the extension + viewer, and the options page notes it
+  where you pick the shortener. The shortener repo gains its own `PRIVACY.md`.
+  Follow-ups: the shortener's admin panel shows the target host only (a
+  destination is revealed one link at a time); redirect analytics now also
+  tally browser family + major version (never the full User-Agent, still no
+  IP / geo / cookies); the shortener privacy policy gains an explicit "never
+  sold" section and describes an on-request domain histogram. An operator that
+  genuinely cannot read the shared collections stays on the shortener's
+  roadmap. No behaviour change in the extension.
+
+## [1.0.0-beta.7.5] - 2026-09-01
+
+Manifests: chrome `version` -> `1.0.0.1` (Chrome needs a higher numeric
+`version` than beta.7's `1.0.0` to accept the update; `version_name` stays
+`1.0.0-beta.7.5`), firefox `version` -> `1.0.0.8`. Same permission set as
+beta.7 -- a popup-copy change only, no new code paths.
+
+### Added
+
+- **Shortener tip in the popup.** A dismissable, compact banner at the top of
+  the build view points at the built-in shortener (free, no account) with a
+  *Set it up* link to the options page. Hidden once a shortener is configured;
+  the dismissal sticks (`shortenerNoticeDismissed`).
+
+## [1.0.0-beta.7] - 2026-09-01
+
+Manifests: chrome `version_name` -> `1.0.0-beta.7`, firefox `version` ->
+`1.0.0.7`. Same permission set as beta.5.5. (Supersedes the dev-only beta.6
+tag, which never reached a store.)
+
+### Changed
+
+- **Options page rebuilt.** One scroll, card layout: a one-line welcome header
+  that reads "Thanks for installing Tab Share!" and is highlighted the first
+  time you open it -- along with the *Show real site icons* choice -- then
+  reverts to "Welcome to Tab Share", plain, on every open after. Below it a
+  two-column body --
+  **Preferences**, **Support & feedback** and **Privacy** on the left, the
+  bigger tiles (**Viewer base URL**, **Shorten links**, **History**) on the
+  right. On a 1080p display the History card's first line is visible without
+  scrolling; only the Privacy card sits below the fold. The title is now a gear
+  glyph + "Tab Share"; "everything is optional / on-device" moved to a footer
+  line; the section headers pick up a faint brand tint instead of reading as
+  greyed-out; preference descriptions are a touch larger.
+- **Picking a shortener no longer errors before you've configured it.** Choosing
+  *Tab Share shortener* or *Custom endpoint* now just reveals its fields and
+  persists the choice; validation and the host-permission prompt wait until you
+  enter an address.
+- The viewer footer's **Ko-fi** entry is now a compact "Buy me a Beer" sticker
+  (a bundled purple SVG) pinned to the bottom-right of the viewport -- still a
+  plain `<a href>`, still no network request until clicked. Checked against the
+  slideshow nav / pagers / toast in every view.
+
+### Added
+
+- **First-party Tab Share shortener at `s.kaikay.de`.** Picking *Tab Share
+  shortener* (labelled *recommended*) pre-fills the address with the public
+  instance, which allow-lists the built-in viewer -- so the default viewer +
+  shortener work with no configuration. Still Off until you turn it on; still
+  opt-in per link. A stored address left pointing at `localhost` (from an old
+  `DEV_LOCALHOST` build) is moved to the packaged default automatically -- both
+  the popup and the options page do it on load, so the address field stops
+  showing the dead `localhost` endpoint.
+- **Long-link nudge.** When a created link is over the soft length limit and no
+  shortener is set up, the result screen suggests turning one on and offers a
+  *Set up the shortener* button. `shorten()` also requests the host permission
+  itself if it's missing (a provider added or migrated without the grant).
+  `SHORTENER_BASE=... npm run build` overrides the baked address.
+- **da.gd as a built-in shortener option.** A small, no-account open-source
+  shortener that keeps the `#…` fragment and takes multi-kilobyte links (where
+  is.gd fails and TinyURL is hit-or-miss). Off by default like the rest. The
+  Shorten-links card now notes that hosted shorteners -- `s.kaikay.de`, da.gd,
+  TinyURL -- can't promise uptime or link longevity; a self-hosted **Tab Share
+  shortener** is the durable choice. See
+  [`docs/CUSTOM-SHORTENER.md`](docs/CUSTOM-SHORTENER.md).
+- The options page carries a **Ko-fi "Buy me a Beer" button** (a bundled local
+  SVG, not a remote image) plus **Report a bug** / **Request a feature** links
+  to the GitHub issue forms, and a **Full privacy policy** link.
+- A **Support** section in `README.md` with a Ko-fi button.
+- `assets/kofi-sticker-*` -- the beer sticker in eight colours (git-ignored
+  palette; regenerated by `npm run icons`, which also copies the purple one to
+  the viewer and the red one to the options page).
+- **`README.md` rework** -- the first lines now spell out that this is a browser
+  extension and how it works, placeholder Chrome Web Store / Firefox Add-ons
+  install links under the title, and a **browser-support table** (Chrome,
+  Chromium, Edge, Brave, Opera, Vivaldi, Arc, Firefox + forks, Android, Safari)
+  with a Tab Groups column.
+
+### Removed
+
+- The "is.gd and v.gd were removed" note under the shortener options -- long
+  stale; the migration of a stored `isgd`/`vgd` choice to "off" stays.
+
 ## [1.0.0-beta.5.5] - 2026-09-01
 
 ### Changed
