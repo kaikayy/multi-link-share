@@ -29,7 +29,7 @@ minimal  [4, name, flags, [url, url, ...]]
 **Page titles.** The viewer has always fallen back to the site name when a page
 has no title, so a minimal link still opens and still navigates. The slideshow,
 the grid and the list all work. They just lead with hosts (`allaboutbirds.org`)
-instead of headlines (`Anna's Hummingbird - Cornell Lab`).
+instead of headlines (`Anna's Hummingbird -- Cornell Lab`).
 
 **The creation date.** The viewer normally shows a small "shared on 3 Sep 2026"
 line under the collection name. A minimal link has no timestamp, so that line is
@@ -40,31 +40,39 @@ changes.
 
 ## What you do not lose
 
-- Every URL, exactly as it was (see the one exception below).
 - The collection name.
-- Password protection - a minimal link can still be encrypted.
+- Password protection -- a minimal link can still be encrypted.
 - Every view: slideshow, preview grid, compact grid, copyable list, filter,
   selection mode.
 - The recipient still needs no extension.
 
-## Tracking parameters are removed (from every link, not just minimal)
+A **normal (non-minimal) link is completely unaffected** by any of this -- it
+carries titles and the date as before, and every URL is stored exactly as you
+gave it: same query string, same `#fragment`, nothing removed. Only a minimal
+link touches the URLs at all.
 
-Schema v4 strips known ad and analytics query parameters from every page URL
-when the link is built: `utm_source`, `utm_medium`, `utm_campaign`, `fbclid`,
-`gclid`, `mc_cid`, `igshid`, and about thirty more. These never change which
-page loads - they exist to attribute a click to a campaign - and dropping them
-shortens the link and stops the recipient seeing where you found the page.
+## Minimal links also strip tracking parameters
 
-Left untouched: the host, any real query parameter (`?id=42`, `?q=hummingbird`,
-`?v=abc` on YouTube), and a page's own `#fragment` (`...#installation`). Generic
-parameter names a site might use for real state - `si`, `ext`, `ref` - are
-**not** on the list. `www.` is not stripped either; some hosts genuinely behave
-differently with and without it.
+Turning on **Minimal link** does two things: it drops `ext` (titles + date, as
+above), and it strips known ad/analytics query parameters from every page URL --
+`utm_source`, `utm_medium`, `utm_campaign`, `fbclid`, `gclid`, `mc_cid`,
+`igshid`, and about thirty more. These never change which page loads -- they
+exist to attribute a click to a campaign -- and dropping them shortens the link
+and stops the recipient seeing where you found the page.
+
+Left untouched, even in a minimal link: the host, any real query parameter
+(`?id=42`, `?q=hummingbird`, `?v=abc` on YouTube), and a page's own `#fragment`
+(`...#installation`). Generic parameter names a site might use for real state --
+`si`, `ext`, `ref` -- are **not** on the list. `www.` is not stripped either;
+some hosts genuinely behave differently with and without it.
+
+A **full link never strips anything** -- if you want the exact URLs preserved
+byte-for-byte, leave Minimal link off.
 
 ## Do old links still work?
 
 Yes. Every link anyone has already shared keeps working. The viewer's decoder
-reads v1, v2, v3 **and** v4 - v4 is a new branch, not a replacement.
+reads v1, v2, v3 **and** v4 -- v4 is a new branch, not a replacement.
 
 The one direction that matters: a **v4 link needs a viewer that has the v4
 decoder**. Opened in an older, cached copy of the viewer, a v4 link shows
@@ -92,4 +100,4 @@ They are complementary, not either-or.
 Turn on **Minimal link** when the link length matters more than the page titles:
 pasting into a length-limited field, a QR code, somewhere the titles would just
 be noise. Leave it off when you want the recipient to see a readable list of
-what you sent - which is most of the time.
+what you sent -- which is most of the time.

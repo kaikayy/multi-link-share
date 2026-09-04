@@ -10,10 +10,11 @@ Done on `dev` (schema v4, `SCHEMA_VERSION = 4`):
   viewer needs to render; `ext` (`{ c: created, t: [titles] }`) is optional.
   `decode()` still reads v1/v2/v3, so every existing link opens unchanged.
 - **"Minimal link" toggle** in the popup -- `encode(coll, { minimal: true })`
-  drops `ext` whole. URLs only, roughly half the characters.
-- **Tracking-param stripping** on encode -- `utm_*`, `fbclid`, `gclid`, ~35
-  unambiguous ad/analytics names. Host, real query params and a shared URL's own
-  `#fragment` are untouched. Generic names (`si`, `ext`, `ref`) are left alone.
+  drops `ext` whole (URLs only, roughly half the characters) and also strips
+  tracking params from every URL: `utm_*`, `fbclid`, `gclid`, ~35 unambiguous
+  ad/analytics names. Host, real query params and a shared URL's own `#fragment`
+  are untouched; generic names (`si`, `ext`, `ref`) are left alone. A full
+  (non-minimal) link never touches the URLs you gave it.
 
 Still open:
 

@@ -196,15 +196,24 @@ ok("v4 minimal link: URLs only, no titles, no timestamp -- still opens", () => {
   assert.ok(min.length < full.length, `minimal (${min.length}) should be shorter than full (${full.length})`);
 });
 
-ok("strips tracking params on encode, keeps real params and the #fragment", () => {
-  const token = ShareCodec.encode({
-    pages: [
-      { u: "https://shop.example/item?id=42&utm_source=newsletter&utm_medium=email&color=blue" },
-      { u: "https://news.example/story?fbclid=AbC123&gclid=xyz" },
-      { u: "https://docs.example/guide?utm_campaign=q3#installation" },
-      { u: "https://site.example/page?si=session-abc&ext=pdf" },
-    ],
-  });
+ok("a full (non-minimal) link leaves every URL exactly as given", () => {
+  const dirty = "https://shop.example/item?id=42&utm_source=newsletter&utm_medium=email&fbclid=AbC123";
+  const token = ShareCodec.encode({ pages: [{ u: dirty }] });
+  assert.equal(ShareCodec.decode(token).pages[0].url, dirty, "full link: no tracking strip, URL untouched");
+});
+
+ok("a minimal link strips tracking params, keeps real params and the #fragment", () => {
+  const token = ShareCodec.encode(
+    {
+      pages: [
+        { u: "https://shop.example/item?id=42&utm_source=newsletter&utm_medium=email&color=blue" },
+        { u: "https://news.example/story?fbclid=AbC123&gclid=xyz" },
+        { u: "https://docs.example/guide?utm_campaign=q3#installation" },
+        { u: "https://site.example/page?si=session-abc&ext=pdf" },
+      ],
+    },
+    { minimal: true },
+  );
   const out = ShareCodec.decode(token);
   assert.equal(out.pages[0].url, "https://shop.example/item?id=42&color=blue", "real params kept, utm_* dropped");
   assert.equal(out.pages[1].url, "https://news.example/story", "every param was a tracker -> bare path");

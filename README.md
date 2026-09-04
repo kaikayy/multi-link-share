@@ -117,10 +117,11 @@ opened.
 ### Minimal links
 
 Tick **Minimal link** to drop page titles and the timestamp from the link --
-URLs only, roughly half the characters. The viewer falls back to the site name,
-so the link still opens and navigates. Known ad / analytics query params
-(`utm_*`, `fbclid`, ...) are stripped from every link regardless. Details and the
-backward-compatibility notes: **[`docs/MINIMAL-LINKS.md`](docs/MINIMAL-LINKS.md)**.
+URLs only, roughly half the characters -- and strip known ad / analytics query
+params (`utm_*`, `fbclid`, ...) from every URL. The viewer falls back to the
+site name, so the link still opens and navigates. A normal link is untouched --
+same URLs you gave it. Details and the backward-compatibility notes:
+**[`docs/MINIMAL-LINKS.md`](docs/MINIMAL-LINKS.md)**.
 
 ### The one honest limitation
 

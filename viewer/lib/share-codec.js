@@ -10,9 +10,9 @@
  *   plaintext  — LZString.compressToEncodedURIComponent(JSON) of
  *                v4 `[4, name, flags, urls[], ext?]`  (v1/v2/v3 still decode)
  *                where `ext` (optional) is `{ c: created, t: [title...] }`;
- *                a "minimal" link omits `ext` entirely -- URLs only. Ad /
- *                analytics query params (utm_*, fbclid, ...) are stripped from
- *                every URL on encode.
+ *                a "minimal" link omits `ext` entirely -- URLs only, and also
+ *                strips ad/analytics query params (utm_*, fbclid, ...). A full
+ *                (non-minimal) link leaves every URL exactly as given.
  *   encrypted  — "E1." + b64url(salt) "." b64url(iv) "." b64url(ciphertext)
  *                where ciphertext = AES-GCM( the plaintext token above ),
  *                key = PBKDF2(password, salt, 210000, SHA-256)
@@ -32,12 +32,13 @@
   var MAX_TITLE = 300;
   var MAX_NAME = 200;
 
-  // Ad / analytics / share-attribution params. Stripped from every URL on encode:
-  // they never change which page loads, and they bloat the link and hand the
-  // recipient the campaign path. Host, real query params and the "#" fragment of
-  // a shared URL are untouched. Kept deliberately conservative -- only names that
-  // are unambiguously tracking. Generic names a site might use for real state
-  // (`si`, `ext`, `ref`, `source`) are NOT on the list.
+  // Ad / analytics / share-attribution params. Stripped only from a MINIMAL
+  // link's URLs (see encode()) -- a full link never touches the URLs you gave
+  // it. They never change which page loads, and they bloat the link and hand
+  // the recipient the campaign path. Host, real query params and the "#"
+  // fragment of a shared URL are untouched. Kept deliberately conservative --
+  // only names that are unambiguously tracking. Generic names a site might use
+  // for real state (`si`, `ext`, `ref`, `source`) are NOT on the list.
   var TRACKING_PARAMS = [
     "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "utm_id",
     "utm_name", "utm_cid", "utm_reader", "utm_social", "utm_brand",
@@ -142,7 +143,9 @@
   /**
    * @param {{title?:string, flags?:number, pages:Array<{url?:string,u?:string,title?:string,t?:string}>}} collection
    * @param {{minimal?:boolean}} [opts]  minimal: URLs only -- no titles, no
-   *                    timestamp. Produces the shortest possible link.
+   *                    timestamp, and tracking query params are stripped.
+   *                    Produces the shortest possible link. Without it, every
+   *                    URL is kept exactly as given.
    * @returns {string} URL-safe *plaintext* fragment payload (no leading '#').
    *                    Wrap with encrypt() for a password link.
    */
@@ -157,7 +160,11 @@
     var anyTitle = false;
     for (var i = 0; i < collection.pages.length; i++) {
       var p = collection.pages[i] || {};
-      var url = sanitizeUrl(slimUrl(p.url != null ? p.url : p.u));
+      var rawUrl = p.url != null ? p.url : p.u;
+      // Full links keep the URL exactly as given. Only a minimal link -- which
+      // already drops titles and the timestamp -- also strips tracking params;
+      // a full link changes nothing about the URLs you gave it.
+      var url = sanitizeUrl(minimal ? slimUrl(rawUrl) : rawUrl);
       if (!url || seen[url]) continue;
       seen[url] = true;
       var title = minimal ? "" : clean(p.title != null ? p.title : p.t, MAX_TITLE);
