@@ -8,7 +8,11 @@
  *
  * Token shapes:
  *   plaintext  — LZString.compressToEncodedURIComponent(JSON) of
- *                v3 `[3, name, created, pages, flags]`  (v1/v2 still decode)
+ *                v4 `[4, name, flags, urls[], ext?]`  (v1/v2/v3 still decode)
+ *                where `ext` (optional) is `{ c: created, t: [title...] }`;
+ *                a "minimal" link omits `ext` entirely -- URLs only. Ad /
+ *                analytics query params (utm_*, fbclid, ...) are stripped from
+ *                every URL on encode.
  *   encrypted  — "E1." + b64url(salt) "." b64url(iv) "." b64url(ciphertext)
  *                where ciphertext = AES-GCM( the plaintext token above ),
  *                key = PBKDF2(password, salt, 210000, SHA-256)
@@ -22,11 +26,26 @@
 })(typeof self !== "undefined" ? self : this, function (LZString) {
   "use strict";
 
-  var SCHEMA_VERSION = 3; // [3, name, created, pages, flags]
+  var SCHEMA_VERSION = 4; // [4, name, flags, urls[], ext?]  (v1/v2/v3 still decode)
   var MAX_PAGES = 100;
   var MAX_URL = 4000;
   var MAX_TITLE = 300;
   var MAX_NAME = 200;
+
+  // Ad / analytics / share-attribution params. Stripped from every URL on encode:
+  // they never change which page loads, and they bloat the link and hand the
+  // recipient the campaign path. Host, real query params and the "#" fragment of
+  // a shared URL are untouched. Kept deliberately conservative -- only names that
+  // are unambiguously tracking. Generic names a site might use for real state
+  // (`si`, `ext`, `ref`, `source`) are NOT on the list.
+  var TRACKING_PARAMS = [
+    "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "utm_id",
+    "utm_name", "utm_cid", "utm_reader", "utm_social", "utm_brand",
+    "fbclid", "gclid", "gclsrc", "dclid", "wbraid", "gbraid", "msclkid", "yclid",
+    "mc_cid", "mc_eid", "_hsenc", "_hsmi", "hsCtaTracking", "vero_id", "vero_conv",
+    "mkt_tok", "igshid", "igsh", "ref_src", "spm", "scm",
+    "oly_anon_id", "oly_enc_id", "__s", "rb_clickid", "twclid", "ttclid", "li_fat_id",
+  ];
 
   var ENC_PREFIX = "E1.";
   var PBKDF2_ITERS = 210000;
@@ -65,6 +84,29 @@
     }
   }
 
+  // Remove known tracking params, drop a dangling "?". Never touches the host or
+  // path, so the page that loads is identical. `null` in -> `null` out.
+  function slimUrl(url) {
+    if (typeof url !== "string") return url;
+    var parsed;
+    try {
+      parsed = new URL(url);
+    } catch (e) {
+      return url;
+    }
+    var changed = false;
+    for (var i = 0; i < TRACKING_PARAMS.length; i++) {
+      if (parsed.searchParams.has(TRACKING_PARAMS[i])) {
+        parsed.searchParams.delete(TRACKING_PARAMS[i]);
+        changed = true;
+      }
+    }
+    if (!changed) return url;
+    var out = parsed.href;
+    // URL keeps a bare "?" when every param was removed.
+    return out.replace(/\?(#|$)/, "$1");
+  }
+
   // Drop the "https://" prefix (the common case) to shave bytes; "http://" and
   // anything else is kept verbatim so decode can tell them apart.
   function packUrl(url) {
@@ -99,31 +141,51 @@
 
   /**
    * @param {{title?:string, flags?:number, pages:Array<{url?:string,u?:string,title?:string,t?:string}>}} collection
+   * @param {{minimal?:boolean}} [opts]  minimal: URLs only -- no titles, no
+   *                    timestamp. Produces the shortest possible link.
    * @returns {string} URL-safe *plaintext* fragment payload (no leading '#').
    *                    Wrap with encrypt() for a password link.
    */
-  function encode(collection) {
+  function encode(collection, opts) {
     if (!collection || !Array.isArray(collection.pages)) {
       throw new Error("encode: expected { pages: [] }");
     }
+    var minimal = !!(opts && opts.minimal);
     var seen = Object.create(null);
-    var pages = [];
+    var urls = [];
+    var titles = [];
+    var anyTitle = false;
     for (var i = 0; i < collection.pages.length; i++) {
       var p = collection.pages[i] || {};
-      var url = sanitizeUrl(p.url != null ? p.url : p.u);
+      var url = sanitizeUrl(slimUrl(p.url != null ? p.url : p.u));
       if (!url || seen[url]) continue;
       seen[url] = true;
-      var title = clean(p.title != null ? p.title : p.t, MAX_TITLE);
-      // A title that just echoes the hostname carries no information — drop it.
+      var title = minimal ? "" : clean(p.title != null ? p.title : p.t, MAX_TITLE);
+      // A title that just echoes the hostname carries no information -- drop it.
       if (title && title === hostOf(url)) title = "";
-      pages.push([packUrl(url), title]);
-      if (pages.length >= MAX_PAGES) break;
+      urls.push(packUrl(url));
+      titles.push(title);
+      if (title) anyTitle = true;
+      if (urls.length >= MAX_PAGES) break;
     }
-    if (!pages.length) {
+    if (!urls.length) {
       throw new Error("encode: no valid http(s) links to share");
     }
-    var flags = collection.flags | 0;
-    var payload = [SCHEMA_VERSION, clean(collection.title, MAX_NAME), Date.now(), pages, flags];
+
+    // v4: [4, name, flags, urls[], ext?]. `ext` carries everything optional and
+    // is dropped whole for a minimal link. Titles ride as a parallel array with
+    // trailing blanks trimmed.
+    var payload = [SCHEMA_VERSION, clean(collection.title, MAX_NAME), collection.flags | 0, urls];
+    if (!minimal) {
+      var ext = { c: Date.now() };
+      if (anyTitle) {
+        var end = titles.length;
+        while (end > 0 && !titles[end - 1]) end--;
+        ext.t = titles.slice(0, end);
+      }
+      payload.push(ext);
+    }
+
     // LZString's URI-safe alphabet still contains "+", which many chat apps and
     // link unfurlers form-decode to a space. Swap it for "_" (truly unreserved).
     return LZString.compressToEncodedURIComponent(JSON.stringify(payload)).replace(/\+/g, "_");
@@ -151,8 +213,20 @@
       return null;
     }
 
-    var name, created, rawRows, flags, compact;
-    if (Array.isArray(obj) && (obj[0] === 3 || obj[0] === 2) && Array.isArray(obj[3])) {
+    var name, created, rawRows, flags, compact, titleAt;
+    if (Array.isArray(obj) && obj[0] === 4 && Array.isArray(obj[3])) {
+      // v4: [4, name, flags, [url...], ext?]  ext = { c: created, t: [title...] }
+      name = obj[1];
+      flags = obj[2] | 0;
+      rawRows = obj[3]; // flat array of packed url strings
+      var ext = obj[4] && typeof obj[4] === "object" ? obj[4] : null;
+      created = ext && typeof ext.c === "number" ? ext.c : null;
+      var extTitles = ext && Array.isArray(ext.t) ? ext.t : [];
+      titleAt = function (i) {
+        return extTitles[i];
+      };
+      compact = true;
+    } else if (Array.isArray(obj) && (obj[0] === 3 || obj[0] === 2) && Array.isArray(obj[3])) {
       // v3: [3, name, created, [[url,title]...], flags]
       // v2: [2, name, created, [[url,title]...]]
       name = obj[1];
@@ -160,6 +234,9 @@
       rawRows = obj[3];
       flags = obj[0] === 3 ? obj[4] | 0 : 0;
       compact = true;
+      titleAt = function (i) {
+        return Array.isArray(rawRows[i]) ? rawRows[i][1] : "";
+      };
     } else if (obj && obj.v === 1 && Array.isArray(obj.p)) {
       // v1: { v:1, n, c, p:[[url,title]...] }
       name = obj.n;
@@ -167,6 +244,9 @@
       rawRows = obj.p;
       flags = 0;
       compact = false;
+      titleAt = function (i) {
+        return Array.isArray(rawRows[i]) ? rawRows[i][1] : "";
+      };
     } else {
       return null;
     }
@@ -174,10 +254,11 @@
     var pages = [];
     for (var i = 0; i < rawRows.length && pages.length < MAX_PAGES; i++) {
       var row = rawRows[i];
-      if (!Array.isArray(row)) continue;
-      var url = compact ? unpackUrl(row[0]) : sanitizeUrl(row[0]);
+      // v4 rows are strings; v1/v2/v3 rows are [url, title] arrays.
+      var rawUrl = Array.isArray(row) ? row[0] : row;
+      var url = compact ? unpackUrl(rawUrl) : sanitizeUrl(rawUrl);
       if (!url) continue;
-      pages.push({ url: url, title: clean(row[1], MAX_TITLE) });
+      pages.push({ url: url, title: clean(titleAt(i), MAX_TITLE) });
     }
     if (!pages.length) return null;
 

@@ -4,18 +4,30 @@ Planned work, roughly ordered. Nothing here is committed to a release yet.
 
 ## Payload & link size
 
-- **Schema v4 -- layered payload.** Split the token into a required core
-  (`[4, name, flags, urls[]]`) and an optional trailing `ext` blob (titles,
-  per-page notes, reading order, folder/group structure). The viewer and the
-  extension read `ext` when present; omitting it produces a smaller link.
-- **"Minimal link" toggle** at creation -- drops `ext` and the `created`
-  timestamp, URLs only.
-- **URL slimming** -- strip `www.`, strip common tracking params
-  (`utm_*`, `fbclid`, ...), and use a shared-domain table when many pages share a
-  host.
-- **Title handling** -- titles become opt-in per link (the viewer already falls
-  back to host/URL); optionally truncate long titles.
-- Revisit `MAX_PAGES` / `SOFT_URL_LIMIT` once v4 lands.
+Done on `dev` (schema v4, `SCHEMA_VERSION = 4`):
+
+- **Layered token** -- `[4, name, flags, urls[], ext?]`. The core is what the
+  viewer needs to render; `ext` (`{ c: created, t: [titles] }`) is optional.
+  `decode()` still reads v1/v2/v3, so every existing link opens unchanged.
+- **"Minimal link" toggle** in the popup -- `encode(coll, { minimal: true })`
+  drops `ext` whole. URLs only, roughly half the characters.
+- **Tracking-param stripping** on encode -- `utm_*`, `fbclid`, `gclid`, ~35
+  unambiguous ad/analytics names. Host, real query params and a shared URL's own
+  `#fragment` are untouched. Generic names (`si`, `ext`, `ref`) are left alone.
+
+Still open:
+
+- **Shared-domain table** when many pages share a host. LZString already
+  compresses the repetition well, so this mostly helps pre-compression size and
+  non-LZString consumers -- low priority, measure first.
+- `www.` stripping -- **decided against.** Some hosts genuinely differ between
+  `www` and apex; a broken redirect beats a few saved bytes.
+- **Per-link title opt-in** finer than the all-or-nothing minimal toggle;
+  optional long-title truncation.
+- Revisit `MAX_PAGES` / `SOFT_URL_LIMIT`.
+- Rollout: the viewer must carry the v4 decoder before v4 links go out (it is
+  backward-compatible, so this is a safe forward step -- ship it to `main`'s
+  viewer first).
 
 ## First-party link shortener
 

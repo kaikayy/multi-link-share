@@ -455,7 +455,7 @@
 
     let token;
     try {
-      token = ShareCodec.encode({ title: name, pages, flags });
+      token = ShareCodec.encode({ title: name, pages, flags }, { minimal: $("#minimal").checked });
       if (password) token = await ShareCodec.encrypt(token, password);
     } catch (e) {
       showError(e.message || "Could not build the link.");
