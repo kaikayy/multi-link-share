@@ -45,6 +45,7 @@
       <symbol id="v-m-list" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h2v2H4zM9 5h11v2H9zM4 11h2v2H4zM9 11h11v2H9zM4 17h2v2H4zM9 17h11v2H9z"/></symbol>
       <symbol id="v-select" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M8 12.5l3 3 6-6"/></symbol>
       <symbol id="v-caret" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></symbol>
+      <symbol id="v-lang" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" d="M3 12h18M12 3c2.8 3 4.2 6 4.2 9s-1.4 6-4.2 9c-2.8-3-4.2-6-4.2-9s1.4-6 4.2-9Z"/></symbol>
     </defs>
   </svg>
 
@@ -89,6 +90,22 @@
           </button>
         </div>
       </div>
+      <div class="v-menu-wrap">
+        <button id="btn-lang" class="v-btn ghost icon-only" type="button" aria-haspopup="true" aria-expanded="false" data-i18n-aria-label="langAria">
+          <svg class="vi"><use href="#v-lang" /></svg>
+        </button>
+        <div id="lang-menu" class="v-menu" hidden role="menu">
+          <button class="v-lang-item" data-lang="en" role="menuitemradio">
+            <span>English</span><svg class="lc"><use href="#v-check"/></svg>
+          </button>
+          <button class="v-lang-item" data-lang="de" role="menuitemradio">
+            <span>Deutsch</span><svg class="lc"><use href="#v-check"/></svg>
+          </button>
+          <button class="v-lang-item" data-lang="es" role="menuitemradio">
+            <span>Español</span><svg class="lc"><use href="#v-check"/></svg>
+          </button>
+        </div>
+      </div>
       <button id="btn-theme" class="v-btn ghost icon-only" type="button" data-i18n-aria-label="v_toggleThemeAria">
         <svg class="vi"><use href="#v-moon" /></svg>
       </button>
@@ -97,19 +114,6 @@
           <svg class="vi"><use href="#v-gear" /></svg>
         </button>
         <div id="settings-menu" class="v-menu" hidden role="menu">
-          <div class="v-menu-label" data-i18n="langAria">Choose language</div>
-          <div class="v-menu-lang" role="radiogroup" aria-label="Language">
-            <button class="v-lang-item" data-lang="en" role="menuitemradio">
-              <span>English</span><svg class="lc"><use href="#v-check"/></svg>
-            </button>
-            <button class="v-lang-item" data-lang="de" role="menuitemradio">
-              <span>Deutsch</span><svg class="lc"><use href="#v-check"/></svg>
-            </button>
-            <button class="v-lang-item" data-lang="es" role="menuitemradio">
-              <span>Español</span><svg class="lc"><use href="#v-check"/></svg>
-            </button>
-          </div>
-          <hr class="v-menu-sep" />
           <label class="v-menu-check"><input type="checkbox" id="set-autopreview" /><span data-i18n="v_settingsAutopreview">Auto-load live previews for sites that allow it</span></label>
           <label class="v-menu-check"><input type="checkbox" id="set-icons" /><span data-i18n="v_settingsIcons">Show site icons (fetched from duckduckgo.com)</span></label>
         </div>

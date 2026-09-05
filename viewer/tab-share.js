@@ -46,6 +46,8 @@
     navNextB: byId("nav-next-b"),
     viewBtn: byId("btn-view"),
     viewMenu: byId("view-menu"),
+    langBtn: byId("btn-lang"),
+    langMenu: byId("lang-menu"),
     setBtn: byId("btn-settings"),
     setMenu: byId("settings-menu"),
     setIcons: byId("set-icons"),
@@ -772,17 +774,19 @@
 
   function closeMenus() {
     els.viewMenu.hidden = true;
+    els.langMenu.hidden = true;
     els.setMenu.hidden = true;
     els.selMenu.hidden = true;
     els.viewBtn.setAttribute("aria-expanded", "false");
+    els.langBtn.setAttribute("aria-expanded", "false");
     els.setBtn.setAttribute("aria-expanded", "false");
     els.selOpen.setAttribute("aria-expanded", "false");
   }
 
-  /** Mark the active language with a check in the Settings menu's language list. */
+  /** Mark the active language with a check in the globe menu. */
   function syncLangMenu() {
     const lang = I18N.getLang();
-    els.setMenu.querySelectorAll(".v-lang-item").forEach((it) =>
+    els.langMenu.querySelectorAll(".v-lang-item").forEach((it) =>
       it.setAttribute("aria-checked", String(it.dataset.lang === lang))
     );
   }
@@ -872,9 +876,10 @@
       if (mode === "slides") renderSlide();
     });
 
-    // language -- lives inside the Settings menu itself
+    // language
     syncLangMenu();
-    els.setMenu.addEventListener("click", (e) => {
+    els.langBtn.addEventListener("click", () => toggleMenu(els.langMenu, els.langBtn));
+    els.langMenu.addEventListener("click", (e) => {
       const it = e.target.closest("[data-lang]");
       if (it) setLanguage(it.dataset.lang);
     });
