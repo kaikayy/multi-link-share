@@ -5,17 +5,35 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
+_No entries yet._
+
+## [1.0.0-beta.11] - 2026-09-05
+
+Manifests: chrome `version` -> `1.0.0.4` (`version_name` -> `1.0.0-beta.11`),
+firefox `version` -> `1.0.0.11`. `beta.10` is skipped deliberately -- Firefox's
+internal version had drifted ahead of the beta number (`1.0.0.10` was
+`beta.9`) from an earlier Firefox-only submission; jumping to `beta.11` brings
+Firefox's number back in line with its own label (`1.0.0.11` == beta 11) going
+forward. Both stores are on `beta.9` as of this release. Same permission set
+as beta.9. 17/17 tests green.
+
 ### Added
 
 - **German and Spanish, throughout.** The viewer, the popup, the options page,
   and the "Open with Tab Share" import banner are all now available in
   English, German and Spanish (`shared/i18n.js`, synced into
   `extension/src/lib/` and `viewer/lib/` like the other shared libraries).
-  Language is auto-detected from the browser once, then remembered. The
-  **viewer** carries its own switcher (a globe icon in its Settings menu,
-  since it has no separate settings surface); the **extension**'s switcher
-  lives on the options page (Preferences > Language) rather than in the
-  popup.
+  Language is auto-detected from the browser once, then remembered.
+  - The **viewer** has its own globe-icon button in its toolbar (opens a
+    menu: English / Deutsch / Español, check mark on the active one) --
+    it's a page with no separate settings surface of its own, so the
+    switcher lives right there.
+  - The **extension** (popup + options + the import banner) is translated
+    the same way, but the language control lives on the **options page**
+    (Preferences -> Language, a plain dropdown) rather than in the popup --
+    the popup has no settings of its own either, so this keeps the one
+    language choice in the one place that already holds every other
+    preference.
 - **Native `_locales/` support for the store listings.** Chrome and Firefox
   now read the extension's name and short description from
   `extension/_locales/<lang>/messages.json` (`default_locale: "en"`,

@@ -23,8 +23,8 @@ see the [support matrix](#browser-support).
 
 | Store | Link |
 | --- | --- |
-| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.8`) |
-| **Firefox Add-ons** (Firefox and forks) | **[Get the Add-on][amo]** (`1.0.0-beta.5.5`) |
+| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.9`) |
+| **Firefox Add-ons** (Firefox and forks) | **[Get the Add-on][amo]** (`1.0.0-beta.9`) |
 
 Or **[install it yourself](docs/SELF-HOSTING.md)** (about two minutes) on any
 supported browser.
@@ -34,10 +34,11 @@ supported browser.
 
 ![Tab Share -- one link for a whole group of tabs](assets/promo-master-3000x2000.png)
 
-> **Status: `1.0.0-beta.8` on the Chrome Web Store** ([listing][cws]) and
-> `1.0.0-beta.5.5` on **[Firefox Add-ons][amo]** (both approved and listed);
-> `beta.9` is the current build here, going out to both stores next. Or run
-> your own copy with **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
+> **Status: `1.0.0-beta.9` on both the Chrome Web Store** ([listing][cws]) **and
+> [Firefox Add-ons][amo]** (approved and listed); `beta.11` (German and
+> Spanish throughout, plus localized store listings) is the current build
+> here, going out to both stores next. Or run your own copy with
+> **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
 
 |  |  |
 | --- | --- |
