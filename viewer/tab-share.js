@@ -103,7 +103,7 @@
   function prettyDate(ts) {
     if (!ts) return "";
     try {
-      return new Date(ts).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+      return new Date(ts).toLocaleDateString(I18N.locale(), { year: "numeric", month: "short", day: "numeric" });
     } catch (e) {
       return "";
     }
@@ -187,11 +187,15 @@
     state.hidden = false;
   }
 
+  let appState = "ready"; // "locked" | "error" | "ready" -- so a language switch can redo document.title
+
   function boot() {
+    I18N.applyStatic();
     const dec = ShareCodec.decode(location.hash);
 
     if (dec && dec.encrypted) {
-      document.title = "Locked — Tab Share";
+      appState = "locked";
+      document.title = I18N.t("v_lockedPageTitle");
       show(els.locked);
       wireUnlock(dec._params);
       wireChrome();
@@ -200,8 +204,9 @@
 
     collection = dec;
     if (!collection || !collection.pages || !collection.pages.length) {
+      appState = "error";
       show(els.error);
-      document.title = "Shared tabs — empty link";
+      document.title = I18N.t("v_emptyPageTitle");
       wireChrome();
       return;
     }
@@ -223,12 +228,22 @@
     });
   }
 
-  function start() {
+  /** Recomputes the header (title + subtitle) for the current collection and
+      language -- run once at boot, and again whenever the language changes. */
+  function renderHeader() {
     const count = collection.pages.length;
-    els.name.textContent = collection.title || "Shared tabs";
-    document.title = (collection.title || "Shared tabs") + ` (${count})`;
+    const title = collection.title || I18N.t("v_defaultTitle");
+    els.name.textContent = title;
+    document.title = title + ` (${count})`;
     const dateStr = prettyDate(collection.created);
-    els.sub.textContent = `${count} page${count === 1 ? "" : "s"}` + (dateStr ? ` · shared ${dateStr}` : "");
+    els.sub.textContent =
+      I18N.t(count === 1 ? "v_pagesCountOne" : "v_pagesCountOther", { count }) +
+      (dateStr ? I18N.t("v_sharedSuffix", { date: dateStr }) : "");
+  }
+
+  function start() {
+    renderHeader();
+    const count = collection.pages.length;
 
     els.setIcons.checked = iconsOn();
     els.setAuto.checked = autoPreviewOn();
@@ -277,7 +292,7 @@
       if (window.FrameHosts && FrameHosts.remember) FrameHosts.remember(host, "bad");
       clearEmbed();
       if (mode === "slides") renderSlide();
-      toast("That site won’t display here — use “Open this page”.");
+      toast(I18N.t("v_toastCantDisplay"));
     }, 4500);
   }
 
@@ -286,8 +301,8 @@
     if (!vis.length) {
       els.card.hidden = false;
       clearEmbed();
-      els.frameTitle.textContent = "No matches";
-      els.cardTitle.textContent = "Nothing matches your search";
+      els.frameTitle.textContent = I18N.t("v_noMatchesTitle");
+      els.cardTitle.textContent = I18N.t("v_noMatchesCard");
       els.cardHost.textContent = els.cardUrl.textContent = "";
       els.cardPreview.hidden = true;
       els.cardNote.hidden = true;
@@ -314,15 +329,14 @@
 
     clearEmbed();
 
-    const badMsg = "This site (Google, X, banks, …) blocks being shown inside another page — use “Open this page”.";
     els.cardPreview.hidden = klass === "bad";
     els.footnote.hidden = true; // the note lives on the card only, never doubled below
     if (klass === "bad") {
       els.cardNote.hidden = false;
-      els.cardNote.textContent = badMsg;
+      els.cardNote.textContent = I18N.t("v_cardNoteBad");
     } else {
       els.cardNote.hidden = klass !== "unknown";
-      els.cardNote.textContent = "Live preview is best-effort — many sites refuse to display inside another page.";
+      els.cardNote.textContent = I18N.t("v_cardNoteDefault");
     }
     if (klass === "good" && autoPreviewOn()) livePreview();
 
@@ -371,7 +385,7 @@
       const b = document.createElement("button");
       b.type = "button";
       b.className = "seg-i" + (i === pos ? " active" : "");
-      b.setAttribute("aria-label", `Page ${i + 1}`);
+      b.setAttribute("aria-label", I18N.t("v_segPageAria", { n: i + 1 }));
       b.addEventListener("click", () => jumpPos(i));
       els.seg.appendChild(b);
     }
@@ -434,6 +448,7 @@
       node.querySelector(".g-title").textContent = page.title || host || page.url;
       node.querySelector(".g-host").textContent = host;
       node.querySelector(".g-index").textContent = String(i + 1).padStart(2, "0");
+      I18N.applyStatic(node);
       wireCard(node, node.querySelector(".g-check"), i);
       frag.appendChild(node);
     });
@@ -460,7 +475,7 @@
         cb = document.createElement("input");
         cb.type = "checkbox";
         cb.className = "li-check";
-        cb.setAttribute("aria-label", "Select");
+        cb.setAttribute("aria-label", I18N.t("v_selectAria"));
         li.appendChild(cb);
       }
 
@@ -500,7 +515,7 @@
         document.execCommand("copy");
         toast(okMsg);
       } catch (e2) {
-        toast("Could not copy automatically");
+        toast(I18N.t("v_toastCopyFailed"));
       }
       ta.remove();
     }
@@ -564,6 +579,7 @@
       node.querySelector(".bg-host").textContent = host;
       node.querySelector(".bg-index").textContent = String(i + 1).padStart(2, "0");
       node.querySelector(".bg-open").href = page.url;
+      I18N.applyStatic(node);
       node.querySelector(".bg-view").addEventListener("click", () => {
         index = i;
         setMode("slides");
@@ -579,7 +595,7 @@
         av.className = "bg-bigmono";
         paintAvatar(av, page.url);
         const note = document.createElement("p");
-        note.textContent = "This site can't be previewed here — open it in a tab.";
+        note.textContent = I18N.t("v_noPreviewNote");
         shot.append(av, note);
       }
       els.bigBody.appendChild(node);
@@ -660,9 +676,9 @@
 
   function updateSelBar() {
     const total = visible().length;
-    els.selCount.textContent = `${selected.size} / ${total} selected`;
+    els.selCount.textContent = I18N.t("v_selCountFormat", { selected: selected.size, total });
     els.selOpen.disabled = selected.size === 0;
-    els.selAll.textContent = selected.size >= total && total > 0 ? "Select none" : "Select all";
+    els.selAll.textContent = I18N.t(selected.size >= total && total > 0 ? "v_selectNone" : "v_selectAll");
   }
 
   function enterSelect() {
@@ -708,10 +724,10 @@
       window.postMessage({ __tabshare: "open", mode: mode, urls: urls }, location.origin);
       toast(
         mode === "new-window"
-          ? "Opening a new window…"
+          ? I18N.t("v_toastOpeningNewWindow")
           : mode === "tab-group"
-          ? "Opening a tab group…"
-          : `Opening ${urls.length} tab${urls.length === 1 ? "" : "s"}…`
+          ? I18N.t("v_toastOpeningTabGroup")
+          : I18N.t(urls.length === 1 ? "v_toastOpeningTab" : "v_toastOpeningTabs", { n: urls.length })
       );
       return;
     }
@@ -720,12 +736,14 @@
     // null even on success, so we can't count — just be honest about pop-ups.
     urls.forEach((u) => window.open(u, "_blank", "noopener"));
     if (mode !== "this-window") {
-      toast(`Opening ${urls.length} tabs — install Tab Share to open them as a ${mode === "new-window" ? "window" : "group"}`);
+      toast(
+        I18N.t(mode === "new-window" ? "v_toastInstallHintWindow" : "v_toastInstallHintGroup", { n: urls.length })
+      );
     } else {
       toast(
         urls.length === 1
-          ? "Opening the page…"
-          : `Opening ${urls.length} tabs — allow pop-ups for this page if some are blocked`
+          ? I18N.t("v_toastOpeningPage")
+          : I18N.t("v_toastOpeningPopupWarn", { n: urls.length })
       );
     }
   }
@@ -759,6 +777,32 @@
     els.viewBtn.setAttribute("aria-expanded", "false");
     els.setBtn.setAttribute("aria-expanded", "false");
     els.selOpen.setAttribute("aria-expanded", "false");
+  }
+
+  /** Mark the active language with a check in the Settings menu's language list. */
+  function syncLangMenu() {
+    const lang = I18N.getLang();
+    els.setMenu.querySelectorAll(".v-lang-item").forEach((it) =>
+      it.setAttribute("aria-checked", String(it.dataset.lang === lang))
+    );
+  }
+
+  /** Switch language: re-paint every static label, the header, and whatever
+      view is currently on screen. */
+  function setLanguage(code) {
+    I18N.setLang(code);
+    I18N.applyStatic();
+    syncLangMenu();
+    closeMenus();
+    if (appState === "locked") {
+      document.title = I18N.t("v_lockedPageTitle");
+    } else if (appState === "error") {
+      document.title = I18N.t("v_emptyPageTitle");
+    } else if (collection) {
+      renderHeader();
+      rerender();
+      if (selectMode) updateSelBar();
+    }
   }
   function toggleMenu(menu, btn) {
     const open = menu.hidden;
@@ -819,7 +863,7 @@
       lsSet("ts:icons", els.setIcons.checked ? "on" : "off");
       if (els.setIcons.checked && lsGet("ts:iconnote") !== "seen") {
         lsSet("ts:iconnote", "seen");
-        toast("Site icons are loaded from duckduckgo.com — turn this off any time in the ⚙ menu.", 6500);
+        toast(I18N.t("v_toastIconsNote"), 6500);
       }
       rerender();
     });
@@ -827,13 +871,21 @@
       lsSet("ts:autopreview", els.setAuto.checked ? "on" : "off");
       if (mode === "slides") renderSlide();
     });
+
+    // language -- lives inside the Settings menu itself
+    syncLangMenu();
+    els.setMenu.addEventListener("click", (e) => {
+      const it = e.target.closest("[data-lang]");
+      if (it) setLanguage(it.dataset.lang);
+    });
+
     document.addEventListener("click", (e) => {
       if (!e.target.closest(".v-menu-wrap")) closeMenus();
     });
 
     els.openPage.addEventListener("click", openAllPages);
-    els.listCopy.addEventListener("click", () => copyText(copyAll(), "Copied"));
-    els.listCopyLinks.addEventListener("click", () => copyText(copyLinksOnly(), "Links copied"));
+    els.listCopy.addEventListener("click", () => copyText(copyAll(), I18N.t("v_toastCopied")));
+    els.listCopyLinks.addEventListener("click", () => copyText(copyLinksOnly(), I18N.t("v_toastLinksCopied")));
 
     window.addEventListener("hashchange", () => location.reload());
   }

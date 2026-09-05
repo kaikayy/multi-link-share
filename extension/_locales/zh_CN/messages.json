@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Tab Share - 把一组标签页整合成一个链接",
+    "description": "Extension name shown in the browser UI and store listings. Keep well under 75 characters."
+  },
+  "appDescription": {
+    "message": "将当前窗口、标签组或粘贴的链接整合成一个以幻灯片形式打开的链接。无需账号，无需服务器。",
+    "description": "Short summary shown in chrome://extensions and the Chrome Web Store listing summary. Hard limit: 132 characters."
+  }
+}

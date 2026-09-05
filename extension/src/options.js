@@ -11,10 +11,10 @@
     try {
       parsed = new URL(v);
     } catch (e) {
-      throw new Error("That is not a valid URL.");
+      throw new Error(I18N.t("o_errInvalidUrl"));
     }
     if (parsed.protocol !== "https:" && parsed.hostname !== "localhost" && parsed.hostname !== "127.0.0.1") {
-      throw new Error("Use an https:// address (localhost is allowed for testing).");
+      throw new Error(I18N.t("o_errNeedsHttps"));
     }
     let out = parsed.href;
     if (!out.endsWith("/")) out += "/";
@@ -182,13 +182,13 @@
       try {
         parsed = new URL(base);
       } catch (e) {
-        $("#short-err").textContent = "Enter the shortener's address, e.g. https://s.kaikay.de";
+        $("#short-err").textContent = I18N.t("o_errShortenerAddress");
         $("#short-err").hidden = false;
         return;
       }
       const localhost = parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
       if (parsed.protocol !== "https:" && !localhost) {
-        $("#short-err").textContent = "The address must be https:// (localhost is allowed for testing).";
+        $("#short-err").textContent = I18N.t("o_errShortenerHttps");
         $("#short-err").hidden = false;
         return;
       }
@@ -199,13 +199,13 @@
       try {
         parsed = new URL(endpoint);
       } catch (e) {
-        $("#short-err").textContent = "Enter a valid https:// endpoint.";
+        $("#short-err").textContent = I18N.t("o_errValidEndpoint");
         $("#short-err").hidden = false;
         return;
       }
       const localhost = parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
       if (parsed.protocol !== "https:" && !localhost) {
-        $("#short-err").textContent = "The endpoint must be https:// (localhost is allowed for testing).";
+        $("#short-err").textContent = I18N.t("o_errEndpointHttps");
         $("#short-err").hidden = false;
         return;
       }
@@ -218,13 +218,13 @@
         if (!has) {
           const granted = await api.permissions.request({ origins: [pattern] });
           if (!granted) {
-            $("#short-err").textContent = "Not saved -- the shortener needs access to that host.";
+            $("#short-err").textContent = I18N.t("o_errNotSavedHostAccess");
             $("#short-err").hidden = false;
             return;
           }
         }
       } catch (e) {
-        $("#short-err").textContent = "Couldn't request access to that host (" + (e.message || e) + ").";
+        $("#short-err").textContent = I18N.t("o_errCouldntRequestHost", { detail: e.message || e });
         $("#short-err").hidden = false;
         return;
       }
@@ -269,8 +269,7 @@
         if (!has) {
           const granted = await api.permissions.request({ origins: [pattern] });
           if (!granted) {
-            $("#save-err").textContent =
-              "Saved, but without access to that host the import banner won't show there.";
+            $("#save-err").textContent = I18N.t("o_savedNoHostAccess");
             $("#save-err").hidden = false;
           }
         }
@@ -289,13 +288,13 @@
   function relDate(ts) {
     if (!ts) return "";
     const s = Math.round((Date.now() - ts) / 1000);
-    if (s < 60) return "just now";
-    if (s < 3600) return Math.floor(s / 60) + " min ago";
-    if (s < 86400) return Math.floor(s / 3600) + " h ago";
+    if (s < 60) return I18N.t("o_relJustNow");
+    if (s < 3600) return I18N.t("o_relMinAgo", { n: Math.floor(s / 60) });
+    if (s < 86400) return I18N.t("o_relHourAgo", { n: Math.floor(s / 3600) });
     const d = Math.floor(s / 86400);
-    if (d < 30) return d + " d ago";
+    if (d < 30) return I18N.t("o_relDayAgo", { n: d });
     try {
-      return new Date(ts).toLocaleDateString();
+      return new Date(ts).toLocaleDateString(I18N.locale());
     } catch (e) {
       return "";
     }
@@ -317,9 +316,12 @@
     items.forEach((r, idx) => {
       const id = r.id || String(r.at || idx);
       const node = tpl.content.firstElementChild.cloneNode(true);
-      node.querySelector(".h-name").textContent = r.name || "Untitled";
-      node.querySelector(".h-sub").textContent =
-        `${r.count || 0} page${r.count === 1 ? "" : "s"} · ${relDate(r.at)}`;
+      node.querySelector(".h-name").textContent = r.name || I18N.t("p_untitled");
+      node.querySelector(".h-sub").textContent = I18N.t(r.count === 1 ? "o_histSubOne" : "o_histSubOther", {
+        count: r.count || 0,
+        rel: relDate(r.at),
+      });
+      I18N.applyStatic(node);
 
       node.querySelector(".h-acts").addEventListener("click", async (e) => {
         const btn = e.target.closest("button[data-act]");
@@ -328,9 +330,9 @@
         if (act === "copy") {
           try {
             await navigator.clipboard.writeText(r.link);
-            toast("Link copied");
+            toast(I18N.t("o_toastLinkCopied"));
           } catch (err) {
-            toast("Could not copy");
+            toast(I18N.t("o_toastCouldNotCopy"));
           }
         } else if (act === "open") {
           api.tabs.create({ url: r.link });
@@ -362,7 +364,21 @@
     }
   }
 
+  /* ---------------- language ---------------- */
+
+  function wireLanguage() {
+    $("#pref-language").value = I18N.getLang();
+    $("#pref-language").addEventListener("change", (e) => {
+      I18N.setLang(e.target.value);
+      I18N.applyStatic();
+      renderHistory(); // re-translate cloned history rows + relative dates
+      flash("#pref-msg");
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
+    I18N.applyStatic();
+    wireLanguage();
     markWelcomeSeen();
     loadPrefs();
     loadShortener();

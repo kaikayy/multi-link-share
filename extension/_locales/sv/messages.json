@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Tab Share - en länk för en grupp flikar",
+    "description": "Extension name shown in the browser UI and store listings. Keep well under 75 characters."
+  },
+  "appDescription": {
+    "message": "Samlar flikar, en flikgrupp eller inklistrade länkar i en länk som öppnas som ett bildspel. Inget konto, ingen server.",
+    "description": "Short summary shown in chrome://extensions and the Chrome Web Store listing summary. Hard limit: 132 characters. Shortened from the AMO summary, which does not have this limit."
+  }
+}

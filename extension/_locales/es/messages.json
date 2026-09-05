@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Tab Share - un enlace para un grupo de pestañas",
+    "description": "Extension name shown in the browser UI and store listings. Keep well under 75 characters."
+  },
+  "appDescription": {
+    "message": "Combina pestañas, un grupo de pestañas o enlaces en un enlace que se abre como diapositivas. Sin cuenta, sin servidor.",
+    "description": "Short summary shown in chrome://extensions and the Chrome Web Store listing summary. Hard limit: 132 characters. Shortened from the AMO summary, which does not have this limit."
+  }
+}

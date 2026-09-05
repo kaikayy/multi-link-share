@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tab Share — Settings</title>
+  <title data-i18n="o_pageTitle">Tab Share — Settings</title>
   <link rel="stylesheet" href="popup.css" />
   <style>
     html, body { width: auto; background: var(--bg); }
@@ -87,28 +87,37 @@
 <body>
   <div class="wrap">
     <div class="page-head">
-      <h1 aria-label="Tab Share settings">
+      <h1 data-i18n-aria-label="o_headAria" aria-label="Tab Share settings">
         <svg class="gear" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Zm7.4-2.1 1.8-1-1.7-3-2 .5a6 6 0 0 0-1.7-1l-.3-2h-3.4l-.3 2a6 6 0 0 0-1.7 1l-2-.5-1.7 3 1.8 1a6 6 0 0 0 0 2l-1.8 1 1.7 3 2-.5a6 6 0 0 0 1.7 1l.3 2h3.4l.3-2a6 6 0 0 0 1.7-1l2 .5 1.7-3-1.8-1a6 6 0 0 0 0-2Z"/></svg>
         Tab Share
       </h1>
     </div>
 
     <section class="card welcome" id="welcome">
-      <h2><span class="w-first">Thanks for installing Tab Share!</span><span class="w-later">Welcome to Tab Share</span></h2>
-      <p>Pick your setup below, then use the toolbar button to turn a group of tabs into one link.</p>
+      <h2><span class="w-first" data-i18n="o_welcomeFirst">Thanks for installing Tab Share!</span><span class="w-later" data-i18n="o_welcomeLater">Welcome to Tab Share</span></h2>
+      <p data-i18n="o_welcomeBody">Pick your setup below, then use the toolbar button to turn a group of tabs into one link.</p>
     </section>
 
     <div class="grid">
       <!-- left column -->
       <div class="col">
         <section class="card">
-          <h2>Preferences</h2>
+          <h2 data-i18n="o_preferences">Preferences</h2>
+
+          <label class="field">
+            <span class="label" data-i18n="o_language">Language</span>
+            <select id="pref-language">
+              <option value="en">English</option>
+              <option value="de">Deutsch</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
 
           <label class="setting" id="row-icons">
             <input id="pref-icons" type="checkbox" />
             <span class="s-body">
-              <span class="s-title">Show real site icons</span>
-              <span class="s-desc">Off by default. On, the viewer fetches one favicon per domain from
+              <span class="s-title" data-i18n="o_iconsTitle">Show real site icons</span>
+              <span class="s-desc" data-i18n-html="o_iconsDescHtml">Off by default. On, the viewer fetches one favicon per domain from
                 <code>icons.duckduckgo.com</code> when a link is opened. Off, the viewer makes
                 <strong>no network requests</strong> and shows coloured initials.</span>
             </span>
@@ -117,8 +126,8 @@
           <label class="setting">
             <input id="pref-autopreview" type="checkbox" />
             <span class="s-body">
-              <span class="s-title">Auto-load live previews</span>
-              <span class="s-desc">In the slideshow, framing-friendly sites (Wikipedia, docs, …) load their
+              <span class="s-title" data-i18n="o_autopreviewTitle">Auto-load live previews</span>
+              <span class="s-desc" data-i18n="o_autopreviewDesc">In the slideshow, framing-friendly sites (Wikipedia, docs, …) load their
                 preview without a click.</span>
             </span>
           </label>
@@ -126,8 +135,8 @@
           <label class="setting">
             <input id="pref-banner" type="checkbox" />
             <span class="s-body">
-              <span class="s-title">Show the "Open with Tab Share" button</span>
-              <span class="s-desc">Adds a button to the viewer toolbar to send the whole set into a window or
+              <span class="s-title" data-i18n="o_bannerTitle">Show the "Open with Tab Share" button</span>
+              <span class="s-desc" data-i18n="o_bannerDesc">Adds a button to the viewer toolbar to send the whole set into a window or
                 tab group.</span>
             </span>
           </label>
@@ -135,44 +144,44 @@
           <label class="setting">
             <input id="pref-autoopen" type="checkbox" />
             <span class="s-body">
-              <span class="s-title">Open its menu automatically</span>
-              <span class="s-desc">Pop the menu the first time you view each link.</span>
+              <span class="s-title" data-i18n="o_autoopenTitle">Open its menu automatically</span>
+              <span class="s-desc" data-i18n="o_autoopenDesc">Pop the menu the first time you view each link.</span>
             </span>
           </label>
 
           <label class="field">
-            <span class="label">Default action</span>
+            <span class="label" data-i18n="o_defaultAction">Default action</span>
             <select id="pref-default">
-              <option value="">Ask each time</option>
-              <option value="this-window">Open in this window</option>
-              <option value="new-window">Open in a new window</option>
-              <option value="tab-group">Open as a tab group</option>
+              <option value="" data-i18n="o_defaultAsk">Ask each time</option>
+              <option value="this-window" data-i18n="o_defaultThisWindow">Open in this window</option>
+              <option value="new-window" data-i18n="o_defaultNewWindow">Open in a new window</option>
+              <option value="tab-group" data-i18n="o_defaultTabGroup">Open as a tab group</option>
             </select>
           </label>
 
-          <p id="pref-msg" class="ok-note" hidden>Saved.</p>
+          <p id="pref-msg" class="ok-note" hidden data-i18n="o_saved">Saved.</p>
         </section>
 
         <section class="card support">
-          <h2>Support &amp; feedback</h2>
+          <h2 data-i18n="o_supportFeedback">Support &amp; feedback</h2>
           <a class="kofi" href="https://ko-fi.com/B3L1265MM0" target="_blank" rel="noopener">
-            <img src="kofi-button.svg" width="240" height="42" alt="Buy me a Beer on Ko-fi" />
+            <img src="kofi-button.svg" width="240" height="42" data-i18n-alt="v_kofiAria" alt="Buy me a Beer on Ko-fi" />
           </a>
           <p class="fb-links">
-            <a href="https://github.com/kaikayy/multi-link-share/issues/new?template=bug_report.yml" target="_blank" rel="noopener">Report a bug</a>
-            <a href="https://github.com/kaikayy/multi-link-share/issues/new?template=feature_request.yml" target="_blank" rel="noopener">Request a feature</a>
-            <a href="https://github.com/kaikayy/multi-link-share" target="_blank" rel="noopener">Source &amp; docs</a>
+            <a href="https://github.com/kaikayy/multi-link-share/issues/new?template=bug_report.yml" target="_blank" rel="noopener" data-i18n="o_reportBug">Report a bug</a>
+            <a href="https://github.com/kaikayy/multi-link-share/issues/new?template=feature_request.yml" target="_blank" rel="noopener" data-i18n="o_requestFeature">Request a feature</a>
+            <a href="https://github.com/kaikayy/multi-link-share" target="_blank" rel="noopener" data-i18n="o_sourceDocs">Source &amp; docs</a>
           </p>
         </section>
 
         <section class="card">
-          <h2>Privacy</h2>
-          <p>The page list lives in the URL after <code>#</code>, which browsers never send to a server.
+          <h2 data-i18n="o_privacy">Privacy</h2>
+          <p data-i18n-html="o_privacyBodyHtml">The page list lives in the URL after <code>#</code>, which browsers never send to a server.
             <code>tabs</code> and <code>tabGroups</code> are read only when you press a button. One content
             script runs on the viewer page only. Password links are encrypted in your browser. Site icons and
             the shortener are the only things that can make a network request — both off-able above.</p>
           <p class="fb-links">
-            <a href="https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md" target="_blank" rel="noopener">Full privacy policy →</a>
+            <a href="https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md" target="_blank" rel="noopener" data-i18n="o_fullPrivacyPolicy">Full privacy policy →</a>
           </p>
         </section>
       </div>
@@ -180,37 +189,37 @@
       <!-- right column: the bigger tiles -->
       <div class="col">
         <section class="card">
-          <h2>Viewer base URL</h2>
-          <p>Where a share link opens: a small static page that renders the slideshow. Host
+          <h2 data-i18n="o_viewerBaseUrl">Viewer base URL</h2>
+          <p data-i18n-html="o_viewerBaseBodyHtml">Where a share link opens: a small static page that renders the slideshow. Host
             <code>viewer/index.html</code> anywhere (GitHub Pages, Netlify, Cloudflare Pages) and paste an
             <code>https://</code> address ending in <code>/</code>.</p>
           <label class="field">
-            <span class="label">Address</span>
+            <span class="label" data-i18n="o_address">Address</span>
             <input id="viewer-base" type="text" placeholder="https://kaikayy.github.io/multi-link-share/" />
           </label>
           <div class="row-actions">
-            <button id="save" class="btn btn-primary btn-sm" type="button">Save</button>
-            <button id="reset" class="btn btn-ghost btn-sm" type="button">Use built-in default</button>
+            <button id="save" class="btn btn-primary btn-sm" type="button" data-i18n="o_save">Save</button>
+            <button id="reset" class="btn btn-ghost btn-sm" type="button" data-i18n="o_useBuiltInDefault">Use built-in default</button>
           </div>
-          <p id="save-msg" class="ok-note" hidden>Saved.</p>
+          <p id="save-msg" class="ok-note" hidden data-i18n="o_saved">Saved.</p>
           <p id="save-err" class="error" hidden></p>
         </section>
 
         <section class="card">
-          <h2>Shorten links (optional)</h2>
-          <p>Off by default. When on, creating a link sends that one generated URL to the service you pick —
+          <h2 data-i18n="o_shortenLinks">Shorten links (optional)</h2>
+          <p data-i18n="o_shortenBody">Off by default. When on, creating a link sends that one generated URL to the service you pick —
             nothing else.</p>
           <label class="field">
-            <span class="label">Shortener</span>
+            <span class="label" data-i18n="o_shortener">Shortener</span>
             <select id="short-provider">
-              <option value="">Off</option>
-              <option value="tabshare">Tab Share shortener (recommended)</option>
+              <option value="" data-i18n="o_shortenerOff">Off</option>
+              <option value="tabshare" data-i18n="o_shortenerTabshare">Tab Share shortener (recommended)</option>
               <option value="dagd">da.gd</option>
               <option value="tinyurl">TinyURL</option>
-              <option value="custom">Custom endpoint</option>
+              <option value="custom" data-i18n="o_shortenerCustom">Custom endpoint</option>
             </select>
           </label>
-          <p class="muted"><strong>Tab Share shortener</strong> is pre-filled with the first-party
+          <p class="muted" data-i18n-html="o_shortenerNoteHtml"><strong>Tab Share shortener</strong> is pre-filled with the first-party
             instance at <code>s.kaikay.de</code>. It, TinyURL and da.gd are all best-effort public
             services — free, no account, but nobody can promise a hosted short link resolves forever.
             Self-host the Tab Share shortener for links you fully control. The <code>s.kaikay.de</code>
@@ -218,17 +227,17 @@
             (<a href="https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md#the-tab-share-shortener-skaikayde" target="_blank" rel="noopener">details</a>).</p>
           <div id="short-tabshare-wrap" hidden>
             <label class="field">
-              <span class="label">Shortener address</span>
+              <span class="label" data-i18n="o_shortenerAddress">Shortener address</span>
               <input id="short-base" type="text" placeholder="https://s.kaikay.de" />
             </label>
             <label class="field">
-              <span class="label">Short link style</span>
+              <span class="label" data-i18n="o_shortLinkStyle">Short link style</span>
               <select id="short-mode">
-                <option value="code">Normal (random, e.g. /k7Rm2pq)</option>
-                <option value="words">Readable words (e.g. /swift-amber-otter)</option>
+                <option value="code" data-i18n="o_shortModeCode">Normal (random, e.g. /k7Rm2pq)</option>
+                <option value="words" data-i18n="o_shortModeWords">Readable words (e.g. /swift-amber-otter)</option>
               </select>
             </label>
-            <p class="note">A shortener only shortens links whose <strong>viewer host is on its
+            <p class="note" data-i18n-html="o_shortenerAllowlistNoteHtml">A shortener only shortens links whose <strong>viewer host is on its
               allowlist</strong>. The <code>s.kaikay.de</code> instance allows the built-in viewer
               (<code>kaikayy.github.io</code>), so the default setup just works. If you've set a custom
               <strong>Viewer base URL</strong>, that host has to be allow-listed by whoever runs the
@@ -236,38 +245,38 @@
               <a href="https://github.com/kaikayy/tab-share-shortener" target="_blank" rel="noopener">tab-share-shortener</a>.</p>
           </div>
           <label class="field" id="short-endpoint-wrap" hidden>
-            <span class="label">Custom endpoint (the encoded long URL is appended)</span>
+            <span class="label" data-i18n="o_customEndpoint">Custom endpoint (the encoded long URL is appended)</span>
             <input id="short-endpoint" type="text" placeholder="https://your-shortener.example/api/new?url=" />
-            <span class="s-desc">Must accept a GET, return the short URL as plain text or JSON, and preserve
+            <span class="s-desc" data-i18n-html="o_customEndpointDescHtml">Must accept a GET, return the short URL as plain text or JSON, and preserve
               the <code>#…</code> fragment. See
               <a href="https://github.com/kaikayy/multi-link-share/blob/main/docs/CUSTOM-SHORTENER.md" target="_blank" rel="noopener">docs/CUSTOM-SHORTENER.md</a>.</span>
           </label>
           <label class="setting">
             <input id="short-auto" type="checkbox" />
             <span class="s-body">
-              <span class="s-title">Shorten automatically</span>
-              <span class="s-desc">Otherwise the popup shows a "Shorten" button on the result. If shortening
+              <span class="s-title" data-i18n="o_shortAutoTitle">Shorten automatically</span>
+              <span class="s-desc" data-i18n="o_shortAutoDesc">Otherwise the popup shows a "Shorten" button on the result. If shortening
                 fails, the popup shows why and keeps the full link.</span>
             </span>
           </label>
-          <p id="short-msg" class="ok-note" hidden>Saved.</p>
+          <p id="short-msg" class="ok-note" hidden data-i18n="o_saved">Saved.</p>
           <p id="short-err" class="error" hidden></p>
         </section>
 
         <section class="card">
-          <h2>History</h2>
-          <p id="hist-empty" class="muted" hidden>No links created yet.</p>
+          <h2 data-i18n="o_history">History</h2>
+          <p id="hist-empty" class="muted" hidden data-i18n="o_histEmpty">No links created yet.</p>
           <ul id="hist-list" class="hist"></ul>
           <div class="row-actions">
-            <button id="clear-recents" class="btn btn-ghost btn-sm" type="button">Clear all history</button>
+            <button id="clear-recents" class="btn btn-ghost btn-sm" type="button" data-i18n="o_clearHistory">Clear all history</button>
           </div>
-          <p class="muted">Kept on this device only — up to 50 links. Password-protected links still need the
+          <p class="muted" data-i18n="o_histFootnote">Kept on this device only — up to 50 links. Password-protected links still need the
             password to open.</p>
         </section>
       </div>
     </div>
 
-    <p class="wrap-foot">Everything on this page is optional and stored on this device only.</p>
+    <p class="wrap-foot" data-i18n="o_footNote">Everything on this page is optional and stored on this device only.</p>
   </div>
 
   <div id="toast" class="toast" hidden></div>
@@ -277,13 +286,14 @@
       <span class="h-name"></span>
       <span class="h-sub"></span>
       <span class="h-acts">
-        <button class="btn btn-ghost btn-sm" data-act="copy" type="button">Copy</button>
-        <button class="btn btn-ghost btn-sm" data-act="open" type="button">Open</button>
-        <button class="btn btn-ghost btn-sm" data-act="remove" type="button" aria-label="Remove">✕</button>
+        <button class="btn btn-ghost btn-sm" data-act="copy" type="button" data-i18n="o_histCopy">Copy</button>
+        <button class="btn btn-ghost btn-sm" data-act="open" type="button" data-i18n="o_histOpen">Open</button>
+        <button class="btn btn-ghost btn-sm" data-act="remove" type="button" data-i18n-aria-label="o_histRemove" aria-label="Remove">✕</button>
       </span>
     </li>
   </template>
 
+  <script src="lib/i18n.js"></script>
   <script src="lib/config.js"></script>
   <script src="options.js"></script>
 </body>

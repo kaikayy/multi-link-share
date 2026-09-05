@@ -144,14 +144,14 @@
       o.textContent = label;
       picker.appendChild(o);
     };
-    opt("current", "This window");
-    opt("all", `All windows (${wins.length})`);
+    opt("current", I18N.t("p_groupThisWindow"));
+    opt("all", I18N.t("p_groupAllWindows", { n: wins.length }));
     let n = 0;
     wins.forEach((w) => {
       n += 1;
       if (w.id === cur.id) return;
       const webCount = (w.tabs || []).filter((t) => isWebUrl(t.url)).length;
-      opt(String(w.id), `Window ${n} · ${webCount} tab${webCount === 1 ? "" : "s"}`);
+      opt(String(w.id), I18N.t(webCount === 1 ? "p_groupWindowN" : "p_groupWindowNPlural", { n, count: webCount }));
     });
     wrap.hidden = false;
     $("#panel-window").hidden = false;
@@ -175,8 +175,7 @@
 
     if (!hasTabGroupsApi()) {
       unsupported.hidden = false;
-      unsupported.textContent =
-        "This browser doesn't have a tab-group API. Use Windows or Paste Links instead.";
+      unsupported.textContent = I18N.t("p_groupNoApi");
       return;
     }
     await populateGroups(keepList);
@@ -194,15 +193,14 @@
     }
     if (!groups.length) {
       $("#group-unsupported").hidden = false;
-      $("#group-unsupported").textContent =
-        "No tab groups in this window. Create one from the browser's tab strip, then reopen this popup.";
+      $("#group-unsupported").textContent = I18N.t("p_groupNone");
       return;
     }
     picker.innerHTML = "";
     groups.forEach((g) => {
       const opt = document.createElement("option");
       opt.value = String(g.id);
-      opt.textContent = (g.title && g.title.trim()) || `Group (${g.color || "untitled"})`;
+      opt.textContent = (g.title && g.title.trim()) || I18N.t("p_groupFallback", { color: g.color || "untitled" });
       picker.appendChild(opt);
     });
     pickerWrap.hidden = false;
@@ -260,7 +258,7 @@
       state.name = gt;
       saveNameDraft();
     }
-    toast(added > 0 ? `Added ${added} tab${added === 1 ? "" : "s"}` : "That group's tabs are already in the list");
+    toast(added > 0 ? I18N.t(added === 1 ? "p_toastAddedTabOne" : "p_toastAddedTabOther", { n: added }) : I18N.t("p_toastGroupAlready"));
   }
 
   /* ---------- paste source ---------- */
@@ -337,14 +335,14 @@
     clearError();
     render();
     const added = state.pages.length - before;
-    if (!found.length) toast("No valid links — cleared the box");
-    else toast(added > 0 ? `Added ${added} link${added === 1 ? "" : "s"}` : "Those links are already in the list");
+    if (!found.length) toast(I18N.t("p_toastNoValidLinks"));
+    else toast(added > 0 ? I18N.t(added === 1 ? "p_toastAddedLinkOne" : "p_toastAddedLinkOther", { n: added }) : I18N.t("p_toastLinksAlready"));
   }
 
   async function fillPasteBox() {
     const tabs = await queryWindowTabs();
     if (!tabs.length) {
-      toast("No web pages open in this window");
+      toast(I18N.t("p_toastNoTabsOpen"));
       return;
     }
     const box = $("#paste-box");
@@ -353,7 +351,7 @@
     box.value = existing ? existing + "\n" + urls : urls;
     savePasteDraft();
     box.focus();
-    toast(`Loaded ${tabs.length} URL${tabs.length === 1 ? "" : "s"} — edit, then Add`);
+    toast(I18N.t(tabs.length === 1 ? "p_toastLoadedUrlOne" : "p_toastLoadedUrlOther", { n: tabs.length }));
   }
 
   /* ---------- rendering ---------- */
@@ -405,6 +403,7 @@
       } catch (e) {}
       $(".p-title", node).textContent = page.title || host || page.url;
       $(".p-host", node).textContent = host;
+      I18N.applyStatic(node);
 
       $(".reorder", node).addEventListener("click", (ev) => {
         const btn = ev.target.closest("button[data-act]");
@@ -432,7 +431,7 @@
 
   function updateCount() {
     const n = selectedPages().length;
-    $("#count-label").textContent = `${n} page${n === 1 ? "" : "s"} selected`;
+    $("#count-label").textContent = I18N.t(n === 1 ? "p_pagesSelectedOne" : "p_pagesSelectedOther", { n });
     $("#create-link").disabled = n === 0;
   }
 
@@ -449,7 +448,7 @@
     const flags = (state.settings.showIcons ? 1 : 0) | (state.settings.autoPreview ? 2 : 0);
     const password = $("#protect").checked ? $("#link-pass").value : "";
     if ($("#protect").checked && !password) {
-      showError("Enter a password, or turn off protection.");
+      showError(I18N.t("p_errEnterPassword"));
       return;
     }
 
@@ -458,7 +457,7 @@
       token = ShareCodec.encode({ title: name, pages, flags }, { minimal: $("#minimal").checked });
       if (password) token = await ShareCodec.encrypt(token, password);
     } catch (e) {
-      showError(e.message || "Could not build the link.");
+      showError(e.message || I18N.t("p_errBuildFailed"));
       return;
     }
 
@@ -471,7 +470,7 @@
       try {
         link = await shorten(lastLongLink);
       } catch (e) {
-        shortenNote = "Couldn't shorten this link — " + (e.message || "the shortener failed") + ". The full link is below.";
+        shortenNote = I18N.t("p_toastCouldntShorten", { reason: e.message || I18N.t("p_errShortenerFailed") });
         link = lastLongLink;
       }
     }
@@ -520,19 +519,21 @@
       const pattern = new URL(url).origin + "/*";
       if (api.permissions && !(await api.permissions.contains({ origins: [pattern] }))) {
         if (!(await api.permissions.request({ origins: [pattern] }))) {
-          throw new Error("the shortener needs access to that host -- allow it, or set it in the options page");
+          const err = new Error(I18N.t("p_errShortenerHostAccess"));
+          err.tsHostDenied = true;
+          throw err;
         }
       }
     } catch (e) {
-      if (e && /needs access/.test(e.message || "")) throw e;
+      if (e && e.tsHostDenied) throw e;
       /* permissions API unavailable -- let the fetch below try anyway */
     }
   }
 
   function finishShort(text, longUrl) {
     const short = pickShortUrl(text);
-    if (!short) throw new Error("the shortener returned no link (it may reject long or '#'-fragment URLs)");
-    if (short.length >= longUrl.length) throw new Error("the shortened link came back no shorter than the original");
+    if (!short) throw new Error(I18N.t("p_errShortenerNoLink"));
+    if (short.length >= longUrl.length) throw new Error(I18N.t("p_errShortenerNotShorter"));
     return short;
   }
 
@@ -545,7 +546,7 @@
     // (nginx's default large_client_header_buffers) rejects that with HTTP 414.
     if (p === "tabshare") {
       const base = shortenerBase();
-      if (!base) throw new Error("no shortener is set up -- see the options page");
+      if (!base) throw new Error(I18N.t("p_errShortenerNotSetUp"));
       const endpoint = base + "/api/shorten";
       await ensureShortenerHost(endpoint);
       let res;
@@ -556,7 +557,7 @@
           body: JSON.stringify({ url: longUrl, mode: state.settings.shortMode === "words" ? "words" : "code" }),
         });
       } catch (e) {
-        throw new Error("the shortener couldn’t be reached (offline, or the options page never got host access)");
+        throw new Error(I18N.t("p_errShortenerUnreachable"));
       }
       const text = await res.text();
       if (!res.ok) {
@@ -565,10 +566,10 @@
           detail = JSON.parse(text).error || "";
         } catch (e) {}
         if (res.status === 414 || res.status === 413) {
-          throw new Error(detail || "the shortener rejected this link as too large -- a self-hosted instance can raise its size limit (SHORTENER_MAX_URL / _MAX_BODY)");
+          throw new Error(detail || I18N.t("p_errShortenerTooLarge"));
         }
         // e.g. a link whose viewer host the shortener does not allowlist.
-        throw new Error(detail || "the shortener returned HTTP " + res.status);
+        throw new Error(detail || I18N.t("p_errShortenerHttp", { status: res.status }));
       }
       return finishShort(text, longUrl);
     }
@@ -578,7 +579,7 @@
     if (p === "tinyurl") url = `https://tinyurl.com/api-create.php?url=${enc}`;
     else if (p === "dagd") url = `https://da.gd/s?url=${enc}`;
     else if (p === "custom" && state.settings.shortEndpoint) url = state.settings.shortEndpoint + enc;
-    else throw new Error("no shortener is set up -- see the options page");
+    else throw new Error(I18N.t("p_errShortenerNotSetUp"));
 
     await ensureShortenerHost(url);
 
@@ -586,7 +587,7 @@
     try {
       res = await fetch(url, { headers: { Accept: "text/plain, application/json" } });
     } catch (e) {
-      throw new Error("the shortener couldn’t be reached (offline, or the options page never got host access)");
+      throw new Error(I18N.t("p_errShortenerUnreachable"));
     }
     const text = await res.text();
     if (!res.ok) {
@@ -597,10 +598,10 @@
       // GET shorteners carry the link in the URL, so a big collection can trip
       // the provider's request-line limit -- the built-in shortener takes these.
       if (res.status === 414 || res.status === 413) {
-        const label = p === "tinyurl" ? "TinyURL" : p === "dagd" ? "da.gd" : "that shortener";
-        throw new Error(label + " can't take a link this large; the Tab Share shortener (Options page) can");
+        const label = p === "tinyurl" ? "TinyURL" : p === "dagd" ? "da.gd" : I18N.t("p_labelThatShortener");
+        throw new Error(I18N.t("p_errShortenerTooLargeOther", { label }));
       }
-      throw new Error(detail || "the shortener returned HTTP " + res.status);
+      throw new Error(detail || I18N.t("p_errShortenerHttp", { status: res.status }));
     }
 
     return finishShort(text, longUrl);
@@ -609,9 +610,9 @@
   async function autoCopy(link) {
     try {
       await navigator.clipboard.writeText(link);
-      toast("Link created — copied to clipboard");
+      toast(I18N.t("p_toastLinkCopiedClipboard"));
     } catch (e) {
-      toast("Link created — press Copy to put it on the clipboard");
+      toast(I18N.t("p_toastLinkCopiedManual"));
     }
   }
 
@@ -620,8 +621,8 @@
     $("#foot-build").hidden = true;
     $("#view-result").hidden = false;
 
-    $("#result-name").textContent = name || "Untitled collection";
-    $("#result-sub").textContent = `${count} page${count === 1 ? "" : "s"} · opens as a slideshow, no extension needed`;
+    $("#result-name").textContent = name || I18N.t("p_untitledCollection");
+    $("#result-sub").textContent = I18N.t(count === 1 ? "p_resultSubOne" : "p_resultSubOther", { n: count });
     $("#result-link").value = link;
     $("#pw-note").hidden = !encrypted;
 
@@ -633,7 +634,7 @@
     const showEnable = !state.settings.shortProvider && longLink && link === lastLongLink;
     $("#shorten-row").hidden = !(showShorten || showEnable);
     $("#shorten-link").hidden = !showShorten;
-    $("#shorten-link").textContent = shortenNote ? "Try shortening again" : "Shorten link";
+    $("#shorten-link").textContent = I18N.t(shortenNote ? "p_shortenAgain" : "p_shortenLink");
     $("#enable-shortener").hidden = !showEnable;
     $("#show-original").hidden = true;
 
@@ -644,8 +645,8 @@
     } else if (longLink) {
       warn.hidden = false;
       warn.textContent =
-        `Heads up: this link is ${link.length.toLocaleString()} characters. It works in browsers, but some chat apps may shorten or break very long links. ` +
-        (showEnable ? "Turn on the Tab Share shortener for a short link, or share fewer pages." : "Consider sharing fewer pages.");
+        I18N.t("p_lenWarn", { chars: link.length.toLocaleString(I18N.locale()) }) +
+        I18N.t(showEnable ? "p_lenWarnShortener" : "p_lenWarnFewer");
     } else {
       warn.hidden = true;
     }
@@ -659,16 +660,16 @@
     const val = $("#result-link").value;
     try {
       await navigator.clipboard.writeText(val);
-      toast("Link copied");
+      toast(I18N.t("p_toastLinkCopied"));
     } catch (e) {
       const inp = $("#result-link");
       inp.focus();
       inp.select();
       try {
         document.execCommand("copy");
-        toast("Link copied");
+        toast(I18N.t("p_toastLinkCopied"));
       } catch (e2) {
-        toast("Press Ctrl/Cmd+C to copy");
+        toast(I18N.t("p_toastPressToCopy"));
       }
     }
   }
@@ -681,7 +682,7 @@
     try {
       const { recents = [] } = await api.storage.local.get("recents");
       const at = Date.now();
-      recents.unshift({ id: String(at), link, name: name || "Untitled", count, at });
+      recents.unshift({ id: String(at), link, name: name || I18N.t("p_untitled"), count, at });
       await api.storage.local.set({ recents: recents.slice(0, HISTORY_CAP) });
     } catch (e) {}
   }
@@ -754,6 +755,10 @@
   /* ---------- wire up ---------- */
 
   function init() {
+    // Language lives in Settings now (I18N.getLang() reads the same localStorage
+    // key from there) -- just render the popup in whichever language is current.
+    I18N.applyStatic();
+
     $("#open-options").addEventListener("click", () => api.runtime.openOptionsPage());
     $("#enable-shortener").addEventListener("click", () => api.runtime.openOptionsPage());
 
@@ -826,9 +831,9 @@
         await copyLink();
       } catch (e) {
         const warn = $("#len-warn");
-        warn.textContent = "Couldn't shorten this link — " + (e.message || "the shortener failed") + ". The full link is still below.";
+        warn.textContent = I18N.t("p_toastCouldntShortenStill", { reason: e.message || I18N.t("p_errShortenerFailed") });
         warn.hidden = false;
-        $("#shorten-link").textContent = "Try shortening again";
+        $("#shorten-link").textContent = I18N.t("p_shortenAgain");
       } finally {
         $("#shorten-link").disabled = false;
       }
@@ -837,7 +842,7 @@
       $("#result-link").value = lastLongLink;
       $("#show-original").hidden = true;
       $("#shorten-link").hidden = false;
-      $("#shorten-link").textContent = "Shorten link";
+      $("#shorten-link").textContent = I18N.t("p_shortenLink");
       $("#len-warn").hidden = true;
     });
     $("#open-preview").addEventListener("click", () => {
@@ -857,7 +862,7 @@
         if (keepList) state.groupPristine = false;
         return setSource(src, keepList);
       })
-      .catch((e) => showError("Could not read this window's tabs: " + e.message));
+      .catch((e) => showError(I18N.t("p_errReadTabs", { msg: e.message })));
   }
 
   document.addEventListener("DOMContentLoaded", init);

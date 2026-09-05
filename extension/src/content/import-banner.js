@@ -12,7 +12,7 @@
   "use strict";
 
   const api = globalThis.browser && globalThis.browser.runtime ? globalThis.browser : globalThis.chrome;
-  if (!api || !api.runtime || typeof ShareCodec === "undefined") return;
+  if (!api || !api.runtime || typeof ShareCodec === "undefined" || typeof I18N === "undefined") return;
 
   const token = (location.hash || "").replace(/^#/, "").slice(0, 96);
   const K = { auto: "tabshare:auto:" + token };
@@ -86,28 +86,29 @@
 
   const wrap = el("div", { class: "wrap" });
   const menu = el("div", { class: "menu", role: "menu", hidden: "" });
-  menu.appendChild(el("p", { class: "hd" }, `${count} page${count === 1 ? "" : "s"}${collection.title ? " · " + collection.title : ""}`));
+  const pagesLabel = I18N.t(count === 1 ? "v_pagesCountOne" : "v_pagesCountOther", { count });
+  menu.appendChild(el("p", { class: "hd" }, pagesLabel + (collection.title ? " · " + collection.title : "")));
 
   const acts = el("div", { class: "acts" });
-  acts.appendChild(el("button", { class: "primary", "data-mode": "this-window" }, "Open in this window"));
-  acts.appendChild(el("button", { "data-mode": "new-window" }, "Open in a new window"));
-  acts.appendChild(el("button", { "data-mode": "tab-group" }, "Open as a tab group"));
-  acts.appendChild(el("button", { "data-mode": "save" }, "Save to history…"));
+  acts.appendChild(el("button", { class: "primary", "data-mode": "this-window" }, I18N.t("v_openInThisWindow")));
+  acts.appendChild(el("button", { "data-mode": "new-window" }, I18N.t("v_openInNewWindow")));
+  acts.appendChild(el("button", { "data-mode": "tab-group" }, I18N.t("v_openAsTabGroup")));
+  acts.appendChild(el("button", { "data-mode": "save" }, I18N.t("b_saveToHistory")));
   menu.appendChild(acts);
 
   const saveRow = el("div", { class: "save", id: "ts-save-row", hidden: "" });
-  saveRow.appendChild(el("input", { id: "ts-save-title", type: "text", maxlength: "200", placeholder: "Title for history" }));
-  saveRow.appendChild(el("button", { class: "primary", id: "ts-save-go" }, "Save"));
+  saveRow.appendChild(el("input", { id: "ts-save-title", type: "text", maxlength: "200", placeholder: I18N.t("b_titleForHistory") }));
+  saveRow.appendChild(el("button", { class: "primary", id: "ts-save-go" }, I18N.t("o_save")));
   menu.appendChild(saveRow);
 
   const opts = el("div", { class: "opts" });
   const cbAuto = el("input", { type: "checkbox", id: "ts-cb-auto" });
   const lAuto = el("label");
-  lAuto.append(cbAuto, el("span", null, "Open this menu automatically"));
+  lAuto.append(cbAuto, el("span", null, I18N.t("b_openMenuAuto")));
   const cbRemember = el("input", { type: "checkbox", id: "ts-cb-remember" });
   const lRem = el("label");
-  lRem.append(cbRemember, el("span", null, "Remember my choice as the default"));
-  opts.append(lAuto, lRem, el("button", { class: "link", id: "ts-hide" }, "Hide this button"));
+  lRem.append(cbRemember, el("span", null, I18N.t("b_rememberChoice")));
+  opts.append(lAuto, lRem, el("button", { class: "link", id: "ts-hide" }, I18N.t("b_hideButton")));
   menu.appendChild(opts);
 
   menu.appendChild(el("p", { class: "note", id: "ts-note", hidden: "" }));
@@ -133,7 +134,7 @@
   use.setAttribute("href", "#v-ext");
   bi.appendChild(use);
   btn.appendChild(bi);
-  btn.appendChild(el("span", null, "Open with Tab Share"));
+  btn.appendChild(el("span", null, I18N.t("b_openWithTabShare")));
 
   let menuOpen = false;
   function positionMenu() {
@@ -153,10 +154,10 @@
     menuOpen = false;
   }
   function flashDone(text) {
-    btn.querySelector("span").textContent = text || "Opened ✓";
+    btn.querySelector("span").textContent = text || I18N.t("b_openedCheck");
     setTimeout(() => {
       const s = btn.querySelector("span");
-      if (s) s.textContent = "Open with Tab Share";
+      if (s) s.textContent = I18N.t("b_openWithTabShare");
     }, 2500);
   }
   function teardown() {
@@ -187,22 +188,22 @@
   /* ---------- actions ---------- */
 
   async function send(mode, title) {
-    say("Working…");
+    say(I18N.t("b_working"));
     if ($("#ts-cb-remember").checked && mode !== "save") setConfig({ "import.default": mode });
     try {
       const res = await api.runtime.sendMessage({ type: "ts-import", mode, collection, title });
       if (res && res.ok) {
         closeMenu();
-        flashDone(mode === "history" ? "Saved ✓" : "Opened ✓");
+        flashDone(I18N.t(mode === "history" ? "b_savedCheck" : "b_openedCheck"));
         if (res.note) {
           openMenu();
           say(res.note);
         }
       } else {
-        say((res && res.error) || "Could not complete that.");
+        say((res && res.error) || I18N.t("b_couldNotComplete"));
       }
     } catch (e) {
-      say("Could not reach the extension.");
+      say(I18N.t("b_couldNotReachExtension"));
     }
   }
 
@@ -299,7 +300,7 @@
     settingsCb.id = "ts-show-btn";
     settingsCb.checked = !disabled;
     const span = document.createElement("span");
-    span.textContent = "Show the “Open with Tab Share” button";
+    span.textContent = I18N.t("o_bannerTitle");
     lbl.append(settingsCb, span);
     menu.appendChild(lbl);
     settingsCb.addEventListener("change", (e) => {

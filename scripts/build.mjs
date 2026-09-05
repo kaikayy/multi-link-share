@@ -40,7 +40,7 @@ const LOCALHOST_PERMS =
   isLocalhostUrl(VIEWER_BASE) ||
   isLocalhostUrl(SHORTENER_BASE);
 
-const SHARED = ["lzstring.min.js", "share-codec.js", "monogram.js"];
+const SHARED = ["lzstring.min.js", "share-codec.js", "monogram.js", "i18n.js"];
 
 function rimraf(p) {
   fs.rmSync(p, { recursive: true, force: true });

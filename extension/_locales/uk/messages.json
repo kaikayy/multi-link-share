@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Tab Share - одне посилання для групи вкладок",
+    "description": "Extension name shown in the browser UI and store listings. Keep well under 75 characters."
+  },
+  "appDescription": {
+    "message": "Об'єднує вкладки, групу вкладок або посилання в одне посилання, яке відкривається як слайд-шоу. Без акаунту, без сервера.",
+    "description": "Short summary shown in chrome://extensions and the Chrome Web Store listing summary. Hard limit: 132 characters. Shortened from the AMO summary, which does not have this limit."
+  }
+}

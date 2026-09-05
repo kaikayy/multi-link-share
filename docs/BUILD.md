@@ -1,7 +1,51 @@
 # Building & testing
 
+## Reproducing the submitted Firefox add-on (Mozilla reviewers)
+
+This source package builds with a single command and no installed
+dependencies. Steps:
+
+1. Install **Node.js 20 or later** (LTS 22.x also works).
+   - Download the installer for your OS from https://nodejs.org, or install via
+     a version manager (`nvm install 22`) or your OS package manager
+     (`apt install nodejs`, `brew install node`, ...).
+   - Verify: `node --version` must report `v20.x` or higher.
+2. Install the **`zip`** command-line tool if it is not already on `PATH`.
+   - Linux: usually preinstalled; otherwise `apt install zip` / `dnf install zip`.
+   - macOS: preinstalled.
+   - Windows: comes with Git for Windows (Git Bash), or install via WSL, or
+     `choco install zip`.
+3. From the root of this source package, run:
+   ```bash
+   npm run build
+   ```
+   This runs `node scripts/build.mjs` directly -- there is **no `npm install`
+   step**; the project has zero npm dependencies.
+4. The Firefox add-on is produced at `dist/firefox/`. This directory is
+   byte-identical to the contents of the submitted `.xpi`.
+5. Optional verification: `npm test` (= `node scripts/selftest.mjs`) runs the
+   share-link codec's self-tests offline, no network access required.
+
+**Operating system / environment:** any OS that can run Node.js 20+ and
+provide a `zip` binary -- verified on Linux and macOS; Windows works via WSL,
+Git Bash, or a standalone `zip.exe`. `scripts/build.mjs` is plain Node.js with
+no OS-specific code paths.
+
+**On source processing:** `scripts/build.mjs` performs exactly two small,
+deterministic edits when assembling a store build (both readable directly in
+that file, no obfuscation): it removes the `localhost` / `127.0.0.1` entries
+from `manifest.json`'s `optional_host_permissions` array, and strips the
+matching now-unreachable conditionals from `src/options.js` via a plain
+text-replace. Every other source file ships exactly as authored -- nothing is
+transpiled, bundled, or minified. The one vendored file is the third-party
+`src/lib/lzstring.min.js` (lz-string 1.5.0, MIT license), fetched unmodified
+from `https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js`
+-- see [`THIRD-PARTY.md`](THIRD-PARTY.md).
+
+---
+
 > Just want to run your own copy? See **[`SELF-HOSTING.md`](SELF-HOSTING.md)**.
-> This file is the dev workflow.
+> The rest of this file is the dev workflow.
 
 Requires **Node 20+** (`npm test` uses WebCrypto) and the system **`zip`**
 command. No npm dependencies -- `web-ext` (Firefox packaging / lint) is optional

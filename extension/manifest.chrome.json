@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Tab Share — one link for a group of tabs",
+  "default_locale": "en",
+  "name": "__MSG_appName__",
   "short_name": "Tab Share",
   "version": "1.0.0.3",
   "version_name": "1.0.0-beta.9",
-  "description": "Bundle the current window, a tab group, or pasted links into a single link that opens as a slideshow. No account, no server.",
+  "description": "__MSG_appDescription__",
   "author": "Tab Share contributors",
   "homepage_url": "https://github.com/kaikayy/multi-link-share",
   "icons": {
@@ -32,6 +33,7 @@
     {
       "matches": ["https://kaikayy.github.io/multi-link-share/*"],
       "js": [
+        "src/lib/i18n.js",
         "src/lib/lzstring.min.js",
         "src/lib/share-codec.js",
         "src/content/import-banner.js"

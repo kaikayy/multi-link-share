@@ -52,53 +52,66 @@
     <div class="v-brand">
       <span class="v-logo" aria-hidden="true"></span>
       <div class="v-titles">
-        <h1 id="coll-name">Shared tabs</h1>
+        <h1 id="coll-name" data-i18n="v_defaultTitle">Shared tabs</h1>
         <p id="coll-sub"></p>
       </div>
     </div>
     <div class="v-tools">
-      <button id="btn-select" class="v-btn ghost icon-only" type="button" aria-label="Select pages" aria-pressed="false">
+      <button id="btn-select" class="v-btn ghost icon-only" type="button" data-i18n-aria-label="v_selectPagesAria" aria-pressed="false">
         <svg class="vi"><use href="#v-select" /></svg>
       </button>
       <button id="btn-openall" class="v-btn ghost" type="button">
-        <svg class="vi"><use href="#v-ext" /></svg><span>Open all pages</span>
+        <svg class="vi"><use href="#v-ext" /></svg><span data-i18n="v_openAllPages">Open all pages</span>
       </button>
-      <button id="btn-search" class="v-btn ghost icon-only" type="button" aria-label="Search" aria-pressed="false">
+      <button id="btn-search" class="v-btn ghost icon-only" type="button" data-i18n-aria-label="v_searchAria" aria-pressed="false">
         <svg class="vi"><use href="#v-search" /></svg>
       </button>
       <div class="v-menu-wrap">
         <button id="btn-view" class="v-btn" type="button" aria-haspopup="true" aria-expanded="false">
-          <svg class="vi"><use href="#v-layout" /></svg><span>Change View</span>
+          <svg class="vi"><use href="#v-layout" /></svg><span data-i18n="v_changeView">Change View</span>
         </button>
         <div id="view-menu" class="v-viewmenu" hidden role="menu">
           <button class="v-tile" data-mode="slides" role="menuitemradio">
-            <svg class="ti"><use href="#v-m-slides"/></svg><span class="tl">Slideshow</span>
+            <svg class="ti"><use href="#v-m-slides"/></svg><span class="tl" data-i18n="v_viewSlideshow">Slideshow</span>
             <svg class="tc"><use href="#v-check"/></svg>
           </button>
           <button class="v-tile" data-mode="biggrid" role="menuitemradio">
-            <svg class="ti"><use href="#v-m-preview"/></svg><span class="tl">Preview Grid</span>
+            <svg class="ti"><use href="#v-m-preview"/></svg><span class="tl" data-i18n="v_viewPreviewGrid">Preview Grid</span>
             <svg class="tc"><use href="#v-check"/></svg>
           </button>
           <button class="v-tile" data-mode="grid" role="menuitemradio">
-            <svg class="ti"><use href="#v-m-grid"/></svg><span class="tl">Grid</span>
+            <svg class="ti"><use href="#v-m-grid"/></svg><span class="tl" data-i18n="v_viewGrid">Grid</span>
             <svg class="tc"><use href="#v-check"/></svg>
           </button>
           <button class="v-tile" data-mode="list" role="menuitemradio">
-            <svg class="ti"><use href="#v-m-list"/></svg><span class="tl">List <em>copyable</em></span>
+            <svg class="ti"><use href="#v-m-list"/></svg><span class="tl"><span data-i18n="v_viewList">List</span> <em data-i18n="v_viewListCopyable">copyable</em></span>
             <svg class="tc"><use href="#v-check"/></svg>
           </button>
         </div>
       </div>
-      <button id="btn-theme" class="v-btn ghost icon-only" type="button" aria-label="Toggle light / dark">
+      <button id="btn-theme" class="v-btn ghost icon-only" type="button" data-i18n-aria-label="v_toggleThemeAria">
         <svg class="vi"><use href="#v-moon" /></svg>
       </button>
       <div class="v-menu-wrap">
-        <button id="btn-settings" class="v-btn ghost icon-only" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Settings">
+        <button id="btn-settings" class="v-btn ghost icon-only" type="button" aria-haspopup="true" aria-expanded="false" data-i18n-aria-label="v_settingsAria">
           <svg class="vi"><use href="#v-gear" /></svg>
         </button>
         <div id="settings-menu" class="v-menu" hidden role="menu">
-          <label class="v-menu-check"><input type="checkbox" id="set-autopreview" /><span>Auto-load live previews for sites that allow it</span></label>
-          <label class="v-menu-check"><input type="checkbox" id="set-icons" /><span>Show site icons (fetched from duckduckgo.com)</span></label>
+          <div class="v-menu-label" data-i18n="langAria">Choose language</div>
+          <div class="v-menu-lang" role="radiogroup" aria-label="Language">
+            <button class="v-lang-item" data-lang="en" role="menuitemradio">
+              <span>English</span><svg class="lc"><use href="#v-check"/></svg>
+            </button>
+            <button class="v-lang-item" data-lang="de" role="menuitemradio">
+              <span>Deutsch</span><svg class="lc"><use href="#v-check"/></svg>
+            </button>
+            <button class="v-lang-item" data-lang="es" role="menuitemradio">
+              <span>Español</span><svg class="lc"><use href="#v-check"/></svg>
+            </button>
+          </div>
+          <hr class="v-menu-sep" />
+          <label class="v-menu-check"><input type="checkbox" id="set-autopreview" /><span data-i18n="v_settingsAutopreview">Auto-load live previews for sites that allow it</span></label>
+          <label class="v-menu-check"><input type="checkbox" id="set-icons" /><span data-i18n="v_settingsIcons">Show site icons (fetched from duckduckgo.com)</span></label>
         </div>
       </div>
     </div>
@@ -106,49 +119,49 @@
 
   <div id="search-bar" class="v-searchbar" hidden>
     <svg class="vi"><use href="#v-search" /></svg>
-    <input id="search-input" type="text" placeholder="Filter by title, site or URL…" autocomplete="off" />
-    <button id="search-clear" type="button" aria-label="Close search">✕</button>
+    <input id="search-input" type="text" data-i18n-placeholder="v_searchPlaceholder" placeholder="Filter by title, site or URL…" autocomplete="off" />
+    <button id="search-clear" type="button" data-i18n-aria-label="v_searchCloseAria">✕</button>
   </div>
 
   <div id="sel-bar" class="v-selbar" hidden>
     <span id="sel-count" class="v-sel-count">0 / 0 selected</span>
-    <button id="sel-all" class="v-btn ghost" type="button">Select all</button>
+    <button id="sel-all" class="v-btn ghost" type="button" data-i18n="v_selectAll">Select all</button>
     <div class="v-menu-wrap">
       <button id="sel-open" class="v-btn" type="button" aria-haspopup="true" aria-expanded="false" disabled>
-        Open selected <svg class="vi"><use href="#v-caret" /></svg>
+        <span data-i18n="v_openSelected">Open selected</span> <svg class="vi"><use href="#v-caret" /></svg>
       </button>
       <div id="sel-menu" class="v-menu" hidden role="menu">
-        <button class="v-menu-item" data-open="this-window" role="menuitem">In this window</button>
-        <button class="v-menu-item" data-open="new-window" role="menuitem">In a new window</button>
-        <button class="v-menu-item" data-open="tab-group" role="menuitem">As a new tab group</button>
+        <button class="v-menu-item" data-open="this-window" role="menuitem" data-i18n="v_openInThisWindow">In this window</button>
+        <button class="v-menu-item" data-open="new-window" role="menuitem" data-i18n="v_openInNewWindow">In a new window</button>
+        <button class="v-menu-item" data-open="tab-group" role="menuitem" data-i18n="v_openAsTabGroup">As a new tab group</button>
       </div>
     </div>
-    <button id="sel-done" class="v-btn ghost" type="button">Done</button>
+    <button id="sel-done" class="v-btn ghost" type="button" data-i18n="v_done">Done</button>
   </div>
 
   <!-- ERROR STATE -->
   <main id="state-error" class="v-error" hidden>
     <div class="v-logo big" aria-hidden="true"></div>
-    <h2>This link has no pages in it</h2>
-    <p>The link may be incomplete — long links sometimes get cut off when pasted into chat apps.
+    <h2 data-i18n="v_errorTitle">This link has no pages in it</h2>
+    <p data-i18n="v_errorBody">The link may be incomplete — long links sometimes get cut off when pasted into chat apps.
        Ask the sender to copy the whole thing again.</p>
   </main>
 
   <!-- LOCKED STATE -->
   <main id="state-locked" class="v-error" hidden>
     <div class="v-logo big" aria-hidden="true"></div>
-    <h2>This collection is password-protected</h2>
-    <p>The sender set a password. Enter it to open the pages.</p>
+    <h2 data-i18n="v_lockedTitle">This collection is password-protected</h2>
+    <p data-i18n="v_lockedBody">The sender set a password. Enter it to open the pages.</p>
     <form id="unlock-form" class="v-unlock">
-      <input id="unlock-pw" type="password" autocomplete="off" placeholder="Password" />
-      <button class="v-btn primary" type="submit">Unlock</button>
+      <input id="unlock-pw" type="password" autocomplete="off" data-i18n-placeholder="v_passwordPlaceholder" placeholder="Password" />
+      <button class="v-btn primary" type="submit" data-i18n="v_unlockButton">Unlock</button>
     </form>
-    <p id="unlock-err" class="v-unlock-err" hidden>That password didn't work.</p>
+    <p id="unlock-err" class="v-unlock-err" hidden data-i18n="v_unlockError">That password didn't work.</p>
   </main>
 
   <!-- SLIDESHOW -->
   <main id="state-slides" class="v-stage" hidden>
-    <button id="nav-prev" class="v-nav prev" type="button" aria-label="Previous page">
+    <button id="nav-prev" class="v-nav prev" type="button" data-i18n-aria-label="v_prevPageAria">
       <svg class="vi lg"><use href="#v-prev" /></svg>
     </button>
 
@@ -157,7 +170,7 @@
         <span class="v-dots" aria-hidden="true"><i></i><i></i><i></i></span>
         <span class="v-frame-title" id="slide-title">—</span>
         <a class="v-open" id="slide-open" target="_blank" rel="noopener noreferrer">
-          <svg class="vi"><use href="#v-ext" /></svg><span>Open</span>
+          <svg class="vi"><use href="#v-ext" /></svg><span data-i18n="v_openWord">Open</span>
         </a>
       </div>
 
@@ -169,27 +182,27 @@
           <p class="v-card-url" id="card-url"></p>
           <div class="v-card-actions">
             <a class="v-btn primary" id="card-open" target="_blank" rel="noopener noreferrer">
-              <svg class="vi"><use href="#v-ext" /></svg><span>Open this page</span>
+              <svg class="vi"><use href="#v-ext" /></svg><span data-i18n="v_openThisPage">Open this page</span>
             </a>
-            <button class="v-btn ghost" id="card-preview" type="button">Try live preview</button>
+            <button class="v-btn ghost" id="card-preview" type="button" data-i18n="v_tryLivePreview">Try live preview</button>
           </div>
-          <p class="v-card-note" id="card-note">Live preview is best-effort — many sites refuse to display inside another page.</p>
+          <p class="v-card-note" id="card-note" data-i18n="v_cardNoteDefault">Live preview is best-effort — many sites refuse to display inside another page.</p>
         </div>
         <div class="v-embed" id="slide-embed" hidden></div>
       </div>
     </figure>
 
-    <button id="nav-next" class="v-nav next" type="button" aria-label="Next page">
+    <button id="nav-next" class="v-nav next" type="button" data-i18n-aria-label="v_nextPageAria">
       <svg class="vi lg"><use href="#v-next" /></svg>
     </button>
 
     <nav class="v-counter" aria-label="Page navigation">
-      <button id="nav-first" class="v-mini" type="button" aria-label="First page"><svg class="vi"><use href="#v-first" /></svg></button>
-      <button id="nav-prev-b" class="v-mini" type="button" aria-label="Previous page"><svg class="vi"><use href="#v-prev" /></svg></button>
-      <button id="counter" class="v-count" type="button" aria-label="Jump to page">1 / 1</button>
+      <button id="nav-first" class="v-mini" type="button" data-i18n-aria-label="v_firstPageAria"><svg class="vi"><use href="#v-first" /></svg></button>
+      <button id="nav-prev-b" class="v-mini" type="button" data-i18n-aria-label="v_prevPageAria"><svg class="vi"><use href="#v-prev" /></svg></button>
+      <button id="counter" class="v-count" type="button" data-i18n-aria-label="v_jumpAria">1 / 1</button>
       <input id="jump-input" class="v-jump" type="number" min="1" hidden />
-      <button id="nav-next-b" class="v-mini" type="button" aria-label="Next page"><svg class="vi"><use href="#v-next" /></svg></button>
-      <button id="nav-last" class="v-mini" type="button" aria-label="Last page"><svg class="vi"><use href="#v-last" /></svg></button>
+      <button id="nav-next-b" class="v-mini" type="button" data-i18n-aria-label="v_nextPageAria"><svg class="vi"><use href="#v-next" /></svg></button>
+      <button id="nav-last" class="v-mini" type="button" data-i18n-aria-label="v_lastPageAria"><svg class="vi"><use href="#v-last" /></svg></button>
     </nav>
     <div class="v-segwrap"><div id="seg-bar" class="v-seg" role="tablist" aria-label="Pages"></div></div>
     <p id="frame-footnote" class="v-footnote" hidden></p>
@@ -204,12 +217,12 @@
   <!-- LIST -->
   <main id="state-list" class="v-list" hidden>
     <div class="v-list-head">
-      <button id="list-copy" class="v-btn ghost" type="button"><svg class="vi"><use href="#v-copy"/></svg><span>Copy all</span></button>
-      <button id="list-copy-links" class="v-btn ghost" type="button"><svg class="vi"><use href="#v-copy"/></svg><span>Copy links only</span></button>
-      <span class="v-list-hint">Or select any rows and press Ctrl/Cmd+C — the numbers aren't copied.</span>
+      <button id="list-copy" class="v-btn ghost" type="button"><svg class="vi"><use href="#v-copy"/></svg><span data-i18n="v_copyAllBtn">Copy all</span></button>
+      <button id="list-copy-links" class="v-btn ghost" type="button"><svg class="vi"><use href="#v-copy"/></svg><span data-i18n="v_copyLinksBtn">Copy links only</span></button>
+      <span class="v-list-hint" data-i18n="v_listHint">Or select any rows and press Ctrl/Cmd+C — the numbers aren't copied.</span>
     </div>
     <ol id="list-body" class="v-list-ol"></ol>
-    <p id="list-empty" class="v-footnote" hidden>No matches.</p>
+    <p id="list-empty" class="v-footnote" hidden data-i18n="v_listEmpty">No matches.</p>
   </main>
 
   <!-- PREVIEW GRID -->
@@ -220,20 +233,20 @@
 
   <footer class="v-source">
     <a href="https://github.com/kaikayy/multi-link-share" target="_blank" rel="noopener">Tab Share</a>
-    · open source (AGPL-3.0) ·
-    <a href="https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md" target="_blank" rel="noopener">Privacy</a>
+    · <span data-i18n="v_footerOpenSource">open source (AGPL-3.0)</span> ·
+    <a href="https://github.com/kaikayy/multi-link-share/blob/main/PRIVACY.md" target="_blank" rel="noopener" data-i18n="v_footerPrivacy">Privacy</a>
   </footer>
 
   <a class="v-kofi" href="https://ko-fi.com/B3L1265MM0" target="_blank" rel="noopener"
-     aria-label="Buy me a Beer on Ko-fi">
-    <img src="assets/kofi-beer.svg" width="116" height="25" alt="Buy me a Beer on Ko-fi" />
+     data-i18n-aria-label="v_kofiAria">
+    <img src="assets/kofi-beer.svg" width="116" height="25" data-i18n-alt="v_kofiAria" alt="Buy me a Beer on Ko-fi" />
   </a>
 
   <div id="v-toast" class="v-toast" hidden></div>
 
   <template id="tpl-grid-card">
     <a class="g-card" target="_blank" rel="noopener noreferrer">
-      <input class="g-check" type="checkbox" aria-label="Select" hidden />
+      <input class="g-check" type="checkbox" data-i18n-aria-label="v_selectAria" aria-label="Select" hidden />
       <span class="g-mono"></span>
       <span class="g-meta">
         <span class="g-title"></span>
@@ -248,7 +261,7 @@
 
   <template id="tpl-big-card">
     <div class="bg-card">
-      <input class="bg-check" type="checkbox" aria-label="Select" hidden />
+      <input class="bg-check" type="checkbox" data-i18n-aria-label="v_selectAria" aria-label="Select" hidden />
       <div class="bg-shot"></div>
       <div class="bg-head">
         <span class="bg-mono"></span>
@@ -261,10 +274,11 @@
           <a class="bg-open" target="_blank" rel="noopener noreferrer" aria-label="Open"><svg class="vi"><use href="#v-ext"/></svg></a>
         </span>
       </div>
-      <button class="bg-view" type="button">Open in slideshow</button>
+      <button class="bg-view" type="button" data-i18n="v_openInSlideshow">Open in slideshow</button>
     </div>
   </template>
 
+  <script src="lib/i18n.js"></script>
   <script src="lib/lzstring.min.js"></script>
   <script src="lib/share-codec.js"></script>
   <script src="lib/monogram.js"></script>
