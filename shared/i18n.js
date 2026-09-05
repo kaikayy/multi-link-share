@@ -9,9 +9,11 @@
  * attributes that I18N.applyStatic() fills in.
  *
  *   data-i18n="key"            -> el.textContent = t(key)
- *   data-i18n-html="key"       -> el.innerHTML = t(key)   (static, author-only
- *                                  HTML fragments with <code>/<strong>/<a> -- no
- *                                  interpolated vars ever land here)
+ *   data-i18n-html="key"       -> renders t(key) into el node-by-node (no
+ *                                  innerHTML -- see renderInlineHtml) for
+ *                                  static, author-only fragments using
+ *                                  <code>/<strong>/<a> -- no interpolated
+ *                                  vars ever land in one of these strings
  *   data-i18n-placeholder="key"
  *   data-i18n-aria-label="key"
  *   data-i18n-title="key"
@@ -860,6 +862,44 @@
     return interpolate(str, vars);
   }
 
+  /**
+   * Render a `data-i18n-html` string into `el` without ever assigning to
+   * innerHTML (addons.mozilla.org's linter flags any dynamic innerHTML
+   * write, even author-controlled ones -- this satisfies that without
+   * losing the inline markup). Recognizes exactly the fixed, closed set of
+   * tags the dictionary actually uses: <strong>, <code>, and
+   * <a href="..." target="_blank" rel="noopener">; everything else in the
+   * string is inserted as plain text via textContent/createTextNode.
+   */
+  function renderInlineHtml(el, html) {
+    while (el.firstChild) el.removeChild(el.firstChild);
+    var re = /<(strong|code)>|<\/(strong|code)>|<a href="([^"]*)"[^>]*>|<\/a>/g;
+    var last = 0;
+    var stack = [el];
+    var m;
+    while ((m = re.exec(html))) {
+      var text = html.slice(last, m.index);
+      if (text) stack[stack.length - 1].appendChild(document.createTextNode(text));
+      if (m[1]) {
+        var opened = document.createElement(m[1]);
+        stack[stack.length - 1].appendChild(opened);
+        stack.push(opened);
+      } else if (m[3] !== undefined) {
+        var a = document.createElement("a");
+        a.href = m[3];
+        a.target = "_blank";
+        a.rel = "noopener";
+        stack[stack.length - 1].appendChild(a);
+        stack.push(a);
+      } else if (stack.length > 1) {
+        stack.pop(); // </strong>, </code> or </a>
+      }
+      last = re.lastIndex;
+    }
+    var rest = html.slice(last);
+    if (rest) stack[stack.length - 1].appendChild(document.createTextNode(rest));
+  }
+
   /** Fill every data-i18n* attribute under `scope` (default: the whole document). */
   function applyStatic(scope) {
     var root0 = scope || (typeof document !== "undefined" ? document : null);
@@ -873,7 +913,7 @@
       el.textContent = t(el.getAttribute("data-i18n"));
     });
     q("data-i18n-html").forEach(function (el) {
-      el.innerHTML = t(el.getAttribute("data-i18n-html"));
+      renderInlineHtml(el, t(el.getAttribute("data-i18n-html")));
     });
     q("data-i18n-placeholder").forEach(function (el) {
       el.placeholder = t(el.getAttribute("data-i18n-placeholder"));
