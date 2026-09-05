@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Tab Share - un lien pour un groupe d'onglets",
+    "description": "Extension name shown in the browser UI and store listings. Keep well under 75 characters."
+  },
+  "appDescription": {
+    "message": "Regroupe des onglets, un groupe d'onglets ou des liens en un lien qui s'ouvre en diaporama. Sans compte, sans serveur.",
+    "description": "Short summary shown in chrome://extensions and the Chrome Web Store listing summary. Hard limit: 132 characters. Shortened from the AMO summary, which does not have this limit."
+  }
+}

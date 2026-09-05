@@ -10,8 +10,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const shared = path.join(root, "shared");
 
 const targets = [
-  { dir: path.join(root, "extension", "src", "lib"), files: ["lzstring.min.js", "share-codec.js", "monogram.js", "config.js"] },
-  { dir: path.join(root, "viewer", "lib"), files: ["lzstring.min.js", "share-codec.js", "monogram.js"] },
+  { dir: path.join(root, "extension", "src", "lib"), files: ["lzstring.min.js", "share-codec.js", "monogram.js", "config.js", "i18n.js"] },
+  { dir: path.join(root, "viewer", "lib"), files: ["lzstring.min.js", "share-codec.js", "monogram.js", "i18n.js"] },
 ];
 
 for (const { dir, files } of targets) {

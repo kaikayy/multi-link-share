@@ -25,7 +25,7 @@
       <img src="../icons/icon-32.png" width="20" height="20" alt="" />
       Tab&nbsp;Share
     </span>
-    <button id="open-options" class="icon-btn" type="button" title="Settings" aria-label="Settings">
+    <button id="open-options" class="icon-btn" type="button" data-i18n-title="p_settingsAria" data-i18n-aria-label="p_settingsAria" title="Settings" aria-label="Settings">
       <svg class="ic"><use href="#i-gear" /></svg>
     </button>
   </header>
@@ -34,23 +34,23 @@
   <main id="view-build" class="view">
     <aside id="shortener-notice" class="notice" hidden>
       <p class="notice-body">
-        <strong>Tip:</strong> share links can get long. The built-in shortener is free, no account.
-        <button id="notice-setup" class="linklike" type="button">Set it up</button>
+        <strong data-i18n="p_tipLabel">Tip:</strong> <span data-i18n="p_tipBody">share links can get long. The built-in shortener is free, no account.</span>
+        <button id="notice-setup" class="linklike" type="button" data-i18n="p_tipSetup">Set it up</button>
       </p>
-      <button id="notice-dismiss" class="icon-btn xs" type="button" title="Dismiss" aria-label="Dismiss this tip">
+      <button id="notice-dismiss" class="icon-btn xs" type="button" data-i18n-title="p_dismissTipAria" data-i18n-aria-label="p_dismissTipAria" title="Dismiss" aria-label="Dismiss this tip">
         <svg class="ic"><use href="#i-x" /></svg>
       </button>
     </aside>
 
-    <div class="segmented" role="tablist" aria-label="Where to take links from">
-      <button class="seg" data-source="window" role="tab" aria-selected="true">Windows</button>
-      <button class="seg" data-source="group" role="tab" aria-selected="false">Tab Groups</button>
-      <button class="seg" data-source="paste" role="tab" aria-selected="false">Paste Links</button>
+    <div class="segmented" role="tablist" data-i18n-aria-label="p_sourceAria" aria-label="Where to take links from">
+      <button class="seg" data-source="window" role="tab" aria-selected="true" data-i18n="p_sourceWindows">Windows</button>
+      <button class="seg" data-source="group" role="tab" aria-selected="false" data-i18n="p_sourceGroups">Tab Groups</button>
+      <button class="seg" data-source="paste" role="tab" aria-selected="false" data-i18n="p_sourcePaste">Paste Links</button>
     </div>
 
     <section id="panel-window" class="panel" hidden>
       <label class="field" id="window-picker-wrap" hidden>
-        <span class="label">Which window</span>
+        <span class="label" data-i18n="p_whichWindow">Which window</span>
         <select id="window-picker"></select>
       </label>
     </section>
@@ -59,103 +59,103 @@
       <p id="group-unsupported" class="hint" hidden></p>
       <div id="group-picker-wrap" hidden>
         <label class="field">
-          <span class="label">Group</span>
+          <span class="label" data-i18n="p_group">Group</span>
           <select id="group-picker"></select>
         </label>
-        <button id="group-add" class="btn btn-ghost btn-sm" type="button">＋ Add this group to the list</button>
-        <p id="group-hint" class="hint" hidden>Pick a group above, then ＋ Add it. Do it again to combine groups.</p>
+        <button id="group-add" class="btn btn-ghost btn-sm" type="button" data-i18n="p_groupAdd">＋ Add this group to the list</button>
+        <p id="group-hint" class="hint" hidden data-i18n="p_groupHint">Pick a group above, then ＋ Add it. Do it again to combine groups.</p>
       </div>
     </section>
 
     <section id="panel-paste" class="panel" hidden>
-      <label class="label" for="paste-box">One URL per line</label>
+      <label class="label" for="paste-box" data-i18n="p_pasteLabel">One URL per line</label>
       <div class="paste-editor">
         <textarea id="paste-box" rows="4" placeholder="https://example.com/page-one&#10;https://example.com/page-two"></textarea>
         <div class="paste-tools">
           <button id="paste-fill" type="button">
             <span class="p-arrow"><svg class="ic"><use href="#i-up" /></svg></span>
-            Load open tabs
+            <span data-i18n="p_pasteLoad">Load open tabs</span>
           </button>
           <button id="paste-parse" data-role="parse" type="button">
             <span class="p-arrow"><svg class="ic"><use href="#i-down" /></svg></span>
-            Add to list
+            <span data-i18n="p_pasteAdd">Add to list</span>
           </button>
         </div>
       </div>
     </section>
 
     <label class="field">
-      <span class="label">Collection name <span class="opt">(optional)</span></span>
-      <input id="collection-name" type="text" maxlength="200" placeholder="e.g. Research on hummingbirds" />
+      <span class="label"><span data-i18n="p_collectionName">Collection name</span> <span class="opt" data-i18n="p_optional">(optional)</span></span>
+      <input id="collection-name" type="text" maxlength="200" data-i18n-placeholder="p_collectionNamePlaceholder" placeholder="e.g. Research on hummingbirds" />
     </label>
 
     <label class="chk pw-toggle">
       <input id="protect" type="checkbox" />
-      <span class="label" style="font-weight:600">Protect with a password</span>
+      <span class="label" style="font-weight:600" data-i18n="p_protect">Protect with a password</span>
     </label>
     <label class="field" id="pw-field" hidden>
-      <span class="label">Password <span class="opt">(the recipient needs it; it's never stored)</span></span>
-      <input id="link-pass" type="password" autocomplete="new-password" placeholder="a phrase you'll share separately" />
+      <span class="label"><span data-i18n="p_passwordLabel">Password</span> <span class="opt" data-i18n="p_passwordHint">(the recipient needs it; it's never stored)</span></span>
+      <input id="link-pass" type="password" autocomplete="new-password" data-i18n-placeholder="p_passwordPlaceholder" placeholder="a phrase you'll share separately" />
     </label>
 
     <label class="chk">
       <input id="minimal" type="checkbox" />
-      <span class="label" style="font-weight:600">Minimal link <span class="opt">(URLs only, no page titles; a shorter link)</span></span>
+      <span class="label" style="font-weight:600"><span data-i18n="p_minimal">Minimal link</span> <span class="opt" data-i18n="p_minimalHint">(URLs only, no page titles; a shorter link)</span></span>
     </label>
 
     <div class="row-actions">
-      <button id="paste-add-window" class="btn btn-ghost btn-sm" type="button">Add current tabs to list</button>
+      <button id="paste-add-window" class="btn btn-ghost btn-sm" type="button" data-i18n="p_addCurrentTabs">Add current tabs to list</button>
     </div>
 
     <div class="list-head">
       <span id="count-label">0 pages</span>
-      <button id="select-all" class="linklike" type="button">select all</button>
-      <button id="select-none" class="linklike" type="button">none</button>
+      <button id="select-all" class="linklike" type="button" data-i18n="p_selectAll">select all</button>
+      <button id="select-none" class="linklike" type="button" data-i18n="p_selectNone">none</button>
     </div>
 
-    <ul id="page-list" class="page-list" aria-label="Pages to share"></ul>
-    <p id="list-empty" class="empty" hidden>No web pages here. Open a few tabs, or paste links.</p>
+    <ul id="page-list" class="page-list" data-i18n-aria-label="p_pagesAria" aria-label="Pages to share"></ul>
+    <p id="list-empty" class="empty" hidden data-i18n="p_listEmpty">No web pages here. Open a few tabs, or paste links.</p>
 
     <p id="build-error" class="error" role="alert" hidden></p>
   </main>
 
   <footer id="foot-build" class="foot">
-    <button id="create-link" class="btn btn-primary" type="button" disabled>Create share link</button>
+    <button id="create-link" class="btn btn-primary" type="button" disabled data-i18n="p_createLink">Create share link</button>
   </footer>
 
   <!-- ============ RESULT VIEW ============ -->
   <main id="view-result" class="view" hidden>
     <button id="result-back" class="linklike back" type="button">
-      <svg class="ic"><use href="#i-back" /></svg> Build another
+      <svg class="ic"><use href="#i-back" /></svg> <span data-i18n="p_buildAnother">Build another</span>
     </button>
 
     <p class="result-title" id="result-name"></p>
     <p class="result-sub" id="result-sub"></p>
 
-    <label class="label" for="result-link">Share link</label>
+    <label class="label" for="result-link" data-i18n="p_shareLinkLabel">Share link</label>
     <div class="link-row">
       <input id="result-link" type="text" readonly />
       <button id="copy-link" class="btn btn-primary btn-sm" type="button">
-        <svg class="ic"><use href="#i-copy" /></svg> Copy
+        <svg class="ic"><use href="#i-copy" /></svg> <span data-i18n="p_copy">Copy</span>
       </button>
     </div>
     <p id="len-warn" class="warn" hidden></p>
-    <p id="pw-note" class="warn" hidden>Password link — the recipient must type the password to open it.</p>
+    <p id="pw-note" class="warn" hidden data-i18n="p_pwNote">Password link — the recipient must type the password to open it.</p>
 
     <div class="row-actions" id="shorten-row" hidden>
-      <button id="shorten-link" class="btn btn-ghost btn-sm" type="button">Shorten link</button>
-      <button id="enable-shortener" class="btn btn-ghost btn-sm" type="button" hidden>Set up the shortener</button>
-      <button id="show-original" class="linklike" type="button" hidden>show original</button>
+      <button id="shorten-link" class="btn btn-ghost btn-sm" type="button" data-i18n="p_shortenLink">Shorten link</button>
+      <button id="enable-shortener" class="btn btn-ghost btn-sm" type="button" hidden data-i18n="p_enableShortener">Set up the shortener</button>
+      <button id="show-original" class="linklike" type="button" hidden data-i18n="p_showOriginal">show original</button>
     </div>
 
     <div class="result-actions">
       <button id="open-preview" class="btn btn-ghost" type="button">
-        <svg class="ic"><use href="#i-external" /></svg> Open slideshow preview
+        <svg class="ic"><use href="#i-external" /></svg> <span data-i18n="p_openPreview">Open slideshow preview</span>
       </button>
     </div>
 
     <details class="recents" id="recents" hidden>
-      <summary>Recent links</summary>
+      <summary data-i18n="p_recentLinks">Recent links</summary>
       <ul id="recents-list"></ul>
     </details>
   </main>
@@ -173,13 +173,14 @@
         <span class="p-host"></span>
       </span>
       <span class="reorder">
-        <button class="icon-btn xs" data-act="up" type="button" title="Move up" aria-label="Move up"><svg class="ic"><use href="#i-up"/></svg></button>
-        <button class="icon-btn xs" data-act="down" type="button" title="Move down" aria-label="Move down"><svg class="ic"><use href="#i-down"/></svg></button>
-        <button class="icon-btn xs" data-act="remove" type="button" title="Remove" aria-label="Remove"><svg class="ic"><use href="#i-x"/></svg></button>
+        <button class="icon-btn xs" data-act="up" type="button" data-i18n-title="p_moveUp" data-i18n-aria-label="p_moveUp" title="Move up" aria-label="Move up"><svg class="ic"><use href="#i-up"/></svg></button>
+        <button class="icon-btn xs" data-act="down" type="button" data-i18n-title="p_moveDown" data-i18n-aria-label="p_moveDown" title="Move down" aria-label="Move down"><svg class="ic"><use href="#i-down"/></svg></button>
+        <button class="icon-btn xs" data-act="remove" type="button" data-i18n-title="p_remove" data-i18n-aria-label="p_remove" title="Remove" aria-label="Remove"><svg class="ic"><use href="#i-x"/></svg></button>
       </span>
     </li>
   </template>
 
+  <script src="lib/i18n.js"></script>
   <script src="lib/lzstring.min.js"></script>
   <script src="lib/config.js"></script>
   <script src="lib/share-codec.js"></script>

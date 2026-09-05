@@ -5,7 +5,25 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
-_No entries yet._
+### Added
+
+- **German and Spanish, throughout.** The viewer, the popup, the options page,
+  and the "Open with Tab Share" import banner are all now available in
+  English, German and Spanish (`shared/i18n.js`, synced into
+  `extension/src/lib/` and `viewer/lib/` like the other shared libraries).
+  Language is auto-detected from the browser once, then remembered. The
+  **viewer** carries its own switcher (a globe icon in its Settings menu,
+  since it has no separate settings surface); the **extension**'s switcher
+  lives on the options page (Preferences > Language) rather than in the
+  popup.
+- **Native `_locales/` support for the store listings.** Chrome and Firefox
+  now read the extension's name and short description from
+  `extension/_locales/<lang>/messages.json` (`default_locale: "en"`,
+  `__MSG_appName__` / `__MSG_appDescription__` in both manifests) instead of a
+  hardcoded English string -- covering en, de, es, fr, sv, uk, ja and zh_CN.
+  This is separate from the in-app i18n above: it's the only mechanism the
+  browsers themselves read before any of the extension's own code runs, and
+  it's what Chrome Web Store now sources the listing's short Summary from.
 
 ## [1.0.0-beta.9] - 2026-09-04
 

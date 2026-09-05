@@ -148,7 +148,7 @@ async function syncCustomContentScript() {
   const def = {
     id: CUSTOM_SCRIPT_ID,
     matches: [pattern],
-    js: ["src/lib/lzstring.min.js", "src/lib/share-codec.js", "src/content/import-banner.js"],
+    js: ["src/lib/i18n.js", "src/lib/lzstring.min.js", "src/lib/share-codec.js", "src/content/import-banner.js"],
     runAt: "document_idle",
   };
   try {
