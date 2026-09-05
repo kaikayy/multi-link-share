@@ -9,13 +9,15 @@ _No entries yet._
 
 ## [1.0.0-beta.11] - 2026-09-05
 
-Manifests: chrome `version` -> `1.0.0.4` (`version_name` -> `1.0.0-beta.11`),
-firefox `version` -> `1.0.0.11`. `beta.10` is skipped deliberately -- Firefox's
-internal version had drifted ahead of the beta number (`1.0.0.10` was
-`beta.9`) from an earlier Firefox-only submission; jumping to `beta.11` brings
-Firefox's number back in line with its own label (`1.0.0.11` == beta 11) going
-forward. Both stores are on `beta.9` as of this release. Same permission set
-as beta.9. 17/17 tests green.
+Manifests: chrome `version` -> `1.0.0.11` (`version_name` -> `1.0.0-beta.11`),
+firefox `version` -> `1.0.0.11`. Chrome has no independent numeric-version
+requirement the way Firefox does, so its `version` now just tracks the beta
+number directly instead of a separately incrementing counter. `beta.10` is
+skipped deliberately -- Firefox's internal version had drifted ahead of the
+beta number (`1.0.0.10` was `beta.9`) from an earlier Firefox-only submission;
+jumping to `beta.11` brings both stores' numeric versions in line with their
+own label (`1.0.0.11` == beta 11) going forward. Both stores are on `beta.9`
+as of this release. Same permission set as beta.9. 17/17 tests green.
 
 ### Added
 
