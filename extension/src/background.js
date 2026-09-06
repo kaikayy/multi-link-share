@@ -37,8 +37,9 @@ async function openNewWindow(urls) {
 }
 
 async function openInGroup(urls, windowId, title) {
-  // tabGroups is a required permission now, but very old builds may still lack
-  // the tabs.group() API — fall back to a new window there.
+  // tabGroups is optional on Firefox (unavailable at all on Firefox for
+  // Android) and very old builds may lack the tabs.group() API too --
+  // fall back to a new window whenever either is missing.
   if (typeof api.tabs.group !== "function" || !(api.tabGroups && api.tabGroups.update)) {
     await openNewWindow(urls);
     return { note: "This browser can't make tab groups — opened a new window instead." };

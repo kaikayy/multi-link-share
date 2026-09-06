@@ -121,6 +121,34 @@
     return !!(api.tabGroups && typeof api.tabGroups.query === "function");
   }
 
+  /** True once we've established this platform can never grant tabGroups
+      (e.g. Firefox for Android, which has no tab-group API at all even
+      though the permission is declared optional in the manifest). Sticky
+      per popup open so we don't re-probe on every panel switch. */
+  let tabGroupsUnsupported = false;
+
+  async function tabGroupsPermissionGranted() {
+    if (!api.permissions || typeof api.permissions.contains !== "function") return false;
+    try {
+      return await api.permissions.contains({ permissions: ["tabGroups"] });
+    } catch (e) {
+      // Runtime doesn't recognize "tabGroups" as a permission at all.
+      tabGroupsUnsupported = true;
+      return false;
+    }
+  }
+
+  async function requestTabGroupsPermission() {
+    if (!api.permissions || typeof api.permissions.request !== "function") return false;
+    try {
+      const granted = await api.permissions.request({ permissions: ["tabGroups"] });
+      return granted && hasTabGroupsApi();
+    } catch (e) {
+      tabGroupsUnsupported = true;
+      return false;
+    }
+  }
+
   /** Populate the window picker; show it only when >1 normal window is open. */
   async function populateWindows() {
     const picker = $("#window-picker");
@@ -169,16 +197,26 @@
 
   async function refreshGroupPanel(keepList) {
     const unsupported = $("#group-unsupported");
+    const enableWrap = $("#group-enable-wrap");
     const pickerWrap = $("#group-picker-wrap");
     unsupported.hidden = true;
+    enableWrap.hidden = true;
     pickerWrap.hidden = true;
 
-    if (!hasTabGroupsApi()) {
-      unsupported.hidden = false;
-      unsupported.textContent = I18N.t("p_groupNoApi");
+    if (hasTabGroupsApi()) {
+      await populateGroups(keepList);
       return;
     }
-    await populateGroups(keepList);
+    const granted = await tabGroupsPermissionGranted();
+    if (!granted && !tabGroupsUnsupported) {
+      // Permission is declared optional and this runtime recognizes it --
+      // just not granted yet. Offer to request it instead of the terminal
+      // "unsupported" message.
+      enableWrap.hidden = false;
+      return;
+    }
+    unsupported.hidden = false;
+    unsupported.textContent = I18N.t("p_groupNoApi");
   }
 
   async function populateGroups(keepList) {
@@ -783,6 +821,13 @@
     $("#group-add").addEventListener("click", () => {
       const id = Number($("#group-picker").value);
       if (Number.isFinite(id)) addGroup(id);
+    });
+    $("#group-enable").addEventListener("click", async () => {
+      const granted = await requestTabGroupsPermission();
+      if (granted) refreshGroupPanel(false);
+      // Denied or unsupported: leave the button up so the user can retry,
+      // except when we've since learned this platform can't grant it at
+      // all -- refreshGroupPanel will pick that up next call regardless.
     });
 
     $("#paste-parse").addEventListener("click", () => parsePasteBox(true));
