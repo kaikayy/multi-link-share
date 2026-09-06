@@ -4,6 +4,8 @@
  *
  *   dist/chrome/    + dist/tab-share-chrome-v<version>.zip     -> Chrome Web Store
  *   dist/firefox/   + dist/tab-share-firefox-v<version>.zip    -> addons.mozilla.org
+ *   dist/safari/    + dist/tab-share-safari-v<version>.zip     -> `xcrun safari-web-extension-converter`
+ *                                                                  (needs macOS + Xcode; not built by this repo's CI)
  *   dist/viewer/    + dist/tab-share-viewer-v<version>.zip     -> any static host
  *
  * Optional env:
@@ -81,7 +83,7 @@ function buildExtension(target, manifestFile) {
   copyDir(path.join(root, "extension"), out);
   // pick the manifest
   fs.copyFileSync(path.join(out, manifestFile), path.join(out, "manifest.json"));
-  for (const f of ["manifest.chrome.json", "manifest.firefox.json"]) {
+  for (const f of ["manifest.chrome.json", "manifest.firefox.json", "manifest.safari.json"]) {
     fs.rmSync(path.join(out, f), { force: true });
   }
   if (!LOCALHOST_PERMS) {
@@ -132,5 +134,6 @@ console.log(
 );
 buildExtension("chrome", "manifest.chrome.json");
 buildExtension("firefox", "manifest.firefox.json");
+buildExtension("safari", "manifest.safari.json");
 buildViewer();
 console.log("Done.");
