@@ -86,7 +86,7 @@ modern browser, mobile included, with no extension.
 | **Firefox** (≥ 139) | ✅ | ✅ | ✅ end-to-end |
 | **Zen** | ✅ | ✅ | ✅ end-to-end |
 | **LibreWolf / Waterfox / Floorp / Mullvad** | ✅ | ✅ | ⬜ TBD (other Firefox forks) |
-| **Firefox for Android** | ⬜ blocked | ❌ no tab-groups API on Android | ⬜ roadmap -- `tabGroups` must become optional first |
+| **Firefox for Android** | ⬜ `tabGroups` now optional in `manifest.firefox.json` (branch `feature/optional-tabgroups-mobile`); not yet verified installable/usable on a device | ❌ no tab-groups API on Android; popup offers "Enable tab groups" but the request can't succeed there -- degrades to Windows / Paste Links | ⬜ TBD -- no Android device tested yet |
 | **Safari** | ⬜ manifest + `dist/safari/` ready, Xcode conversion not done | ❌ no tabGroups API in Safari; degrades gracefully (feature-detected) | ⬜ `xcrun safari-web-extension-converter` + Xcode needed -- macOS-only, can't build or test from this repo's Linux dev setup |
 | **Chrome / Safari on iOS & Android** | ❌ no extension support | -- | -- |
 | _Opening a shared link (any of the above + mobile)_ | -- | -- | ✅ responsive viewer, no extension needed |
