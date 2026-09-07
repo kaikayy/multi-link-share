@@ -87,7 +87,7 @@ modern browser, mobile included, with no extension.
 | **Zen** | ✅ | ✅ | ✅ end-to-end |
 | **LibreWolf / Waterfox / Floorp / Mullvad** | ✅ | ✅ | ⬜ TBD (other Firefox forks) |
 | **Firefox for Android** | ⬜ blocked | ❌ no tab-groups API on Android | ⬜ roadmap -- `tabGroups` must become optional first |
-| **Safari** | ⬜ needs porting | ✅ | ⬜ `safari-web-extension-converter`, not attempted |
+| **Safari** | ⬜ manifest + `dist/safari/` ready, Xcode conversion not done | ❌ no tabGroups API in Safari; degrades gracefully (feature-detected) | ⬜ `xcrun safari-web-extension-converter` + Xcode needed -- macOS-only, can't build or test from this repo's Linux dev setup |
 | **Chrome / Safari on iOS & Android** | ❌ no extension support | -- | -- |
 | _Opening a shared link (any of the above + mobile)_ | -- | -- | ✅ responsive viewer, no extension needed |
 
