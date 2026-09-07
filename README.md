@@ -23,8 +23,8 @@ see the [support matrix](#browser-support).
 
 | Store | Link |
 | --- | --- |
-| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.9`) |
-| **Firefox Add-ons** (Firefox and forks) | **[Get the Add-on][amo]** (`1.0.0-beta.9`) |
+| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.11`) |
+| **Firefox Add-ons** (Firefox and forks) | **[Get the Add-on][amo]** (`1.0.0-beta.11`) |
 
 Or **[install it yourself](docs/SELF-HOSTING.md)** (about two minutes) on any
 supported browser.
