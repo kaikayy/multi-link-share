@@ -191,25 +191,17 @@ The Firefox manifest already carries the add-on id
 
 ### Safari (macOS / iOS)
 
-Safari needs the extension repackaged as an app bundle. `npm run build`
-produces a `dist/safari/` folder with its own manifest (no `tabGroups`
-permission -- Safari's WebExtensions API doesn't expose one; the code already
-feature-detects its absence in `background.js` and `popup.js`, so Tab Groups
-source just quietly disables itself there):
+Safari needs the extension repackaged as an app bundle:
 
 ```bash
-xcrun safari-web-extension-converter dist/safari/
+xcrun safari-web-extension-converter dist/chrome/
 ```
 
 This generates an Xcode project. Build and run it; on **macOS** you can then
 enable it after ticking *Develop -> Allow Unsigned Extensions*. On **iOS** you
 need an Apple Developer account (or a 7-day free-provisioning sideload) to run
 it on a device. See Apple's "Converting a web extension for Safari" guide. This
-is a real porting task, not a quick load -- both `xcrun` and Xcode are
-macOS-only, so it can't be attempted or verified from a Linux dev machine.
-Worth spot-checking on a real device once built: `storage.session` and dynamic
-`scripting.registerContentScripts` are both used by the extension and their
-Safari support has varied by version -- not verified here.
+is a real porting task, not a quick load.
 
 ---
 
