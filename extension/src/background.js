@@ -12,8 +12,8 @@
 
 const api = globalThis.browser && globalThis.browser.runtime ? globalThis.browser : globalThis.chrome;
 
-// The only host the manifest's static content_scripts entry covers.
-const BUILTIN_VIEWER_HOST = "kaikayy.github.io";
+// The hosts the manifest's static content_scripts entry covers.
+const BUILTIN_VIEWER_HOSTS = ["viewer.kaikay.de", "kaikayy.github.io"];
 const CUSTOM_SCRIPT_ID = "ts-viewer-custom";
 const HISTORY_CAP = 50;
 
@@ -125,7 +125,7 @@ async function syncCustomContentScript() {
   // permission-gated dynamic registration below.
   let covered = false;
   try {
-    if (pattern) covered = new URL(pattern.replace(/\*$/, "")).hostname === BUILTIN_VIEWER_HOST;
+    if (pattern) covered = BUILTIN_VIEWER_HOSTS.includes(new URL(pattern.replace(/\*$/, "")).hostname);
   } catch (e) {}
 
   let existing = [];

@@ -7,6 +7,25 @@ All notable changes to Tab Share. Format loosely follows
 
 _No entries yet._
 
+## [1.0.0-beta.12] - 2026-09-08
+
+Manifests: chrome `version` -> `1.0.0.12` (`version_name` -> `1.0.0-beta.12`),
+firefox `version` -> `1.0.0.12`. Same permission set as beta.11. 17/17 tests
+green.
+
+### Changed
+
+- **Default viewer is now self-hosted at `viewer.kaikay.de`**, previously
+  `kaikayy.github.io` (`shared/config.js`'s `DEFAULT_VIEWER_BASE`). Both
+  extension manifests' static `content_scripts` entry now covers **both**
+  hosts, so the "Open with Tab Share" import banner still works on links
+  pointing at the old GitHub Pages host -- existing shared links keep working
+  with no extra permission prompt. `s.kaikay.de`'s host allowlist was updated
+  to match. Purely an infrastructure change for resiliency (a second,
+  independently-hosted copy of the viewer); the privacy model is unaffected --
+  the collection still lives entirely in the URL fragment, which no server,
+  either host, ever receives.
+
 ## [1.0.0-beta.11] - 2026-09-05
 
 Manifests: chrome `version` -> `1.0.0.11` (`version_name` -> `1.0.0-beta.11`),
