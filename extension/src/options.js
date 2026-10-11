@@ -213,20 +213,23 @@
     }
 
     if (pattern) {
+      // Call request() straight away, with no `await` before it: Firefox only
+      // allows permissions.request while the user-input event is still being
+      // handled, and an awaited contains() first ends that window (the old code
+      // threw "may only be called from a user input handler" there and never
+      // saved). request() resolves true without a prompt when already granted.
       try {
-        const has = await api.permissions.contains({ origins: [pattern] });
-        if (!has) {
-          const granted = await api.permissions.request({ origins: [pattern] });
-          if (!granted) {
-            $("#short-err").textContent = I18N.t("o_errNotSavedHostAccess");
-            $("#short-err").hidden = false;
-            return;
-          }
+        const granted = await api.permissions.request({ origins: [pattern] });
+        if (!granted) {
+          $("#short-err").textContent = I18N.t("o_errNotSavedHostAccess");
+          $("#short-err").hidden = false;
+          return;
         }
       } catch (e) {
-        $("#short-err").textContent = I18N.t("o_errCouldntRequestHost", { detail: e.message || e });
-        $("#short-err").hidden = false;
-        return;
+        // Not a denial -- the browser would not prompt from this event (e.g. a
+        // text field's change on blur in Firefox). Save anyway: the popup asks
+        // again from the Shorten click, and a CORS-enabled shortener (the Tab
+        // Share one is) works without the grant.
       }
     }
 

@@ -516,13 +516,14 @@
    *  request it now (this runs from a user gesture -- Shorten-link / build). */
   async function ensureShortenerHost(url) {
     try {
-      const pattern = new URL(url).origin + "/*";
-      if (api.permissions && !(await api.permissions.contains({ origins: [pattern] }))) {
-        if (!(await api.permissions.request({ origins: [pattern] }))) {
-          const err = new Error(I18N.t("p_errShortenerHostAccess"));
-          err.tsHostDenied = true;
-          throw err;
-        }
+      // No awaited contains() first -- Firefox drops the user-gesture window at
+      // the first await, and request() is a no-op when already granted.
+      const u = new URL(url);
+      const pattern = u.protocol + "//" + u.hostname + "/*";
+      if (api.permissions && !(await api.permissions.request({ origins: [pattern] }))) {
+        const err = new Error(I18N.t("p_errShortenerHostAccess"));
+        err.tsHostDenied = true;
+        throw err;
       }
     } catch (e) {
       if (e && e.tsHostDenied) throw e;
