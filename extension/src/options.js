@@ -268,14 +268,11 @@
     // a one-time host permission so the import banner can appear there.
     if (value && !isBuiltInOrigin(value)) {
       try {
-        const pattern = new URL(value).origin + "/*";
-        const has = await api.permissions.contains({ origins: [pattern] });
-        if (!has) {
-          const granted = await api.permissions.request({ origins: [pattern] });
-          if (!granted) {
-            $("#save-err").textContent = I18N.t("o_savedNoHostAccess");
-            $("#save-err").hidden = false;
-          }
+        // request() first, no await before it -- see saveShortener (Firefox).
+        const granted = await api.permissions.request({ origins: [hostPattern(new URL(value))] });
+        if (!granted) {
+          $("#save-err").textContent = I18N.t("o_savedNoHostAccess");
+          $("#save-err").hidden = false;
         }
       } catch (e) {
         /* older browser without host permission prompts — ignore */

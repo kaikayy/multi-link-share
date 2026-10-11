@@ -7,6 +7,28 @@ All notable changes to Tab Share. Format loosely follows
 
 _No entries yet._
 
+## [1.0.0-beta.13] - 2026-10-12
+
+Manifests: chrome `version` -> `1.0.0.13` (`version_name` -> `1.0.0-beta.13`),
+firefox `version` -> `1.0.0.13`. Same permission set as beta.12. 17/17 tests
+green.
+
+### Fixed
+
+- **Shortener could not be turned on in Firefox.** The options page awaited
+  `permissions.contains()` before `permissions.request()`; Firefox only allows
+  `request()` while the user-input event is still being handled, so it threw
+  and the setting was never saved. With no provider stored, the popup showed
+  no "Shorten link" button and auto-shorten never ran. `request()` is now
+  called directly (it resolves without a prompt when access is already
+  granted), and if the browser refuses to prompt at all (as opposed to the
+  user saying no) the setting is saved anyway -- the Tab Share shortener is
+  CORS-enabled and works without the grant. Same fix in the popup's
+  on-demand host request.
+- **Custom viewer address in Firefox** had the same pattern: the address
+  saved, but the host prompt never appeared, so the import banner did not
+  show on that host.
+
 ## [1.0.0-beta.12] - 2026-09-08
 
 Manifests: chrome `version` -> `1.0.0.12` (`version_name` -> `1.0.0-beta.12`),
