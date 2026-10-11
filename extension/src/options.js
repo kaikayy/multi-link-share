@@ -29,10 +29,11 @@
     toast._t = setTimeout(() => (el.hidden = true), 1800);
   }
 
-  /** The one host the manifest's static content_scripts entry already covers. */
+  /** The hosts the manifest's static content_scripts entry already covers. */
+  const BUILTIN_VIEWER_HOSTS = ["viewer.kaikay.de", "kaikayy.github.io"];
   function isBuiltInOrigin(base) {
     try {
-      return new URL(base).hostname === "kaikayy.github.io";
+      return BUILTIN_VIEWER_HOSTS.includes(new URL(base).hostname);
     } catch (e) {
       return true;
     }

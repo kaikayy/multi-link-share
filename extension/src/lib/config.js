@@ -15,7 +15,7 @@
   "use strict";
   return {
     // Trailing slash required. Override at build time with VIEWER_BASE=...
-    DEFAULT_VIEWER_BASE: "https://kaikayy.github.io/multi-link-share/",
+    DEFAULT_VIEWER_BASE: "https://viewer.kaikay.de/",
     PROJECT_URL: "https://github.com/kaikayy/multi-link-share",
     // Address pre-filled when a user picks the "Tab Share shortener" provider.
     // The first-party public instance; the shortener still stays Off until the

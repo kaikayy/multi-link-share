@@ -23,8 +23,8 @@ see the [support matrix](#browser-support).
 
 | Store | Link |
 | --- | --- |
-| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.9`) |
-| **Firefox Add-ons** (Firefox and forks) | **[Get the Add-on][amo]** (`1.0.0-beta.9`) |
+| **Chrome Web Store** (Chrome / Edge / Brave / Opera / Vivaldi / Arc) | **[Add to Chrome][cws]** (`1.0.0-beta.11`) |
+| **Firefox Add-ons** (Firefox and forks) | **[Get the Add-on][amo]** (`1.0.0-beta.11`) |
 
 Or **[install it yourself](docs/SELF-HOSTING.md)** (about two minutes) on any
 supported browser.
@@ -34,10 +34,10 @@ supported browser.
 
 ![Tab Share -- one link for a whole group of tabs](assets/promo-master-3000x2000.png)
 
-> **Status: `1.0.0-beta.9` on both the Chrome Web Store** ([listing][cws]) **and
-> [Firefox Add-ons][amo]** (approved and listed); `beta.11` (German and
-> Spanish throughout, plus localized store listings) is the current build
-> here, going out to both stores next. Or run your own copy with
+> **Status: `1.0.0-beta.11` is live on both the Chrome Web Store**
+> ([listing][cws]) **and [Firefox Add-ons][amo]** (approved and listed) --
+> German and Spanish throughout, plus localized store listings. Tested
+> end-to-end on Chrome, Opera, Firefox, and Zen. Or run your own copy with
 > **[`docs/SELF-HOSTING.md`](docs/SELF-HOSTING.md)**.
 
 |  |  |
@@ -230,11 +230,12 @@ unpacked. Full instructions for every OS / browser without a store:
 
 ## Status
 
-Verified end-to-end in Chrome: link creation from every source, the four viewer
-views, navigation, the segmented pager at 14 and 50 pages, per-view search,
-selection mode, theme toggle, password unlock, the empty-link state, and the
-companion import button / reversible-hide flow (in the mocked dev harness -- do a
-real reloaded-extension pass before you publish). `viewer/` deploys to GitHub
+`1.0.0-beta.11` is live on both the Chrome Web Store and Firefox Add-ons, and
+tested end-to-end on Chrome, Opera, Firefox, and Zen: link creation from every
+source, the four viewer views, navigation, the segmented pager at 14 and 50
+pages, per-view search, selection mode, theme toggle, password unlock, the
+empty-link state, and the companion import button / reversible-hide flow.
+`viewer/` deploys to GitHub
 Pages via `.github/workflows/deploy-viewer.yml`; the privacy policy is published
 at `/privacy.html` alongside it. See `CHANGELOG.md` for what's changed and
 `ROADMAP.md` for what's planned (notably an offline safer-links filter).
