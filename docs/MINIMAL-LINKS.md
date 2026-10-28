@@ -20,7 +20,7 @@ minimal  [4, name, flags, [url, url, ...]]
 |---|---|---|
 | Page URLs | yes | yes |
 | Collection name | yes | yes |
-| View flags (site icons, auto-preview) | yes | yes |
+| View flags (site icons, auto-preview; offered to the recipient, never auto-applied) | yes | yes |
 | Page titles | yes | **dropped** |
 | "Shared on `<date>`" | yes | **dropped** |
 

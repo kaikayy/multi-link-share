@@ -283,6 +283,14 @@ ok("view flags survive an encode/decode round trip", () => {
   assert.deepEqual(ShareCodec.unpackViewFlags(out.flags), { icons: true, autoPreview: true });
 });
 
+ok("the recipient's stored choice decides; a sender's request is only offered", () => {
+  assert.equal(ShareCodec.viewChoice("on", false), "on");
+  assert.equal(ShareCodec.viewChoice("off", true), "off");
+  assert.equal(ShareCodec.viewChoice(null, true), "offer");
+  assert.equal(ShareCodec.viewChoice(null, false), "off");
+  assert.equal(ShareCodec.viewChoice("garbage", true), "offer");
+});
+
 ok("config recognises localhost addresses", () => {
   assert.equal(Config.isLocalAddress("http://localhost:8787/new"), true);
   assert.equal(Config.isLocalAddress("https://127.0.0.1"), true);

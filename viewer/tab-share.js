@@ -68,6 +68,10 @@
     listCopy: byId("list-copy"),
     listCopyLinks: byId("list-copy-links"),
     toast: byId("v-toast"),
+    suggest: byId("v-suggest"),
+    suggestText: byId("v-suggest-text"),
+    suggestYes: byId("v-suggest-yes"),
+    suggestNo: byId("v-suggest-no"),
   };
 
   let collection = null;
@@ -119,14 +123,36 @@
     } catch (e) {}
   };
 
-  function iconsOn() {
-    return lsGet("ts:icons") === "on"; // OFF by default (privacy)
+  // Icons and auto-preview both contact third-party sites, so they stay OFF
+  // until the recipient opts in; the sender's flags are only offered.
+  function iconsChoice() {
+    return ShareCodec.viewChoice(lsGet("ts:icons"), ShareCodec.unpackViewFlags(collection.flags).icons);
   }
-  function autoPreviewOn() {
-    const v = lsGet("ts:autopreview");
-    if (v === "on") return true;
-    if (v === "off") return false;
-    return ShareCodec.unpackViewFlags(collection.flags).autoPreview;
+  function autoPreviewChoice() {
+    return ShareCodec.viewChoice(lsGet("ts:autopreview"), ShareCodec.unpackViewFlags(collection.flags).autoPreview);
+  }
+  const iconsOn = () => iconsChoice() === "on";
+  const autoPreviewOn = () => autoPreviewChoice() === "on";
+
+  /** Show the sender's suggestions; either answer is stored as the recipient's choice. */
+  function offerSuggestions() {
+    const keys = [];
+    if (autoPreviewChoice() === "offer") keys.push("ts:autopreview");
+    if (iconsChoice() === "offer") keys.push("ts:icons");
+    if (!keys.length) return;
+    const textKey = keys.length === 2 ? "v_suggestBoth" : keys[0] === "ts:icons" ? "v_suggestIcons" : "v_suggestPreviews";
+    els.suggestText.setAttribute("data-i18n", textKey);
+    I18N.applyStatic(els.suggest);
+    els.suggest.hidden = false;
+    const answer = (value) => {
+      keys.forEach((k) => lsSet(k, value));
+      els.suggest.hidden = true;
+      els.setIcons.checked = iconsOn();
+      els.setAuto.checked = autoPreviewOn();
+      rerender();
+    };
+    els.suggestYes.addEventListener("click", () => answer("on"));
+    els.suggestNo.addEventListener("click", () => answer("off"));
   }
 
   const sessionKey = () => "tabshare:" + (location.hash || "").slice(1, 40);
@@ -255,6 +281,7 @@
     wireChrome();
     wireSlides();
     setMode("slides"); // always open in the slideshow
+    offerSuggestions();
   }
 
   /* ---------- slideshow ---------- */

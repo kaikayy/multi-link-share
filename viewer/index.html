@@ -121,6 +121,15 @@
     </div>
   </header>
 
+  <!-- The sender's view suggestions, offered to the recipient; never applied silently. -->
+  <div id="v-suggest" class="v-suggest" role="region" hidden>
+    <span id="v-suggest-text"></span>
+    <span class="v-suggest-acts">
+      <button id="v-suggest-yes" class="v-btn" type="button" data-i18n="v_suggestTurnOn">Turn on</button>
+      <button id="v-suggest-no" class="v-btn ghost" type="button" data-i18n="v_suggestNoThanks">No thanks</button>
+    </span>
+  </div>
+
   <div id="search-bar" class="v-searchbar" hidden>
     <svg class="vi"><use href="#v-search" /></svg>
     <input id="search-input" type="text" data-i18n-placeholder="v_searchPlaceholder" placeholder="Filter by title, site or URL…" autocomplete="off" />

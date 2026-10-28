@@ -4,9 +4,9 @@
 
 **Blocked by:** 03, 04
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The viewer reads the site-icons flag from the link
-- [ ] With no stored recipient choice, icons are not loaded automatically; the recipient can enable them in one step when the sender requested them
-- [ ] A stored recipient choice (on or off) overrides the link's flag
-- [ ] Behaviour matches what MINIMAL-LINKS.md says the flag does (update the doc's wording only if needed to describe the opt-in)
+- [x] The viewer reads the site-icons flag from the link
+- [x] With no stored recipient choice, icons are not loaded automatically; the recipient can enable them in one step when the sender requested them
+- [x] A stored recipient choice (on or off) overrides the link's flag
+- [x] Behaviour matches what MINIMAL-LINKS.md says the flag does (update the doc's wording only if needed to describe the opt-in)

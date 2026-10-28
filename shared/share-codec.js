@@ -373,11 +373,25 @@
     return { icons: (flags & FLAG_ICONS) !== 0, autoPreview: (flags & FLAG_AUTO_PREVIEW) !== 0 };
   }
 
+  /**
+   * Resolve one view preference for the recipient. Their stored choice always
+   * wins; with none, a sender's request is only offered, never applied, so the
+   * viewer makes no third-party request the recipient didn't ask for.
+   * @param {string|null} stored  "on" | "off" | null (no choice yet)
+   * @param {boolean} senderWants  the matching bit from unpackViewFlags()
+   * @returns {"on"|"off"|"offer"}
+   */
+  function viewChoice(stored, senderWants) {
+    if (stored === "on" || stored === "off") return stored;
+    return senderWants ? "offer" : "off";
+  }
+
   return {
     encode: encode,
     decode: decode,
     packViewFlags: packViewFlags,
     unpackViewFlags: unpackViewFlags,
+    viewChoice: viewChoice,
     encrypt: encrypt,
     decrypt: decrypt,
     sanitizeUrl: sanitizeUrl,

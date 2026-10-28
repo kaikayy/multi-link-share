@@ -4,9 +4,9 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Opening a fresh share link in a browser with no stored viewer setting loads no third-party page until the recipient acts, regardless of the sender's flag
-- [ ] A recipient who turns auto-preview on keeps that choice for later links; turning it off sticks too
-- [ ] If the sender's flag requests previews, the recipient sees a clear way to enable them (optional, but the flag must not auto-apply)
-- [ ] The self-test or a viewer test covers the "no stored choice + sender flag on" case
+- [x] Opening a fresh share link in a browser with no stored viewer setting loads no third-party page until the recipient acts, regardless of the sender's flag
+- [x] A recipient who turns auto-preview on keeps that choice for later links; turning it off sticks too
+- [x] If the sender's flag requests previews, the recipient sees a clear way to enable them (optional, but the flag must not auto-apply)
+- [x] The self-test or a viewer test covers the "no stored choice + sender flag on" case
