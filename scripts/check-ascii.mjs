@@ -13,10 +13,10 @@ const SKIPPED = [/^extension\/src\/lib\//, /^viewer\/lib\//, /^extension\/_local
 const I18N_ENTRY = /^\s+[a-z]\w*:\s*"/; // `  key: "translated text",` in shared/i18n.js
 
 const FIX = {
-  "–": "-", "—": "--", "‘": "'", "’": "'", "“": '"', "”": '"',
-  "…": "...", "→": "->", "←": "<-", "⇒": "=>", "↔": "<->",
+  "\u2013": "-", "\u2014": "--", "\u2018": "'", "\u2019": "'", "\u201C": '"', "\u201D": '"',
+  "\u2026": "...", "\u2192": "->", "\u2190": "<-", "\u21D2": "=>", "\u2194": "<->",
 };
-const BANNED = /[–—‘’“”…←-⇿]/g;
+const BANNED = /[\u2013\u2014\u2018\u2019\u201C\u201D\u2026\u2190-\u21FF]/g;
 
 const files = execFileSync("git", ["ls-files"], { cwd: root, encoding: "utf8" })
   .split("\n")
