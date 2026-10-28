@@ -10,6 +10,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ShareCodec = require(path.join(root, "shared", "share-codec.js"));
 const Monogram = require(path.join(root, "shared", "monogram.js"));
 const LZString = require(path.join(root, "shared", "lzstring.min.js"));
+const Config = require(path.join(root, "shared", "config.js"));
 
 /** Recreate a legacy v1 token so we can prove old links still decode. */
 function encodeV1(collection) {
@@ -265,6 +266,36 @@ ok("monogram is deterministic and offline", () => {
   const b = Monogram.forUrl("https://github.com/y");
   assert.equal(a.bg, b.bg);
   assert.equal(a.label, "GI");
+});
+
+ok("config recognises localhost addresses", () => {
+  assert.equal(Config.isLocalAddress("http://localhost:8787/new"), true);
+  assert.equal(Config.isLocalAddress("https://127.0.0.1"), true);
+  assert.equal(Config.isLocalAddress("https://localhost.example.com/"), false);
+  assert.equal(Config.isLocalAddress("https://s.kaikay.de"), false);
+  assert.equal(Config.isLocalAddress(""), false);
+});
+
+ok("config: localhost is grantable only when the manifest asks for it", () => {
+  assert.equal(Config.localhostGrantable({ optional_host_permissions: ["http://localhost/*", "https://*/*"] }), true);
+  assert.equal(Config.localhostGrantable({ optional_host_permissions: ["http://127.0.0.1/*"] }), true);
+  assert.equal(Config.localhostGrantable({ optional_host_permissions: ["https://*/*"] }), false);
+  assert.equal(Config.localhostGrantable({}), false);
+  assert.equal(Config.localhostGrantable(null), false);
+});
+
+ok("config: shortener base and endpoint", () => {
+  assert.equal(Config.shortenerBase(" https://s.example.com// "), "https://s.example.com");
+  assert.equal(Config.shortenerBase(null), "");
+  assert.equal(Config.shortenerEndpoint("https://s.example.com/", "code"), "https://s.example.com/new?url=");
+  assert.equal(Config.shortenerEndpoint("https://s.example.com", "words"), "https://s.example.com/new?mode=words&url=");
+});
+
+ok("config: built-in viewer hosts match the manifests' content-script hosts", () => {
+  assert.equal(Config.isBuiltInViewer("https://viewer.kaikay.de/"), true);
+  assert.equal(Config.isBuiltInViewer("https://kaikayy.github.io/multi-link-share/*"), true);
+  assert.equal(Config.isBuiltInViewer("https://viewer.example.org/"), false);
+  assert.equal(Config.isBuiltInViewer("not a url"), false);
 });
 
 run();

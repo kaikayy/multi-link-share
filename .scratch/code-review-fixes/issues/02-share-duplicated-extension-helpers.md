@@ -6,10 +6,10 @@ Remember `shared/` is canonical and is copied out by the sync script; edit the c
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The built-in viewer host list is defined once and read by every script that needs it (manifests may still list hosts statically if the build can't template them; note this if so)
-- [ ] Shortener base normalisation, the localhost check and the toast helper each exist once
-- [ ] Popup, options page and viewer still show toasts, accept localhost/custom shortener settings and recognise built-in viewers exactly as before
-- [ ] Synced copies are byte-identical to `shared/` after `npm run sync`
-- [ ] `npm test` passes
+- [x] The built-in viewer host list is defined once and read by every script that needs it (manifests may still list hosts statically if the build can't template them; note this if so)
+- [x] Shortener base normalisation, the localhost check and the toast helper each exist once
+- [x] Popup, options page and viewer still show toasts, accept localhost/custom shortener settings and recognise built-in viewers exactly as before
+- [x] Synced copies are byte-identical to `shared/` after `npm run sync`
+- [x] `npm test` passes

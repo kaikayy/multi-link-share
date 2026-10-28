@@ -35,7 +35,7 @@
     "open_in_tab": true
   },
   "background": {
-    "scripts": ["src/background.js"]
+    "scripts": ["src/lib/config.js", "src/background.js"]
   },
   "content_scripts": [
     {

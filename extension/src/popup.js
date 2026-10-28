@@ -37,19 +37,16 @@
       // A "Tab Share shortener" left pointing at localhost (an old DEV_LOCALHOST
       // build) can't be granted in a shipped build -- move it to the packaged
       // default. Skipped where localhost IS a grantable host (a DEV build).
-      const dflt = ((CFG && CFG.DEFAULT_SHORTENER_BASE) || "").replace(/\/+$/, "");
-      const local = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
+      const defaultBase = CFG.shortenerBase(CFG.DEFAULT_SHORTENER_BASE);
       let localhostGrantable = false;
       try {
-        localhostGrantable = (api.runtime.getManifest().optional_host_permissions || []).some((p) =>
-          /^https?:\/\/(localhost|127\.0\.0\.1)\//.test(p),
-        );
+        localhostGrantable = CFG.localhostGrantable(api.runtime.getManifest());
       } catch (e) {}
-      if (provider === "tabshare" && /^https:\/\//i.test(dflt) && !localhostGrantable &&
-          (local.test((s.shortBase || "").trim()) || local.test(endpoint))) {
-        endpoint = dflt + "/new?" + (mode === "words" ? "mode=words&" : "") + "url=";
+      if (provider === "tabshare" && /^https:\/\//i.test(defaultBase) && !localhostGrantable &&
+          (CFG.isLocalAddress(s.shortBase) || CFG.isLocalAddress(endpoint))) {
+        endpoint = CFG.shortenerEndpoint(defaultBase, mode);
         try {
-          await api.storage.local.set({ shortBase: dflt, shortEndpoint: endpoint });
+          await api.storage.local.set({ shortBase: defaultBase, shortEndpoint: endpoint });
         } catch (e) {}
       }
 
@@ -79,13 +76,7 @@
     );
   }
 
-  function toast(msg) {
-    const el = $("#toast");
-    el.textContent = msg;
-    el.hidden = false;
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => (el.hidden = true), 1800);
-  }
+  const toast = Toast.create($("#toast"), 1800);
 
   function dedupe(pages) {
     const seen = new Set();
@@ -503,7 +494,7 @@
   /** Origin of the configured Tab Share shortener -- the stored base, or parsed
    *  back out of the `<base>/new?...url=` endpoint string for older installs. */
   function shortenerBase() {
-    const b = String(state.settings.shortBase || "").replace(/\/+$/, "");
+    const b = CFG.shortenerBase(state.settings.shortBase);
     if (/^https?:\/\//i.test(b)) return b;
     try {
       return new URL(state.settings.shortEndpoint).origin;

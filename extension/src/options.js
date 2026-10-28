@@ -21,23 +21,7 @@
     return out;
   }
 
-  function toast(msg) {
-    const el = $("#toast");
-    el.textContent = msg;
-    el.hidden = false;
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => (el.hidden = true), 1800);
-  }
-
-  /** The hosts the manifest's static content_scripts entry already covers. */
-  const BUILTIN_VIEWER_HOSTS = ["viewer.kaikay.de", "kaikayy.github.io"];
-  function isBuiltInOrigin(base) {
-    try {
-      return BUILTIN_VIEWER_HOSTS.includes(new URL(base).hostname);
-    } catch (e) {
-      return true;
-    }
-  }
+  const toast = Toast.create($("#toast"), 1800);
 
   /* ---------------- preferences ---------------- */
 
@@ -79,13 +63,6 @@
 
   const DEFAULT_SHORT_BASE = (CFG && CFG.DEFAULT_SHORTENER_BASE) || "";
 
-  /** Turn a Tab Share shortener base + style into the endpoint string the popup
-   *  appends the encoded long URL to. */
-  function tabshareEndpoint(base, mode) {
-    const b = String(base || "").replace(/\/+$/, "");
-    return b + "/new?" + (mode === "words" ? "mode=words&" : "") + "url=";
-  }
-
   function toggleShortFields() {
     const p = $("#short-provider").value;
     $("#short-tabshare-wrap").hidden = p !== "tabshare";
@@ -99,14 +76,10 @@
     return parsed.protocol + "//" + parsed.hostname + "/*";
   }
 
-  const LOCAL_ADDR = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
-
   /** True in a DEV_LOCALHOST build (localhost is a grantable host there). */
   function localhostAllowed() {
     try {
-      return (api.runtime.getManifest().optional_host_permissions || []).some((p) =>
-        /^https?:\/\/(localhost|127\.0\.0\.1)\//.test(p),
-      );
+      return CFG.localhostGrantable(api.runtime.getManifest());
     } catch (e) {
       return false;
     }
@@ -134,11 +107,11 @@
     // DEV_LOCALHOST build) can't be granted in a shipped build -- move it to the
     // packaged default and persist, so the popup uses the live endpoint too.
     let base = s.shortBase || "";
-    if (LOCAL_ADDR.test(base) && !localhostAllowed() && /^https:\/\//i.test(DEFAULT_SHORT_BASE)) {
-      base = DEFAULT_SHORT_BASE.replace(/\/+$/, "");
+    if (CFG.isLocalAddress(base) && !localhostAllowed() && /^https:\/\//i.test(DEFAULT_SHORT_BASE)) {
+      base = CFG.shortenerBase(DEFAULT_SHORT_BASE);
       const patch = { shortBase: base };
       if (prov === "tabshare") {
-        patch.shortEndpoint = tabshareEndpoint(base, s.shortMode === "words" ? "words" : "code");
+        patch.shortEndpoint = CFG.shortenerEndpoint(base, s.shortMode === "words" ? "words" : "code");
       }
       try {
         await api.storage.local.set(patch);
@@ -193,7 +166,7 @@
         $("#short-err").hidden = false;
         return;
       }
-      endpoint = tabshareEndpoint(base, mode);
+      endpoint = CFG.shortenerEndpoint(base, mode);
       pattern = hostPattern(parsed);
     } else if (provider === "custom") {
       let parsed;
@@ -266,7 +239,7 @@
 
     // Any viewer host other than the packaged default (localhost included) needs
     // a one-time host permission so the import banner can appear there.
-    if (value && !isBuiltInOrigin(value)) {
+    if (value && !CFG.isBuiltInViewer(value)) {
       try {
         // request() first, no await before it -- see saveShortener (Firefox).
         const granted = await api.permissions.request({ origins: [hostPattern(new URL(value))] });

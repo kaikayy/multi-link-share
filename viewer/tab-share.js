@@ -87,12 +87,7 @@
 
   /* ---------- utils ---------- */
 
-  function toast(msg, ms) {
-    els.toast.textContent = msg;
-    els.toast.hidden = false;
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => (els.toast.hidden = true), ms || 2200);
-  }
+  const toast = Toast.create(els.toast, 2200);
 
   function hostOf(url) {
     try {

@@ -12,8 +12,11 @@
 
 const api = globalThis.browser && globalThis.browser.runtime ? globalThis.browser : globalThis.chrome;
 
-// The hosts the manifest's static content_scripts entry covers.
-const BUILTIN_VIEWER_HOSTS = ["viewer.kaikay.de", "kaikayy.github.io"];
+// Firefox loads the shared config via the manifest's background "scripts"; the
+// Chrome / Safari service worker pulls it in here.
+if (typeof TabShareConfig === "undefined" && typeof importScripts === "function") importScripts("lib/config.js");
+const CFG = globalThis.TabShareConfig;
+
 const CUSTOM_SCRIPT_ID = "ts-viewer-custom";
 const HISTORY_CAP = 50;
 
@@ -125,7 +128,7 @@ async function syncCustomContentScript() {
   // permission-gated dynamic registration below.
   let covered = false;
   try {
-    if (pattern) covered = BUILTIN_VIEWER_HOSTS.includes(new URL(pattern.replace(/\*$/, "")).hostname);
+    if (pattern) covered = CFG.isBuiltInViewer(pattern.replace(/\*$/, ""));
   } catch (e) {}
 
   let existing = [];
