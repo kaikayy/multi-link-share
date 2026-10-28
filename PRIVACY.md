@@ -1,5 +1,7 @@
 # Privacy Policy -- Tab Share
 
+<!-- Mirrored by viewer/privacy.html: change both in the same commit (see CODING_STANDARDS.md). -->
+
 _Last updated: 2026-10-28 (unreleased, after 1.0.0-beta.13)_
 
 Tab Share is built so that **the extension and the viewer** have nothing to

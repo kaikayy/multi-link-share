@@ -37,9 +37,10 @@
   </style>
 </head>
 <body>
+  <!-- Mirrors PRIVACY.md: change both in the same commit (see CODING_STANDARDS.md). -->
   <main>
     <h1>Privacy Policy — Tab Share</h1>
-    <p class="updated">Last updated: 2026-09-02</p>
+    <p class="updated">Last updated: 2026-10-28</p>
 
     <p>Tab Share is built so that there is nothing to collect. The extension and
       the viewer have no server, no account, no analytics, and no tracking. The
@@ -48,10 +49,13 @@
 
     <h2>What the extension accesses</h2>
     <ul>
-      <li><strong>Open tabs in the current window</strong> — their URLs, titles and
-        icons. Read only at the moment you click <strong>Create share link</strong> (or
-        an "add tabs" button), only for the window you triggered it from, and only to
-        build the list you choose from. Tab icons are shown in the popup, never uploaded.</li>
+      <li><strong>Open tabs in the current window</strong> -- their URLs, titles and
+        icons. Read when you open the popup (or press an "add tabs" button), only for
+        the window you opened it from, and only to build the list you choose from. The
+        popup lists your other windows without reading their tabs; it reads another
+        window's tabs only if you pick that window (or "all windows") as the source.
+        Tab icons are never uploaded; they're shown in the popup only if <strong>site
+        icons</strong> is on, in which case your browser loads each tab's own favicon.</li>
       <li><strong>Tab groups</strong> — names and colours, and (on import) the ability
         to create a group. Used for the "Tab group" source and the "open as a tab
         group" action.</li>
@@ -59,9 +63,20 @@
         choices, and up to 50 links you recently generated, stored on your device via
         <code>storage.local</code>. Never synced, never transmitted. Clear all or
         individual entries any time from the options page.</li>
+      <li><strong>Session storage</strong> -- <code>storage.session</code>, or
+        <code>storage.local</code> in browsers without it: a draft of the list you're
+        building in the popup (its URLs and titles, the name and pasted text), so it
+        survives closing the popup. Never uploaded; cleared when you create the link
+        (and <code>storage.session</code> is also emptied when the browser closes).</li>
       <li><strong>The viewer page only</strong> — one content script runs on the
         slideshow viewer page. It reads the collection from that page's URL fragment
         so it can offer to open the pages with the extension instead of the web view.
+        For a password link it can't read the fragment; after the recipient unlocks
+        the link, the viewer page hands it the decrypted page list (never the
+        password), and those pages can be opened as tabs but not saved to history.
+        It opens tabs in response to a click, or automatically only if you saved a
+        default import mode -- and even then it asks first for more than 10 pages,
+        and always for password links.
         It ships enabled only for the packaged viewer address; if you point the
         extension at your own viewer (including <code>localhost</code> for testing),
         the options page asks you to approve that one host before the script runs
@@ -69,10 +84,14 @@
     </ul>
 
     <h2>What can make a network request</h2>
-    <p>Two things, both optional. If <strong>site icons</strong> are left on, the viewer
-      requests one icon per domain in the link from <code>icons.duckduckgo.com</code> when
-      the link is opened — those domain names go to DuckDuckGo's icon service and nowhere
-      else. If you turn on a <strong>URL shortener</strong> in the extension, creating a
+    <p>Only things you opt into. <strong>Site icons</strong> and <strong>Auto-load live
+      previews</strong> are off in the viewer until the recipient turns them on: a
+      sender's link can only <em>suggest</em> them ("Turn on / No thanks"), and nothing
+      loads unless the recipient accepts or enables them in the viewer's settings menu.
+      With site icons on, the viewer requests one icon per domain in the link from
+      <code>icons.duckduckgo.com</code> -- those domain names go to DuckDuckGo's icon
+      service and nowhere else. With live previews on, framing-friendly pages load in
+      the slideshow without a click. If you turn on a <strong>URL shortener</strong> in the extension, creating a
       link sends that one generated URL to the service you chose (the first-party
       <code>s.kaikay.de</code>, da.gd, TinyURL, or a custom endpoint). With <strong>site
       icons</strong> and <strong>Auto-load live previews</strong> both off (both viewer
@@ -123,13 +142,13 @@
     <h2>The viewer page</h2>
     <p>The recipient opens the link in a normal browser tab. The viewer page is a
       static file (no backend). It reads the collection from the fragment in the
-      recipient's browser and renders it. It loads no third-party scripts, fonts, or
-      images and sends no data anywhere. "Open all" and "live preview" simply navigate
+      recipient's browser and renders it. It loads no third-party scripts or fonts,
+      no images unless the recipient turns on site icons, and sends no data anywhere. "Open all" and "live preview" simply navigate
       to, or embed, the pages you chose — the same as clicking the links yourself.</p>
     <p>If the recipient also has Tab Share installed, the content script described
       above adds an "Open with Tab Share" button to the viewer's toolbar, offering to
       open the collection into a window or a tab group, or to save it to the
-      recipient's own on-device history. That choice, and the pages opened, never
+      recipient's own on-device history (not offered for password links). That choice, and the pages opened, never
       leave the recipient's device.</p>
 
     <h2>Contact</h2>
