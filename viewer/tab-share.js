@@ -248,6 +248,12 @@
       }
       collection = result;
       start();
+      // Let the extension's "Open with Tab Share" button import the unlocked
+      // pages. Only the decrypted list is posted, never the password.
+      if (hasExtension()) {
+        const pages = collection.pages.map((p) => ({ url: p.url, title: p.title }));
+        window.postMessage({ __tabshare: "unlocked", collection: { title: collection.title, pages } }, location.origin);
+      }
     });
   }
 

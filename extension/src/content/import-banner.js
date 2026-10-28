@@ -8,7 +8,7 @@
  * `event.isTrusted`, so the host page can't drive the import actions. No
  * network requests; menu markup is built with createElement.
  */
-(function () {
+(async function () {
   "use strict";
 
   const api = globalThis.browser && globalThis.browser.runtime ? globalThis.browser : globalThis.chrome;
@@ -36,13 +36,29 @@
     if (req) api.runtime.sendMessage({ type: "ts-import", mode: req.mode, collection: { pages: req.pages } });
   });
 
+  function unlockedByViewer() {
+    return new Promise((resolve) => {
+      window.addEventListener("message", function onUnlocked(e) {
+        if (e.origin !== location.origin) return;
+        const unlocked = ShareCodec.unlockedCollection(e.data);
+        if (!unlocked) return;
+        window.removeEventListener("message", onUnlocked);
+        resolve(unlocked);
+      });
+    });
+  }
+
   let collection = null;
   try {
     collection = ShareCodec.decode(location.hash);
   } catch (e) {
     collection = null;
   }
-  if (!collection || collection.encrypted || !collection.pages || !collection.pages.length) return;
+  // A password link can't be read here; wait for the viewer to post the page
+  // list once the recipient unlocks it.
+  const passwordLink = !!(collection && collection.encrypted);
+  if (passwordLink) collection = await unlockedByViewer();
+  if (!collection || !collection.pages || !collection.pages.length) return;
   const count = collection.pages.length;
 
   /* ---------- menu shadow UI ---------- */
@@ -273,8 +289,9 @@
         sessionStorage.setItem(K.auto, "1");
       } catch (e) {}
       if (cfg.deflt && cfg.deflt !== "save") {
-        if (!ShareCodec.autoImportNeedsConfirm(count)) return send(cfg.deflt);
-        // A big collection: show the menu and let a click confirm it.
+        if (!passwordLink && !ShareCodec.autoImportNeedsConfirm(count)) return send(cfg.deflt);
+        // A big collection, or a page list the viewer posted after an unlock:
+        // show the menu and let a click confirm it.
         return setTimeout(() => {
           openMenu();
           say(I18N.t("b_confirmManyPages", { count }));

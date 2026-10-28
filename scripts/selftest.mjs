@@ -308,6 +308,17 @@ ok("malformed 'open tabs' requests are ignored", () => {
   assert.equal(ShareCodec.importRequest({ __tabshare: "open", urls: ["ftp://a.example/"] }), null);
 });
 
+ok("an unlocked password collection from the viewer is sanitised before import", () => {
+  const out = ShareCodec.unlockedCollection({
+    __tabshare: "unlocked",
+    collection: { title: "Secret set", pages: [{ url: "https://example.com/one", title: "One" }, { url: "javascript:alert(1)" }, null] },
+  });
+  assert.deepEqual(out, { title: "Secret set", pages: [{ url: "https://example.com/one", title: "One" }] });
+  assert.equal(ShareCodec.unlockedCollection({ __tabshare: "open", collection: { pages: [] } }), null);
+  assert.equal(ShareCodec.unlockedCollection({ __tabshare: "unlocked", collection: { pages: [{ url: "ftp://x" }] } }), null);
+  assert.equal(ShareCodec.unlockedCollection({ __tabshare: "unlocked" }), null);
+});
+
 ok("auto-import asks before opening more than 10 pages", () => {
   assert.equal(ShareCodec.autoImportNeedsConfirm(1), false);
   assert.equal(ShareCodec.autoImportNeedsConfirm(10), false);

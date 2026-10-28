@@ -409,6 +409,23 @@
     return { mode: mode, pages: pages };
   }
 
+  /**
+   * Validate the page list the viewer posts after the recipient unlocks a
+   * password link (the password itself never leaves the page).
+   * @returns {{title:string, pages:Array<{url:string,title:string}>}|null}
+   */
+  function unlockedCollection(data) {
+    var c = data && data.__tabshare === "unlocked" ? data.collection : null;
+    if (!c || !Array.isArray(c.pages)) return null;
+    var pages = [];
+    for (var i = 0; i < c.pages.length && pages.length < MAX_PAGES; i++) {
+      var p = c.pages[i];
+      var url = p && sanitizeUrl(p.url);
+      if (url) pages.push({ url: url, title: clean(p.title, MAX_TITLE) });
+    }
+    return pages.length ? { title: clean(c.title, MAX_NAME), pages: pages } : null;
+  }
+
   /** A saved default import mode opens tabs without a click; above this many
    *  pages it asks first. */
   function autoImportNeedsConfirm(count) {
@@ -422,6 +439,7 @@
     unpackViewFlags: unpackViewFlags,
     viewChoice: viewChoice,
     importRequest: importRequest,
+    unlockedCollection: unlockedCollection,
     autoImportNeedsConfirm: autoImportNeedsConfirm,
     encrypt: encrypt,
     decrypt: decrypt,

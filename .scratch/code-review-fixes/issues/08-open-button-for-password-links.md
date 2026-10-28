@@ -4,9 +4,9 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done (manual browser check pending)
 
-- [ ] Opening a password link with the extension installed shows the button once the link is unlocked (or a locked state that becomes active after unlock)
-- [ ] Importing an unlocked password link opens the same pages as the viewer shows, in the chosen mode
-- [ ] The password is never stored or sent to the background; only the decrypted URLs are passed when the user clicks
-- [ ] Non-password links behave as before
+- [x] Opening a password link with the extension installed shows the button once the link is unlocked (or a locked state that becomes active after unlock)
+- [x] Importing an unlocked password link opens the same pages as the viewer shows, in the chosen mode
+- [x] The password is never stored or sent to the background; only the decrypted URLs are passed when the user clicks
+- [x] Non-password links behave as before
