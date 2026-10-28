@@ -4,9 +4,9 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done (manual browser check pending)
 
-- [ ] Viewer "Open all / Open selected" buttons still open tabs when clicked
-- [ ] An "open" message not caused by a user click (e.g. posted from script on load) opens nothing
-- [ ] With a saved default import mode, opening a link with more than a small threshold of pages asks before opening them
-- [ ] The cross-origin rejection that exists today is kept
+- [x] Viewer "Open all / Open selected" buttons still open tabs when clicked
+- [x] An "open" message not caused by a user click (e.g. posted from script on load) opens nothing
+- [x] With a saved default import mode, opening a link with more than a small threshold of pages asks before opening them
+- [x] The cross-origin rejection that exists today is kept

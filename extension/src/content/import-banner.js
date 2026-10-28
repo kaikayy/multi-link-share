@@ -26,17 +26,14 @@
   // Let the viewer's "Open all pages" / "Open selected in a new window / tab
   // group" reach the background (a static page can't open tabs itself).
   window.addEventListener("message", (e) => {
-    // same document only — the viewer's live-preview iframes are always
+    // same document only -- the viewer's live-preview iframes are always
     // cross-origin, so this rejects anything they could post
     if (e.origin !== location.origin) return;
-    const d = e.data;
-    if (!d || d.__tabshare !== "open" || !Array.isArray(d.urls)) return;
-    const pages = d.urls
-      .filter((u) => typeof u === "string" && /^https?:\/\//i.test(u))
-      .slice(0, 200)
-      .map((u) => ({ url: u }));
-    const mode = ["this-window", "new-window", "tab-group"].indexOf(d.mode) === -1 ? "this-window" : d.mode;
-    if (pages.length) api.runtime.sendMessage({ type: "ts-import", mode, collection: { pages } });
+    // The viewer posts this synchronously from its own button clicks; without
+    // a live user gesture (script on load, timers) nothing opens.
+    if (!(navigator.userActivation && navigator.userActivation.isActive)) return;
+    const req = ShareCodec.importRequest(e.data);
+    if (req) api.runtime.sendMessage({ type: "ts-import", mode: req.mode, collection: { pages: req.pages } });
   });
 
   let collection = null;
@@ -275,7 +272,14 @@
       try {
         sessionStorage.setItem(K.auto, "1");
       } catch (e) {}
-      if (cfg.deflt && cfg.deflt !== "save") return send(cfg.deflt);
+      if (cfg.deflt && cfg.deflt !== "save") {
+        if (!ShareCodec.autoImportNeedsConfirm(count)) return send(cfg.deflt);
+        // A big collection: show the menu and let a click confirm it.
+        return setTimeout(() => {
+          openMenu();
+          say(I18N.t("b_confirmManyPages", { count }));
+        }, 400);
+      }
       if (!cfg.noauto) setTimeout(openMenu, 400);
     });
   }

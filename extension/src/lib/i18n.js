@@ -291,6 +291,7 @@
       b_savedCheck: "Saved ✓",
       b_working: "Working…",
       b_couldNotComplete: "Could not complete that.",
+      b_confirmManyPages: "{count} pages -- pick where to open them.",
       b_couldNotReachExtension: "Could not reach the extension.",
     },
 
@@ -551,6 +552,7 @@
       b_savedCheck: "Gespeichert ✓",
       b_working: "Wird bearbeitet…",
       b_couldNotComplete: "Das konnte nicht ausgeführt werden.",
+      b_confirmManyPages: "{count} Seiten -- wähle, wo sie geöffnet werden sollen.",
       b_couldNotReachExtension: "Die Erweiterung konnte nicht erreicht werden.",
     },
 
@@ -811,6 +813,7 @@
       b_savedCheck: "Guardado ✓",
       b_working: "Procesando…",
       b_couldNotComplete: "No se pudo completar esa acción.",
+      b_confirmManyPages: "{count} páginas -- elige dónde abrirlas.",
       b_couldNotReachExtension: "No se pudo contactar con la extensión.",
     },
   };

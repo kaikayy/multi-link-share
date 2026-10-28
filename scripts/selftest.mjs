@@ -291,6 +291,29 @@ ok("the recipient's stored choice decides; a sender's request is only offered", 
   assert.equal(ShareCodec.viewChoice("garbage", true), "offer");
 });
 
+ok("an 'open tabs' request keeps only http(s) URLs, caps at 200, and defaults the mode", () => {
+  assert.deepEqual(
+    ShareCodec.importRequest({ __tabshare: "open", mode: "new-window", urls: ["https://a.example/", "javascript:alert(1)", 5, "http://b.example/x"] }),
+    { mode: "new-window", pages: [{ url: "https://a.example/" }, { url: "http://b.example/x" }] }
+  );
+  assert.equal(ShareCodec.importRequest({ __tabshare: "open", mode: "evil", urls: ["https://a.example/"] }).mode, "this-window");
+  const many = Array.from({ length: 250 }, (_, i) => "https://a.example/" + i);
+  assert.equal(ShareCodec.importRequest({ __tabshare: "open", urls: many }).pages.length, 200);
+});
+
+ok("malformed 'open tabs' requests are ignored", () => {
+  assert.equal(ShareCodec.importRequest(null), null);
+  assert.equal(ShareCodec.importRequest({ __tabshare: "other", urls: ["https://a.example/"] }), null);
+  assert.equal(ShareCodec.importRequest({ __tabshare: "open", urls: "https://a.example/" }), null);
+  assert.equal(ShareCodec.importRequest({ __tabshare: "open", urls: ["ftp://a.example/"] }), null);
+});
+
+ok("auto-import asks before opening more than 10 pages", () => {
+  assert.equal(ShareCodec.autoImportNeedsConfirm(1), false);
+  assert.equal(ShareCodec.autoImportNeedsConfirm(10), false);
+  assert.equal(ShareCodec.autoImportNeedsConfirm(11), true);
+});
+
 ok("config recognises localhost addresses", () => {
   assert.equal(Config.isLocalAddress("http://localhost:8787/new"), true);
   assert.equal(Config.isLocalAddress("https://127.0.0.1"), true);

@@ -386,12 +386,43 @@
     return senderWants ? "offer" : "off";
   }
 
+  var IMPORT_MODES = ["this-window", "new-window", "tab-group"];
+  var IMPORT_MAX = 200;
+  var AUTO_IMPORT_CONFIRM_OVER = 10;
+
+  /**
+   * Validate an "open these tabs" message the viewer posts to the extension.
+   * @returns {{mode:string, pages:Array<{url:string}>}|null}  null = ignore it
+   */
+  function importRequest(data) {
+    if (!data || data.__tabshare !== "open" || !Array.isArray(data.urls)) return null;
+    var pages = data.urls
+      .filter(function (u) {
+        return typeof u === "string" && /^https?:\/\//i.test(u);
+      })
+      .slice(0, IMPORT_MAX)
+      .map(function (u) {
+        return { url: u };
+      });
+    if (!pages.length) return null;
+    var mode = IMPORT_MODES.indexOf(data.mode) === -1 ? "this-window" : data.mode;
+    return { mode: mode, pages: pages };
+  }
+
+  /** A saved default import mode opens tabs without a click; above this many
+   *  pages it asks first. */
+  function autoImportNeedsConfirm(count) {
+    return count > AUTO_IMPORT_CONFIRM_OVER;
+  }
+
   return {
     encode: encode,
     decode: decode,
     packViewFlags: packViewFlags,
     unpackViewFlags: unpackViewFlags,
     viewChoice: viewChoice,
+    importRequest: importRequest,
+    autoImportNeedsConfirm: autoImportNeedsConfirm,
     encrypt: encrypt,
     decrypt: decrypt,
     sanitizeUrl: sanitizeUrl,

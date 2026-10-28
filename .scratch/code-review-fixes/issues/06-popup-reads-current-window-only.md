@@ -4,9 +4,9 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done (manual browser check pending)
 
-- [ ] Opening the popup reads tabs from the current window only
-- [ ] Choosing another window or "all windows" as the source still works, and reads those tabs only at that moment
-- [ ] Tab-group sourcing and drafts keep working
+- [x] Opening the popup reads tabs from the current window only
+- [x] Choosing another window or "all windows" as the source still works, and reads those tabs only at that moment
+- [x] Tab-group sourcing and drafts keep working
 - [ ] Manual check in Chrome and Firefox with two windows open: the second window's tabs are not queried until it is selected
