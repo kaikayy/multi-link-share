@@ -112,13 +112,14 @@
     return !!(api.tabGroups && typeof api.tabGroups.query === "function");
   }
 
-  /** Populate the window picker; show it only when >1 normal window is open. */
+  /** Populate the window picker; show it only when >1 normal window is open.
+      Lists windows only -- another window's tabs are read when it's picked. */
   async function populateWindows() {
     const picker = $("#window-picker");
     const wrap = $("#window-picker-wrap");
     let wins = [];
     try {
-      wins = (await api.windows.getAll({ populate: true, windowTypes: ["normal"] })) || [];
+      wins = (await api.windows.getAll({ populate: false, windowTypes: ["normal"] })) || [];
     } catch (e) {
       wins = [];
     }
@@ -141,8 +142,7 @@
     wins.forEach((w) => {
       n += 1;
       if (w.id === cur.id) return;
-      const webCount = (w.tabs || []).filter((t) => isWebUrl(t.url)).length;
-      opt(String(w.id), I18N.t(webCount === 1 ? "p_groupWindowN" : "p_groupWindowNPlural", { n, count: webCount }));
+      opt(String(w.id), I18N.t("p_groupWindow", { n }));
     });
     wrap.hidden = false;
     $("#panel-window").hidden = false;
