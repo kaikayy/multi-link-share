@@ -1,5 +1,5 @@
 /*!
- * config.js — build-time defaults.
+ * config.js -- build-time defaults.
  *
  * DEFAULT_VIEWER_BASE is where the static viewer (viewer/index.html) is
  * hosted. Ship the extension pointing at your own deployment, or leave the

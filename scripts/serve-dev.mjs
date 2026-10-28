@@ -3,7 +3,7 @@
  *  the popup / options / viewer in a normal tab with a mocked `chrome.*`.
  *
  *    npm run dev
- *    → http://localhost:8778/dev/          (index of previews)
+ *    -> http://localhost:8778/dev/          (index of previews)
  */
 import http from "node:http";
 import fs from "node:fs";
@@ -23,12 +23,12 @@ const MIME = {
 
 const INDEX = `<!doctype html><meta charset=utf-8><title>Tab Share dev previews</title>
 <body style="font-family:system-ui;background:#1a1a20;color:#eee;padding:40px;line-height:1.8">
-<h1>Tab Share — dev previews</h1>
+<h1>Tab Share -- dev previews</h1>
 <ul>
   <li><a style="color:#9a8dff" href="/dev/popup-inner.html">Popup</a> (mocked chrome.*)</li>
   <li><a style="color:#9a8dff" href="/dev/options-inner.html">Options page</a> (mocked chrome.*)</li>
   <li><a style="color:#9a8dff" href="/dev/import-banner.html">Import banner</a> (mocked chrome.*)</li>
-  <li><a style="color:#9a8dff" href="/viewer/">Viewer</a> — append <code>#&lt;token&gt;</code> from <code>npm test</code> output or the popup</li>
+  <li><a style="color:#9a8dff" href="/viewer/">Viewer</a> -- append <code>#&lt;token&gt;</code> from <code>npm test</code> output or the popup</li>
 </ul></body>`;
 
 const BANNER = `<!doctype html><meta charset=utf-8><title>Import button preview</title>
@@ -43,7 +43,7 @@ const BANNER = `<!doctype html><meta charset=utf-8><title>Import button preview<
   <button class="v-btn ghost">Open all pages</button>
   <button class="v-btn">Change View</button>
   <div class="v-menu-wrap">
-    <button id="btn-settings" class="v-btn ghost icon-only" type="button">⚙</button>
+    <button id="btn-settings" class="v-btn ghost icon-only" type="button">&#9881;</button>
     <div id="settings-menu" class="v-menu" hidden role="menu">
       <label class="v-menu-check"><input type="checkbox" id="set-autopreview"><span>Auto-load live previews</span></label>
       <label class="v-menu-check"><input type="checkbox" id="set-icons"><span>Show site icons</span></label>
@@ -51,7 +51,7 @@ const BANNER = `<!doctype html><meta charset=utf-8><title>Import button preview<
   </div>
 </div></header>
 <p style="padding:24px;color:var(--text-dim)">The content script adds "Open with Tab Share" to the toolbar, and a
-"Show the button" checkbox into the ⚙ menu (click ⚙). Actions log to the console.</p>
+"Show the button" checkbox into the settings menu (click the gear). Actions log to the console.</p>
 <script>document.getElementById('btn-settings').addEventListener('click',()=>{const m=document.getElementById('settings-menu');m.hidden=!m.hidden;});<\/script>
 <script>
   var token = ShareCodec.encode({

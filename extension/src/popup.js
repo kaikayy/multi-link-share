@@ -1,4 +1,4 @@
-/* Tab Share — popup logic. The only network call is the optional URL shortener
+/* Tab Share -- popup logic. The only network call is the optional URL shortener
    (off by default; see options). */
 (function () {
   "use strict";
@@ -125,7 +125,7 @@
     }
     if (wins.length <= 1) {
       wrap.hidden = true;
-      $("#panel-window").hidden = true; // nothing to choose — don't show an empty panel
+      $("#panel-window").hidden = true; // nothing to choose -- don't show an empty panel
       return;
     }
     const cur = await api.windows.getCurrent();
@@ -202,7 +202,7 @@
       picker.value = String(active.groupId);
     }
     if (keepList) {
-      render(); // a restored list wins — don't replace it with a group preview
+      render(); // a restored list wins -- don't replace it with a group preview
       return;
     }
     state.groupPristine = true;
@@ -225,7 +225,7 @@
     }
   }
 
-  /** Preview one group — replaces the list. Only runs while the list is pristine.
+  /** Preview one group -- replaces the list. Only runs while the list is pristine.
       Merely browsing groups never touches the name field (not even its placeholder). */
   async function loadGroup(groupId) {
     state.pages = dedupe(await groupTabs(groupId));
@@ -233,7 +233,7 @@
     render();
   }
 
-  /** Append the picked group's tabs — combines groups. The first group actively
+  /** Append the picked group's tabs -- combines groups. The first group actively
       added seeds the collection name (if the user hasn't typed one). */
   async function addGroup(groupId) {
     const before = state.pages.length;
@@ -254,7 +254,7 @@
 
   /* ---------- paste source ---------- */
 
-  // Draft persistence — the paste box, the collection name and the active source
+  // Draft persistence -- the paste box, the collection name and the active source
   // tab all survive a popup close/reopen or a tab switch.
   const draftStore = (api.storage && api.storage.session) || (api.storage && api.storage.local);
 
@@ -322,7 +322,7 @@
     const before = state.pages.length;
     if (found.length) state.pages = dedupe(merge ? state.pages.concat(found) : found);
     state.groupPristine = false;
-    clearPasteDraft(); // always empty the box — anything left couldn't be added
+    clearPasteDraft(); // always empty the box -- anything left couldn't be added
     clearError();
     render();
     const added = state.pages.length - before;
@@ -404,7 +404,7 @@
         if (act === "up" && idx > 0) [state.pages[idx - 1], state.pages[idx]] = [state.pages[idx], state.pages[idx - 1]];
         if (act === "down" && idx < state.pages.length - 1)
           [state.pages[idx + 1], state.pages[idx]] = [state.pages[idx], state.pages[idx + 1]];
-        state.groupPristine = false; // curated — don't let a picker change wipe it
+        state.groupPristine = false; // curated -- don't let a picker change wipe it
         render();
       });
 
@@ -468,7 +468,7 @@
 
     await saveRecent(link, name, pages.length);
     clearDrafts();
-    // the link is done — "Build another" starts from a clean name (pages are kept
+    // the link is done -- "Build another" starts from a clean name (pages are kept
     // so a quick variant is easy), and a fresh popup open won't resurrect this one
     $("#collection-name").value = "";
     state.name = "";
@@ -619,10 +619,10 @@
     $("#pw-note").hidden = !encrypted;
 
     const longLink = link.length > (CFG.SOFT_URL_LIMIT || 12000);
-    // A shortener is configured and we're still on the long link — offer the
+    // A shortener is configured and we're still on the long link -- offer the
     // button (whether auto-shorten is off, or it's on but just failed).
     const showShorten = !!state.settings.shortProvider && link === lastLongLink;
-    // No shortener, but the link is long — nudge toward setting one up.
+    // No shortener, but the link is long -- nudge toward setting one up.
     const showEnable = !state.settings.shortProvider && longLink && link === lastLongLink;
     $("#shorten-row").hidden = !(showShorten || showEnable);
     $("#shorten-link").hidden = !showShorten;
@@ -711,7 +711,7 @@
     const el = $("#shortener-notice");
     if (!el) return;
     if (state.settings.shortProvider) {
-      el.hidden = true; // already using one — nothing to recommend
+      el.hidden = true; // already using one -- nothing to recommend
       return;
     }
     let dismissed = false;
@@ -769,7 +769,7 @@
       if (state.groupPristine) {
         loadGroup(id);
       } else {
-        $("#group-hint").hidden = false; // list is curated — pick + ＋ Add to combine
+        $("#group-hint").hidden = false; // list is curated -- pick a group, then "+ Add" to combine
       }
     });
     $("#group-add").addEventListener("click", () => {

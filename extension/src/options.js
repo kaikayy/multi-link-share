@@ -248,7 +248,7 @@
           $("#save-err").hidden = false;
         }
       } catch (e) {
-        /* older browser without host permission prompts — ignore */
+        /* older browser without host permission prompts -- ignore */
       }
     }
 

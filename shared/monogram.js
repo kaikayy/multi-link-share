@@ -1,5 +1,5 @@
 /*!
- * monogram.js — deterministic, offline avatar for a URL.
+ * monogram.js -- deterministic, offline avatar for a URL.
  *
  * The viewer renders zero third-party requests, so instead of fetching a
  * favicon we draw a coloured monogram derived from the hostname. Shared by

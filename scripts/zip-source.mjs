@@ -20,4 +20,4 @@ execFileSync(
   ["-qr", "-X", out, ".", "-x", "dist/*", ".git/*", "node_modules/*", "*.DS_Store"],
   { cwd: root, stdio: "inherit" }
 );
-console.log("  ✓", path.relative(root, out));
+console.log("  ok", path.relative(root, out));

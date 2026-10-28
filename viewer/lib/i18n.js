@@ -1,5 +1,5 @@
 /*!
- * i18n.js — UI strings for the viewer, popup and options pages, in English,
+ * i18n.js -- UI strings for the viewer, popup and options pages, in English,
  * German and Spanish.
  *
  * The language is auto-detected once from the browser's language list, then
@@ -292,6 +292,7 @@
       b_working: "Working…",
       b_couldNotComplete: "Could not complete that.",
       b_confirmManyPages: "{count} pages -- pick where to open them.",
+      b_menuHeadingTitled: "{pages} · {title}",
       b_couldNotReachExtension: "Could not reach the extension.",
     },
 
@@ -553,6 +554,7 @@
       b_working: "Wird bearbeitet…",
       b_couldNotComplete: "Das konnte nicht ausgeführt werden.",
       b_confirmManyPages: "{count} Seiten -- wähle, wo sie geöffnet werden sollen.",
+      b_menuHeadingTitled: "{pages} · {title}",
       b_couldNotReachExtension: "Die Erweiterung konnte nicht erreicht werden.",
     },
 
@@ -814,6 +816,7 @@
       b_working: "Procesando…",
       b_couldNotComplete: "No se pudo completar esa acción.",
       b_confirmManyPages: "{count} páginas -- elige dónde abrirlas.",
+      b_menuHeadingTitled: "{pages} · {title}",
       b_couldNotReachExtension: "No se pudo contactar con la extensión.",
     },
   };

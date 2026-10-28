@@ -87,7 +87,7 @@ const FORCE_GOOD = `
 `.split(/\s+/).filter(Boolean);
 
 // probe said good, but keep it out of AUTO preview (SPA / consent-wall / ad-heavy
-// / marginal — better shown as the plain card with a "try preview" opt-in)
+// / marginal -- better shown as the plain card with a "try preview" opt-in)
 const DROP_GOOD = new Set([
   "adobe.com", "airtable.com", "monday.com", "trello.com", "todoist.com", "mural.co",
   "zoom.us", "microsoft.com", "sharepoint.com", "disneyplus.com", "hulu.com",
@@ -99,7 +99,7 @@ const DROP_GOOD = new Set([
   "immobilienscout24.de", "rightmove.co.uk", "trulia.com", "zillow.com", "dice.com",
   "gog.com", "rockstargames.com", "wix.com", "squarespace.com", "netlify.com",
   "netlify.app", "stackblitz.com", "codesandbox.io", "hashnode.com", "hashnode.dev",
-  // ad / consent heavy news + aggregators — plain card is the better default
+  // ad / consent heavy news + aggregators -- plain card is the better default
   "foxnews.com", "cbsnews.com", "usatoday.com", "bild.de", "faz.net", "zeit.de",
   "repubblica.it", "corriere.it", "elmundo.es", "elpais.com", "thesun.co.uk",
   "newyorker.com", "theatlantic.com", "time.com", "wired.com", "cnet.com",

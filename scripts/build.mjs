@@ -112,7 +112,7 @@ function buildExtension(target, manifestFile) {
   syncShared(path.join(out, "src", "lib"), true);
   const zip = path.join(dist, `tab-share-${target}-v${version}.zip`);
   zipDir(out, zip);
-  console.log("  ✓", path.relative(root, zip));
+  console.log("  ok", path.relative(root, zip));
 }
 
 function buildViewer() {
@@ -122,7 +122,7 @@ function buildViewer() {
   syncShared(path.join(out, "lib"), false);
   const zip = path.join(dist, `tab-share-viewer-v${version}.zip`);
   zipDir(out, zip);
-  console.log("  ✓", path.relative(root, zip));
+  console.log("  ok", path.relative(root, zip));
 }
 
 fs.mkdirSync(dist, { recursive: true });

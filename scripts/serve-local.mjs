@@ -7,7 +7,7 @@
  * Builds dist/chrome + dist/firefox + dist/viewer with the viewer base pinned to
  * http://localhost:8777/, then serves dist/viewer on that port. Load dist/chrome
  * (or dist/firefox) unpacked, set the same URL in the options page, create a
- * link, and open it — the import banner should appear.
+ * link, and open it -- the import banner should appear.
  *
  * A plain `npm run build` (and the post-commit hook) resets the baked default,
  * so re-run this whenever you want the localhost build back.
@@ -22,7 +22,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = process.env.PORT || 8777;
 const BASE = `http://localhost:${PORT}/`;
 
-console.log(`Building with VIEWER_BASE=${BASE} …`);
+console.log(`Building with VIEWER_BASE=${BASE} ...`);
 execFileSync(process.execPath, [path.join(root, "scripts", "build.mjs")], {
   cwd: root,
   stdio: "inherit",
@@ -64,7 +64,7 @@ http
     console.log(`\nviewer running at ${BASE}`);
     console.log("Next:");
     console.log("  1. Load dist/chrome (or dist/firefox) unpacked");
-    console.log(`  2. Options → Viewer base URL → ${BASE} → Save (grant the host prompt)`);
-    console.log("  3. Create a share link — it should point at localhost");
-    console.log("  4. Open the link → the import banner appears\n");
+    console.log(`  2. Options -> Viewer base URL -> ${BASE} -> Save (grant the host prompt)`);
+    console.log("  3. Create a share link -- it should point at localhost");
+    console.log("  4. Open the link -> the import banner appears\n");
   });

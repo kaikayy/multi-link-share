@@ -15,7 +15,7 @@ const R = (...p) => path.join(root, ...p);
 
 function render(svg, w, h, out) {
   execFileSync("rsvg-convert", ["-w", String(w), "-h", String(h), svg, "-o", out], { stdio: "inherit" });
-  console.log("  ✓", path.relative(root, out));
+  console.log("  ok", path.relative(root, out));
 }
 
 try {

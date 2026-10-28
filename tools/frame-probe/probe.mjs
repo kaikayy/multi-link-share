@@ -21,7 +21,7 @@ function classify(xfo, csp, status) {
     if (v.includes("allowall")) return "good";
     if (v.includes("deny") || v.includes("sameorigin") || v.includes("allow-from")) return "bad";
   }
-  if (status === 401) return "bad"; // auth wall — nothing to preview
+  if (status === 401) return "bad"; // auth wall -- nothing to preview
   return "good"; // no anti-framing headers seen
 }
 

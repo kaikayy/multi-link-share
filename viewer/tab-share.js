@@ -1,6 +1,6 @@
-/* Tab Share viewer — renders a shared collection from the URL fragment.
+/* Tab Share viewer -- renders a shared collection from the URL fragment.
    No network requests except optional site icons (icons.duckduckgo.com), which
-   are OFF by default and toggled in the ⚙ menu. No storage beyond localStorage
+   are OFF by default and toggled in the gear menu. No storage beyond localStorage
    prefs and an in-session "last page" memory. */
 (function () {
   "use strict";
@@ -421,7 +421,7 @@
     }
   }
 
-  /* ---------- generic pager ([⏮ ◀ n/total ▶ ⏭]) ---------- */
+  /* ---------- generic pager ([|< < n/total > >|]) ---------- */
 
   function iconBtn(symbol, cls, onClick, dis) {
     const b = document.createElement("button");
@@ -740,7 +740,7 @@
   /**
    * Open a set of URLs.
    *  - With the extension: post them to the content script, which asks the
-   *    background worker to open every one cleanly via the tabs API — no pop-up
+   *    background worker to open every one cleanly via the tabs API -- no pop-up
    *    blocking.
    *  - Without it: open them synchronously inside the click gesture so the
    *    browser lets the first through; if it blocks the rest, tell the user how
@@ -763,7 +763,7 @@
     }
 
     // Synchronous, inside the click gesture. `noopener` makes window.open return
-    // null even on success, so we can't count — just be honest about pop-ups.
+    // null even on success, so we can't count -- just be honest about pop-ups.
     urls.forEach((u) => window.open(u, "_blank", "noopener"));
     if (mode !== "this-window") {
       toast(

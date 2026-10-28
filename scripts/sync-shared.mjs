@@ -18,6 +18,6 @@ for (const { dir, files } of targets) {
   fs.mkdirSync(dir, { recursive: true });
   for (const f of files) {
     fs.copyFileSync(path.join(shared, f), path.join(dir, f));
-    console.log("  ✓", path.relative(root, path.join(dir, f)));
+    console.log("  ok", path.relative(root, path.join(dir, f)));
   }
 }

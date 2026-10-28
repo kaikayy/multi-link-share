@@ -1,10 +1,10 @@
-/* Tab Share — background worker.
+/* Tab Share -- background worker.
  *
  * Two jobs, both offline:
  *   1. Handle "import" requests from the viewer-page banner (content script):
  *      open a shared collection into this window / a new window / a tab group,
  *      or save it to history.
- *   2. Register the banner content script for the viewer URL set in options —
+ *   2. Register the banner content script for the viewer URL set in options --
  *      any host other than the packaged default (localhost included) after the
  *      user grants that one host in the options page.
  */
@@ -41,10 +41,10 @@ async function openNewWindow(urls) {
 
 async function openInGroup(urls, windowId, title) {
   // tabGroups is a required permission now, but very old builds may still lack
-  // the tabs.group() API — fall back to a new window there.
+  // the tabs.group() API -- fall back to a new window there.
   if (typeof api.tabs.group !== "function" || !(api.tabGroups && api.tabGroups.update)) {
     await openNewWindow(urls);
-    return { note: "This browser can't make tab groups — opened a new window instead." };
+    return { note: "This browser can't make tab groups, so it opened a new window instead." };
   }
   const ids = [];
   for (const url of urls) {
@@ -184,7 +184,7 @@ if (api.permissions && api.permissions.onRemoved) {
 if (api.runtime.onInstalled) {
   api.runtime.onInstalled.addListener((details) => {
     syncCustomContentScript();
-    // First install → open the options page so the user can make the setup choices.
+    // First install -> open the options page so the user can make the setup choices.
     if (details && details.reason === "install") {
       try {
         api.runtime.openOptionsPage();

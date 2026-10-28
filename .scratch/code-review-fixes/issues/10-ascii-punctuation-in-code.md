@@ -6,8 +6,8 @@ Do this after the functional tickets so it doesn't create merge conflicts with t
 
 **Blocked by:** 01, 02, 03, 04, 05, 06, 07, 08
 
-**Status:** ready-for-agent
+**Status:** done (HTML fallback/privacy page text and i18n strings left for the maintainer)
 
-- [ ] No non-ASCII punctuation remains in code or comments outside the i18n string tables and vendored files
-- [ ] Any non-ASCII characters that appear in UI output from code (e.g. a separator glyph) are either moved into i18n strings or replaced deliberately
-- [ ] `shared/` copies are re-synced and `npm test` passes
+- [x] No non-ASCII punctuation remains in code or comments outside the i18n string tables and vendored files
+- [x] Any non-ASCII characters that appear in UI output from code (e.g. a separator glyph) are either moved into i18n strings or replaced deliberately
+- [x] `shared/` copies are re-synced and `npm test` passes

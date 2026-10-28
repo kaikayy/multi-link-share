@@ -1,4 +1,4 @@
-/* Tab Share — viewer-page import affordance (content script).
+/* Tab Share -- viewer-page import affordance (content script).
  *
  * Adds ONE button to the viewer's toolbar: "Open with Tab Share". It stays
  * there for the whole session and opens a small menu to send the collection
@@ -19,7 +19,7 @@
 
   // Tell the viewer's page script the extension is here. A content-script global
   // (window.__tabShare) lives in an isolated world the page can't see, so use a
-  // DOM marker plus a postMessage channel — both cross the boundary reliably.
+  // DOM marker plus a postMessage channel -- both cross the boundary reliably.
   window.__tabShare = true; // kept for older viewers
   document.documentElement.setAttribute("data-tabshare-ext", "1");
 
@@ -100,7 +100,8 @@
   const wrap = el("div", { class: "wrap" });
   const menu = el("div", { class: "menu", role: "menu", hidden: "" });
   const pagesLabel = I18N.t(count === 1 ? "v_pagesCountOne" : "v_pagesCountOther", { count });
-  menu.appendChild(el("p", { class: "hd" }, pagesLabel + (collection.title ? " · " + collection.title : "")));
+  const heading = collection.title ? I18N.t("b_menuHeadingTitled", { pages: pagesLabel, title: collection.title }) : pagesLabel;
+  menu.appendChild(el("p", { class: "hd" }, heading));
 
   const acts = el("div", { class: "acts" });
   acts.appendChild(el("button", { class: "primary", "data-mode": "this-window" }, I18N.t("v_openInThisWindow")));
@@ -301,7 +302,7 @@
     });
   }
 
-  /* ---------- reversible "Show the button" checkbox in the viewer ⚙ menu ---------- */
+  /* ---------- reversible "Show the button" checkbox in the viewer gear menu ---------- */
 
   let settingsCb = null;
   function addSettingsToggle(disabled) {

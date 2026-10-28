@@ -1,25 +1,25 @@
 /*!
- * frame-hosts.js — a static, offline classifier for whether a page is worth
+ * frame-hosts.js -- a static, offline classifier for whether a page is worth
  * trying to show inside an <iframe>.
  *
- *   'good'    — sends no anti-framing headers and renders cleanly; the viewer
+ *   'good'    -- sends no anti-framing headers and renders cleanly; the viewer
  *               previews it automatically (when auto-preview is on).
- *   'bad'     — blocks framing (X-Frame-Options / CSP frame-ancestors) or is a
+ *   'bad'     -- blocks framing (X-Frame-Options / CSP frame-ancestors) or is a
  *               login / consent / SPA wall where a preview is pointless; the
  *               viewer shows only "Open this page".
- *   'unknown' — everything else: the card plus a "Try live preview" button.
+ *   'unknown' -- everything else: the card plus a "Try live preview" button.
  *
  * The GOOD / BAD lists were built by probing the response headers of the ~700
  * most-visited / most-shared domains (see tools/frame-probe) in 2026-08, then
  * hand-reviewing the ambiguous cases. Matching is by registrable-domain suffix,
  * so "en.wikipedia.org" matches "wikipedia.org". The list never blocks a
- * page — it only picks which preview affordance is shown — and callers may add
+ * page -- it only picks which preview affordance is shown -- and callers may add
  * runtime observations via FrameHosts.remember().
  */
 (function (root) {
   "use strict";
 
-  // Allows framing — safe to auto-preview.
+  // Allows framing -- safe to auto-preview.
   var GOOD = [
     "404media.co", "500px.com", "abcnews.go.com", "angular.dev", "archive.org", "babeljs.io",
     "bandcamp.com", "blogger.com", "blogspot.com", "caniuse.com", "clojure.org",

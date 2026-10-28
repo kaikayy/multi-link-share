@@ -2,7 +2,7 @@
    in a normal tab for visual work. NOT shipped (scripts/build.mjs excludes dev/). */
 (function () {
   const FAKE_TABS = [
-    { id: 1, url: "https://en.wikipedia.org/wiki/Anna's_hummingbird", title: "Anna's hummingbird — Wikipedia", groupId: 7, active: true, favIconUrl: "https://en.wikipedia.org/static/favicon/wikipedia.ico" },
+    { id: 1, url: "https://en.wikipedia.org/wiki/Anna's_hummingbird", title: "Anna's hummingbird -- Wikipedia", groupId: 7, active: true, favIconUrl: "https://en.wikipedia.org/static/favicon/wikipedia.ico" },
     { id: 2, url: "https://www.allaboutbirds.org/guide/Annas_Hummingbird", title: "Anna's Hummingbird Identification", groupId: 7, favIconUrl: "" },
     { id: 3, url: "https://www.youtube.com/watch?v=abc123", title: "Hummingbird in slow motion (4K)", groupId: 7, favIconUrl: "https://www.youtube.com/s/desktop/favicon.ico" },
     { id: 4, url: "https://scholar.google.com/scholar?q=hummingbird+flight", title: "hummingbird flight - Google Scholar", groupId: -1, favIconUrl: "" },
@@ -100,7 +100,7 @@
     storage: {
       onChanged: { addListener() {} },
       local: makeArea(store),
-      // Backed by real sessionStorage so drafts survive a tab reload — closer to
+      // Backed by real sessionStorage so drafts survive a tab reload -- closer to
       // how chrome.storage.session behaves across popup open/close.
       session: makeArea(sessionBacked()),
     },

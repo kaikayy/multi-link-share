@@ -51,9 +51,9 @@ async function run() {
     try {
       await fn();
       pass++;
-      console.log("  ✓", name);
+      console.log("  ok", name);
     } catch (e) {
-      console.error("  ✗", name, "\n   ", e.message);
+      console.error("  FAIL", name, "\n   ", e.message);
       process.exitCode = 1;
     }
   }
@@ -119,7 +119,7 @@ ok("tokens never contain a '+' (chat apps form-decode it to space)", () => {
 ok("large collection stays a sane URL length", () => {
   const pages = Array.from({ length: 30 }, (_, i) => ({
     u: `https://example.com/section/${i}/a-fairly-long-slug-for-the-page-${i}`,
-    t: `Page number ${i} — a representative title of middling length`,
+    t: `Page number ${i} -- a representative title of middling length`,
   }));
   const token = ShareCodec.encode({ title: "Big set", pages });
   const v1len = encodeV1({ title: "Big set", pages }).length;

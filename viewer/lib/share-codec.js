@@ -1,5 +1,5 @@
 /*!
- * share-codec.js — encode / decode a tab collection to a URL-safe string.
+ * share-codec.js -- encode / decode a tab collection to a URL-safe string.
  *
  * The entire collection lives inside the URL fragment (`#...`) of the viewer
  * link. Fragments are never sent to a web server, so no backend and no data
@@ -7,13 +7,13 @@
  * `ShareCodec`) and as a CommonJS module.
  *
  * Token shapes:
- *   plaintext  — LZString.compressToEncodedURIComponent(JSON) of
+ *   plaintext  -- LZString.compressToEncodedURIComponent(JSON) of
  *                v4 `[4, name, flags, urls[], ext?]`  (v1/v2/v3 still decode)
  *                where `ext` (optional) is `{ c: created, t: [title...] }`;
  *                a "minimal" link omits `ext` entirely -- URLs only, and also
  *                strips ad/analytics query params (utm_*, fbclid, ...). A full
  *                (non-minimal) link leaves every URL exactly as given.
- *   encrypted  — "E1." + b64url(salt) "." b64url(iv) "." b64url(ciphertext)
+ *   encrypted  -- "E1." + b64url(salt) "." b64url(iv) "." b64url(ciphertext)
  *                where ciphertext = AES-GCM( the plaintext token above ),
  *                key = PBKDF2(password, salt, 210000, SHA-256)
  */
@@ -209,7 +209,7 @@
 
     var raw = null;
     try {
-      // Undo the "+"→"_" swap from encode(). Old links (raw "+") have no "_",
+      // Undo the "+"->"_" swap from encode(). Old links (raw "+") have no "_",
       // so this is a no-op there.
       raw = LZString.decompressFromEncodedURIComponent(token.replace(/_/g, "+"));
     } catch (e) {
