@@ -107,7 +107,8 @@
   acts.appendChild(el("button", { class: "primary", "data-mode": "this-window" }, I18N.t("v_openInThisWindow")));
   acts.appendChild(el("button", { "data-mode": "new-window" }, I18N.t("v_openInNewWindow")));
   acts.appendChild(el("button", { "data-mode": "tab-group" }, I18N.t("v_openAsTabGroup")));
-  acts.appendChild(el("button", { "data-mode": "save" }, I18N.t("b_saveToHistory")));
+  // A password link's decrypted pages go only into tabs, never into history.
+  if (!passwordLink) acts.appendChild(el("button", { "data-mode": "save" }, I18N.t("b_saveToHistory")));
   menu.appendChild(acts);
 
   const saveRow = el("div", { class: "save", id: "ts-save-row", hidden: "" });
@@ -295,7 +296,7 @@
         // show the menu and let a click confirm it.
         return setTimeout(() => {
           openMenu();
-          say(I18N.t("b_confirmManyPages", { count }));
+          if (!passwordLink) say(I18N.t("b_confirmManyPages", { count }));
         }, 400);
       }
       if (!cfg.noauto) setTimeout(openMenu, 400);

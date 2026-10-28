@@ -145,14 +145,18 @@
     I18N.applyStatic(els.suggest);
     els.suggest.hidden = false;
     const answer = (value) => {
-      keys.forEach((k) => lsSet(k, value));
+      // never overwrite a choice made meanwhile in the settings menu
+      keys.forEach((k) => {
+        if (lsGet(k) !== "on" && lsGet(k) !== "off") lsSet(k, value);
+      });
       els.suggest.hidden = true;
       els.setIcons.checked = iconsOn();
       els.setAuto.checked = autoPreviewOn();
       rerender();
     };
-    els.suggestYes.addEventListener("click", () => answer("on"));
-    els.suggestNo.addEventListener("click", () => answer("off"));
+    // onclick, not addEventListener: start() can run again after a repeat unlock
+    els.suggestYes.onclick = () => answer("on");
+    els.suggestNo.onclick = () => answer("off");
   }
 
   const sessionKey = () => "tabshare:" + (location.hash || "").slice(1, 40);
@@ -251,7 +255,7 @@
       // Let the extension's "Open with Tab Share" button import the unlocked
       // pages. Only the decrypted list is posted, never the password.
       if (hasExtension()) {
-        const pages = collection.pages.map((p) => ({ url: p.url, title: p.title }));
+        const pages = collection.pages.map((p) => ({ url: p.url })); // URLs only
         window.postMessage({ __tabshare: "unlocked", collection: { title: collection.title, pages } }, location.origin);
       }
     });
@@ -893,6 +897,7 @@
     });
     els.setIcons.addEventListener("change", () => {
       lsSet("ts:icons", els.setIcons.checked ? "on" : "off");
+      els.suggest.hidden = true; // answered in settings; the offer is moot
       if (els.setIcons.checked && lsGet("ts:iconnote") !== "seen") {
         lsSet("ts:iconnote", "seen");
         toast(I18N.t("v_toastIconsNote"), 6500);
@@ -901,6 +906,7 @@
     });
     els.setAuto.addEventListener("change", () => {
       lsSet("ts:autopreview", els.setAuto.checked ? "on" : "off");
+      els.suggest.hidden = true;
       if (mode === "slides") renderSlide();
     });
 

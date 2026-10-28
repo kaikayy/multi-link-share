@@ -34,7 +34,10 @@ own section below.
   "Open with Tab Share" button that opens the pages with the extension instead
   of the web view. For a password link it can't read the fragment; after the
   recipient unlocks the link, the viewer page hands it the decrypted page list
-  (never the password). It opens tabs only in response to a real click. It ships enabled only for the packaged viewer address; a
+  (never the password); those pages can be opened as tabs but not saved to
+  history. It opens tabs in response to a click, or automatically only if you
+  saved a default import mode -- and even then it asks first for more than 10
+  pages, and always for password links. It ships enabled only for the packaged viewer address; a
   self-hosted (https) viewer runs it only after you approve that one host in
   the options page. It runs on no other site.
 
