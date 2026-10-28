@@ -10,8 +10,8 @@
 
 **Blocked by:** 04, 05, 06, 07, 08
 
-**Status:** ready-for-agent
+**Status:** done (store-listing versions in README left as published: beta.11)
 
-- [ ] Every bullet above is reflected in the docs
-- [ ] No claim in README, PRIVACY or ROADMAP "Done" contradicts the code (spot-check each privacy promise against the code)
-- [ ] CHANGELOG has an entry for the user-visible privacy changes
+- [x] Every bullet above is reflected in the docs
+- [x] No claim in README, PRIVACY or ROADMAP "Done" contradicts the code (spot-check each privacy promise against the code)
+- [x] CHANGELOG has an entry for the user-visible privacy changes

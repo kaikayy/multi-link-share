@@ -83,7 +83,7 @@ modern browser, mobile included, with no extension.
 | **Opera** | ✅ | ✅ | ✅ end-to-end |
 | **Vivaldi** | ✅ | ✅ | ⬜ TBD |
 | **Arc** | ✅ | ✅ | ⬜ TBD |
-| **Firefox** (≥ 139) | ✅ | ✅ | ✅ end-to-end |
+| **Firefox** (≥ 140) | ✅ | ✅ | ✅ end-to-end |
 | **Zen** | ✅ | ✅ | ✅ end-to-end |
 | **LibreWolf / Waterfox / Floorp / Mullvad** | ✅ | ✅ | ⬜ TBD (other Firefox forks) |
 | **Firefox for Android** | ⬜ blocked | ❌ no tab-groups API on Android | ⬜ roadmap -- `tabGroups` must become optional first |
@@ -100,9 +100,11 @@ The collection (page URLs + titles) is compressed with
 **fragment** -- the part after `#`. Browsers never transmit the fragment, so:
 
 - no backend, no database, no accounts;
-- the extension makes **no network requests** (unless you turn on a URL shortener);
-- the viewer makes **none** (unless you leave the site-icons option on, which
-  fetches favicons from `icons.duckduckgo.com`);
+- the extension makes **no network requests** (unless you turn on a URL shortener,
+  or the site-icons option, which shows each tab's own favicon in the popup);
+- the viewer makes **none** until the recipient opts in: a sender can *suggest*
+  site icons (fetched from `icons.duckduckgo.com`) or live previews, but nothing
+  loads until the recipient accepts or turns them on in the viewer's settings;
 - the link is self-contained (~500 chars for 5 pages, ~1.5 KB for 30);
 - `"+"` is swapped out of the token so chat apps can't mangle it.
 
@@ -134,7 +136,7 @@ classifies hosts from a header probe of the ~730 most-visited / most-shared
 domains (rebuild it with `tools/frame-probe/`):
 
 - **framing-friendly** (Wikipedia, MDN-style docs, many reference and dev sites)
-  preview inline automatically;
+  preview inline automatically once the recipient has turned on live previews;
 - **known blockers** show a clean card with just **"Open this page"**;
 - **everything else** shows the card plus an opt-in **"Try live preview"** -- and
   if that preview never loads, the viewer drops it and remembers the host for
@@ -149,7 +151,10 @@ When a Tab Share link is opened in a browser that has the extension, a button
 appears in the viewer's toolbar -- **Open with Tab Share** -- offering to open the
 collection natively: into the current window, a new window, or a tab group, or
 to **save it to history** with a title. Everyone else just gets the slideshow.
-It's a content script that runs **only on the viewer page** (statically, just
+For a password link the button appears once the recipient has unlocked it; the
+viewer hands the decrypted page list to the button, never the password. Tabs
+open only from a real click (a saved default mode asks first for more than 10
+pages, and always for password links). It's a content script that runs **only on the viewer page** (statically, just
 the packaged viewer host); point the extension at your own viewer and the
 options page asks you to approve that one host first. Hide the button from its
 own menu or the options page; bring it back from the viewer's settings menu.

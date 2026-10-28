@@ -148,7 +148,7 @@ Two ideas for people who want to run a fuller instance (whether that's
   needed) -- that's the recipient side and it's done.
 - **The extension on Firefox for Android.** Blocked by `tabGroups` being a
   *required* permission (Android Firefox has no tab-groups API) and
-  `strict_min_version: 139`. The popup already degrades gracefully when the API
+  `strict_min_version: 140`. The popup already degrades gracefully when the API
   is missing (`hasTabGroupsApi()`), so the fix is: make `tabGroups` optional
   (request it from the popup/options instead of relying on it at content-script
   time), test the popup at ~360 px, and flag Android compatibility on AMO. Low
@@ -159,7 +159,8 @@ Two ideas for people who want to run a fuller instance (whether that's
 ## Done (previously on this list)
 
 - ✅ Password-protected links (client-side WebCrypto).
-- ✅ Optional external URL shorteners (is.gd / v.gd / TinyURL / custom).
+- ✅ Optional URL shorteners (Tab Share shortener / TinyURL / da.gd / custom).
+  is.gd and v.gd were retired: they reject `#`-fragment and github.io URLs.
 - ✅ Companion "Open with Tab Share" import button for recipients who have the
   extension.
 - ✅ Self-hosting the viewer + a custom viewer URL in options.

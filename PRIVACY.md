@@ -1,6 +1,6 @@
 # Privacy Policy -- Tab Share
 
-_Last updated: 2026-09-02 (1.0.0-beta.7.5)_
+_Last updated: 2026-10-28 (unreleased, after 1.0.0-beta.13)_
 
 Tab Share is built so that **the extension and the viewer** have nothing to
 collect: no server, no account, no analytics, no tracking. The one part with a
@@ -9,10 +9,13 @@ own section below.
 
 ## What the extension accesses
 
-- **Open tabs in the current window** -- their URLs, titles and icons. Read only
-  at the moment you click **Create share link** (or an "add tabs" button), only
-  for the window you triggered it from, and only to build the list you choose
-  from. Tab icons are shown in the popup and never uploaded.
+- **Open tabs in the current window** -- their URLs, titles and icons. Read when
+  you open the popup (or press an "add tabs" button), only for the window you
+  opened it from, and only to build the list you choose from. The popup lists
+  your other windows without reading their tabs; it reads another window's tabs
+  only if you pick that window (or "all windows") as the source. Tab icons are
+  never uploaded; they're shown in the popup only if **site icons** is on, in
+  which case your browser loads each tab's own favicon.
 - **Tab groups** -- names and colours, and (on import) the ability to create a
   group. Used for the "Tab group" source and the "open as a tab group" action.
 - **Local extension storage** (`storage.local`) -- your viewer address, setup
@@ -21,22 +24,33 @@ own section below.
   the single link you shorten is sent to that service as you create it -- see
   below -- but the stored list itself is not.) Clear all or individual entries
   in the options page.
+- **Session storage** (`storage.session`, or `storage.local` in browsers
+  without it) -- a draft of the list you're building in the popup (its URLs and
+  titles, the name and pasted text), so it survives closing the popup. Never
+  uploaded; cleared when you create the link (and `storage.session` is also
+  emptied when the browser closes).
 - **The viewer page only** -- one content script runs on the slideshow viewer
   page. It reads the collection from that page's URL fragment so it can add an
   "Open with Tab Share" button that opens the pages with the extension instead
-  of the web view. It ships enabled only for the packaged viewer address; a
+  of the web view. For a password link it can't read the fragment; after the
+  recipient unlocks the link, the viewer page hands it the decrypted page list
+  (never the password). It opens tabs only in response to a real click. It ships enabled only for the packaged viewer address; a
   self-hosted (https) viewer runs it only after you approve that one host in
   the options page. It runs on no other site.
 
 ## What can make a network request -- and only if you turn it on
 
-- **Site icons** in the shared viewer. If left on, when a recipient opens a link
-  the viewer requests one icon per domain in the collection from
-  `icons.duckduckgo.com`. Those domain names go to DuckDuckGo's icon service and
-  nowhere else. Turn it off at first run or in options. With **site icons** off
-  and **Auto-load live previews** off (both in the viewer's settings menu), the
-  viewer makes no network request of its own -- it loads a page only when you
-  open or preview one yourself.
+- **Site icons** in the shared viewer. Off by default. A sender's link can only
+  *suggest* them: the recipient sees "Turn on / No thanks" and nothing loads
+  unless they accept (or turn it on in the viewer's settings menu). Once on, the
+  viewer requests one icon per domain in the collection from
+  `icons.duckduckgo.com`; those domain names go to DuckDuckGo's icon service and
+  nowhere else.
+- **Auto-load live previews** in the viewer. Same rule: the sender's link can
+  suggest it, but framing-friendly pages load without a click only after the
+  recipient accepts or turns it on. Until the recipient turns on site icons or
+  live previews, the viewer makes no network request of its own -- it loads a
+  page only when they open or preview one themselves.
 - **A URL shortener**. Off by default. The built-in choices are the first-party
   **Tab Share shortener** (`s.kaikay.de`), **da.gd**, **TinyURL**, or a **custom
   endpoint** you supply. When one is on, creating a share link sends that one

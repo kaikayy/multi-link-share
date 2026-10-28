@@ -5,7 +5,32 @@ All notable changes to Tab Share. Format loosely follows
 
 ## [Unreleased]
 
-_No entries yet._
+Manifests: firefox background now loads `src/lib/config.js` before
+`src/background.js`. No permission changes.
+
+### Changed
+
+- **Recipients opt in to site icons and live previews.** A sender's settings
+  are now only *suggested*: the viewer shows "Turn on / No thanks" and loads no
+  third-party content until the recipient accepts or enables it in settings.
+  Previously a link's auto-preview flag (on by default) applied silently.
+- **The popup no longer reads every window's tabs on open.** The window picker
+  lists windows without their tabs (labels are now "Window N" without a tab
+  count); another window's tabs are read only when it is picked.
+- **Opening tabs from the viewer requires a real click.** The import content
+  script ignores open requests without a user gesture, and a saved default
+  import mode asks first for collections over 10 pages.
+
+### Added
+
+- **"Open with Tab Share" for password links**, after the recipient unlocks
+  them. Only the decrypted page list reaches the extension, never the password.
+
+### Internal
+
+- Shared helpers (`shared/config.js`, new `shared/toast.js`) and named view
+  flags in `share-codec.js` replace copies across popup, options, background
+  and viewer. Self-test grows to cover them.
 
 ## [1.0.0-beta.13] - 2026-10-12
 
