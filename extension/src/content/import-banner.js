@@ -160,10 +160,6 @@
       if (s) s.textContent = I18N.t("b_openWithTabShare");
     }, 2500);
   }
-  function teardown() {
-    btn.remove();
-    host.remove();
-  }
 
   /* ---------- storage ---------- */
 
@@ -266,9 +262,6 @@
     btn.remove();
     host.remove();
     mounted = false;
-  }
-  function teardown() {
-    unmountButton();
   }
 
   function autoOpen() {

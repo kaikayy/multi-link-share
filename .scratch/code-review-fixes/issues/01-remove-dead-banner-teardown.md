@@ -4,8 +4,8 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The import banner script declares a single teardown routine
-- [ ] Mounting, dismissing and re-mounting the button behaves exactly as before (menu closes, button and host element are removed, mounted state resets)
-- [ ] `npm test` still passes
+- [x] The import banner script declares a single teardown routine
+- [x] Mounting, dismissing and re-mounting the button behaves exactly as before (menu closes, button and host element are removed, mounted state resets)
+- [x] `npm test` still passes
