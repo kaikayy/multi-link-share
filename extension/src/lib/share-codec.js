@@ -32,6 +32,10 @@
   var MAX_TITLE = 300;
   var MAX_NAME = 200;
 
+  // Bits of the `flags` field: the sender's view preferences for the recipient.
+  var FLAG_ICONS = 1; // show site icons
+  var FLAG_AUTO_PREVIEW = 2; // live-preview framable pages
+
   // Ad / analytics / share-attribution params. Stripped only from a MINIMAL
   // link's URLs (see encode()) -- a full link never touches the URLs you gave
   // it. They never change which page loads, and they bloat the link and hand
@@ -359,9 +363,21 @@
       });
   }
 
+  /** @param {{icons?:boolean, autoPreview?:boolean}} prefs  @returns {number} */
+  function packViewFlags(prefs) {
+    return (prefs && prefs.icons ? FLAG_ICONS : 0) | (prefs && prefs.autoPreview ? FLAG_AUTO_PREVIEW : 0);
+  }
+
+  /** @param {number} flags  a decoded collection's `flags` */
+  function unpackViewFlags(flags) {
+    return { icons: (flags & FLAG_ICONS) !== 0, autoPreview: (flags & FLAG_AUTO_PREVIEW) !== 0 };
+  }
+
   return {
     encode: encode,
     decode: decode,
+    packViewFlags: packViewFlags,
+    unpackViewFlags: unpackViewFlags,
     encrypt: encrypt,
     decrypt: decrypt,
     sanitizeUrl: sanitizeUrl,

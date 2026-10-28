@@ -436,7 +436,7 @@
     if (!pages.length) return;
 
     const name = ($("#collection-name").value || "").trim() || defaultTitle();
-    const flags = (state.settings.showIcons ? 1 : 0) | (state.settings.autoPreview ? 2 : 0);
+    const flags = ShareCodec.packViewFlags({ icons: state.settings.showIcons, autoPreview: state.settings.autoPreview });
     const password = $("#protect").checked ? $("#link-pass").value : "";
     if ($("#protect").checked && !password) {
       showError(I18N.t("p_errEnterPassword"));

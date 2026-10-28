@@ -268,6 +268,21 @@ ok("monogram is deterministic and offline", () => {
   assert.equal(a.label, "GI");
 });
 
+ok("view flags pack and unpack with the wire values (1 = icons, 2 = auto-preview)", () => {
+  assert.equal(ShareCodec.packViewFlags({ icons: true, autoPreview: false }), 1);
+  assert.equal(ShareCodec.packViewFlags({ icons: false, autoPreview: true }), 2);
+  assert.equal(ShareCodec.packViewFlags({}), 0);
+  assert.deepEqual(ShareCodec.unpackViewFlags(3), { icons: true, autoPreview: true });
+  assert.deepEqual(ShareCodec.unpackViewFlags(2), { icons: false, autoPreview: true });
+  assert.deepEqual(ShareCodec.unpackViewFlags(undefined), { icons: false, autoPreview: false });
+});
+
+ok("view flags survive an encode/decode round trip", () => {
+  const flags = ShareCodec.packViewFlags({ icons: true, autoPreview: true });
+  const out = ShareCodec.decode(ShareCodec.encode({ title: "F", flags, pages: [{ u: "https://example.com/" }] }));
+  assert.deepEqual(ShareCodec.unpackViewFlags(out.flags), { icons: true, autoPreview: true });
+});
+
 ok("config recognises localhost addresses", () => {
   assert.equal(Config.isLocalAddress("http://localhost:8787/new"), true);
   assert.equal(Config.isLocalAddress("https://127.0.0.1"), true);

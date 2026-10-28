@@ -126,7 +126,7 @@
     const v = lsGet("ts:autopreview");
     if (v === "on") return true;
     if (v === "off") return false;
-    return (collection.flags & 2) !== 0;
+    return ShareCodec.unpackViewFlags(collection.flags).autoPreview;
   }
 
   const sessionKey = () => "tabshare:" + (location.hash || "").slice(1, 40);

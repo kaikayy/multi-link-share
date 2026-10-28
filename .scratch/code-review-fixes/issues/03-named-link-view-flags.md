@@ -4,9 +4,9 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The share codec exports named constants (and/or encode/decode helpers) for the site-icons and auto-preview flags
-- [ ] Neither the popup nor the viewer uses a raw bit value for these flags any more
-- [ ] Links created before the change decode to the same settings as before (no wire-format change)
-- [ ] The self-test covers encoding and decoding both flags
+- [x] The share codec exports named constants (and/or encode/decode helpers) for the site-icons and auto-preview flags
+- [x] Neither the popup nor the viewer uses a raw bit value for these flags any more
+- [x] Links created before the change decode to the same settings as before (no wire-format change)
+- [x] The self-test covers encoding and decoding both flags
