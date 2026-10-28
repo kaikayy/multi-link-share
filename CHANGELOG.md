@@ -228,7 +228,7 @@ tag, which never reached a store.)
   itself if it's missing (a provider added or migrated without the grant).
   `SHORTENER_BASE=... npm run build` overrides the baked address.
 - **da.gd as a built-in shortener option.** A small, no-account open-source
-  shortener that keeps the `#…` fragment and takes multi-kilobyte links (where
+  shortener that keeps the `#...` fragment and takes multi-kilobyte links (where
   is.gd fails and TinyURL is hit-or-miss). Off by default like the rest. The
   Shorten-links card now notes that hosted shorteners -- `s.kaikay.de`, da.gd,
   TinyURL -- can't promise uptime or link longevity; a self-hosted **Tab Share

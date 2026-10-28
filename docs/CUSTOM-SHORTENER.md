@@ -13,7 +13,7 @@ Tab Share can run every share link through a shortener of your choice. Options:
   to run it yourself.
 - **da.gd** -- built in, no setup, no account. A small open-source shortener
   (running since 2011) that -- unlike is.gd / TinyURL's older API -- keeps the
-  `#…` fragment intact and swallows multi-kilobyte links. `GET https://da.gd/s?url=`.
+  `#...` fragment intact and swallows multi-kilobyte links. `GET https://da.gd/s?url=`.
 - **TinyURL** -- built in, no setup, but a public third party sees every link.
 - **Custom endpoint** -- any other tiny web service, described below.
 

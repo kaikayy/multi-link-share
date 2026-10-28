@@ -57,15 +57,18 @@ commit all three.
 - Match the surrounding code -- indentation, naming, and structure.
 - **ASCII punctuation only** in code, comments, and docs: `--` for dashes,
   `...` for ellipsis, `->` for arrows, straight quotes. No em/en dashes or smart
-  quotes.
+  quotes. UI translation strings (`shared/i18n.js` tables, HTML page text) are
+  exempt.
 - No new dependencies.
 - Keep the diff focused on one thing.
+- Review-time judgement rules live in `CODING_STANDARDS.md`.
 
 ## Tests
 
-`npm test` covers the URL codec (compression, the `+` swap, encryption
-round-trip). Run it before every commit. If you touch `shared/share-codec.js`
-or the encryption, add a case to `scripts/selftest.mjs`.
+`npm run check` runs everything CI runs: `npm test` (the URL codec, shared
+helpers, manifest hosts), a check that the `shared/` copies are in sync, and the
+ASCII-punctuation check. Run it before every commit. If you touch
+`shared/share-codec.js` or the encryption, add a case to `scripts/selftest.mjs`.
 
 There is no automated UI test suite; describe your manual testing in the PR
 (browser, what you clicked, what you saw). For anything touching the viewer,

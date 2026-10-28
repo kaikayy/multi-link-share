@@ -14,8 +14,8 @@
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
   var LOCAL_ADDR = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
-  // The hosts the manifests' static content_scripts entry covers. Keep in sync
-  // with the "matches" list in extension/manifest.*.json.
+  // The hosts the manifests' static content_scripts entry covers; the
+  // self-test fails if extension/manifest.*.json "matches" disagree.
   var BUILTIN_VIEWER_HOSTS = ["viewer.kaikay.de", "kaikayy.github.io"];
 
   /** A Tab Share shortener address without trailing slashes. */
@@ -49,6 +49,8 @@
         return /^https?:\/\/(localhost|127\.0\.0\.1)\//.test(p);
       });
     },
+
+    BUILTIN_VIEWER_HOSTS: BUILTIN_VIEWER_HOSTS,
 
     /** True when `url` is on a host the static content script already covers.
      *  False for anything that doesn't parse. */

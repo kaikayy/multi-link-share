@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Round-trips the codec the same way the browser does. `npm test` */
 import { createRequire } from "node:module";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
@@ -348,7 +349,15 @@ ok("config: shortener base and endpoint", () => {
   assert.equal(Config.shortenerEndpoint("https://s.example.com", "words"), "https://s.example.com/new?mode=words&url=");
 });
 
-ok("config: built-in viewer hosts match the manifests' content-script hosts", () => {
+ok("every manifest's content-script hosts equal Config.BUILTIN_VIEWER_HOSTS", () => {
+  for (const name of ["chrome", "firefox", "safari"]) {
+    const m = JSON.parse(fs.readFileSync(path.join(root, "extension", `manifest.${name}.json`), "utf8"));
+    const hosts = [...new Set(m.content_scripts.flatMap((c) => c.matches).map((u) => new URL(u.replace(/\*$/, "")).hostname))];
+    assert.deepEqual(hosts.sort(), [...Config.BUILTIN_VIEWER_HOSTS].sort(), `manifest.${name}.json`);
+  }
+});
+
+ok("config recognises built-in viewer URLs", () => {
   assert.equal(Config.isBuiltInViewer("https://viewer.kaikay.de/"), true);
   assert.equal(Config.isBuiltInViewer("https://kaikayy.github.io/multi-link-share/*"), true);
   assert.equal(Config.isBuiltInViewer("https://viewer.example.org/"), false);

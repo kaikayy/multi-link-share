@@ -1,11 +1,12 @@
 {
   "name": "tab-share-ext",
   "version": "1.0.0-beta.13",
-  "description": "Bundle a group of tabs (current window, a tab group, or pasted links) into one link that opens as a slideshow — no account, no server, and the recipient needs no extension.",
+  "description": "Bundle a group of tabs (current window, a tab group, or pasted links) into one link that opens as a slideshow -- no account, no server, and the recipient needs no extension.",
   "license": "AGPL-3.0-only",
   "private": true,
   "scripts": {
     "test": "node scripts/selftest.mjs",
+    "check": "node scripts/selftest.mjs && node scripts/check-sync.mjs && node scripts/check-ascii.mjs",
     "sync": "node scripts/sync-shared.mjs",
     "icons": "node scripts/make-icons.mjs",
     "build": "node scripts/build.mjs",

@@ -21,6 +21,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { SHARED } from "./shared-files.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -41,8 +42,6 @@ const LOCALHOST_PERMS =
   /^(1|true|yes)$/i.test(process.env.DEV_LOCALHOST || "") ||
   isLocalhostUrl(VIEWER_BASE) ||
   isLocalhostUrl(SHORTENER_BASE);
-
-const SHARED = ["lzstring.min.js", "share-codec.js", "monogram.js", "toast.js", "i18n.js"];
 
 function rimraf(p) {
   fs.rmSync(p, { recursive: true, force: true });

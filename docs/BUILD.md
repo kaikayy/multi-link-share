@@ -63,6 +63,7 @@ the domain list, then fold the results plus the hand-review overrides into the
 
 ```bash
 npm test            # round-trip tests for the URL codec
+npm run check       # what CI runs: tests + shared/ copies in sync + ASCII punctuation
 npm run sync        # copy shared/ libs into extension/ and viewer/
 npm run dev         # http://localhost:8778/dev/  -- popup/options/viewer with a mocked chrome.*
 npm run serve:viewer # http://localhost:8777/     -- the real viewer, append #<token>

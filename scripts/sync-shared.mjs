@@ -4,20 +4,12 @@
  *  `npm run build` does this too; run this after editing anything in shared/. */
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { root, TARGETS } from "./shared-files.mjs";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const shared = path.join(root, "shared");
-
-const targets = [
-  { dir: path.join(root, "extension", "src", "lib"), files: ["lzstring.min.js", "share-codec.js", "monogram.js", "toast.js", "config.js", "i18n.js"] },
-  { dir: path.join(root, "viewer", "lib"), files: ["lzstring.min.js", "share-codec.js", "monogram.js", "toast.js", "i18n.js"] },
-];
-
-for (const { dir, files } of targets) {
+for (const { dir, files } of TARGETS) {
   fs.mkdirSync(dir, { recursive: true });
   for (const f of files) {
-    fs.copyFileSync(path.join(shared, f), path.join(dir, f));
+    fs.copyFileSync(path.join(root, "shared", f), path.join(dir, f));
     console.log("  ok", path.relative(root, path.join(dir, f)));
   }
 }
